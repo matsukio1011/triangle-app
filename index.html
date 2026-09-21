@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>三角形の心 4択マスター | 重心・内心・外心・垂心・傍心</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- ヘッダー -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="header-content">
+        <h1>📐 三角形の心 4択マスター</h1>
+        <p class="app-subtitle">中学幾何（重心・内心・外心）から高校発展（垂心・傍心）まで完全攻略</p>
+      </div>
+      <div class="header-actions">
+        <button id="btn-sound-toggle" class="sound-toggle-btn" type="button" title="効果音 ON/OFF" aria-label="効果音切替">
+          <span id="sound-icon" class="sound-icon">🔊</span>
+          <span id="sound-text" class="sound-text">音 ON</span>
+        </button>
+        <button id="btn-theme-toggle" class="theme-toggle-btn" type="button" title="ダークモード/ライトモード切替" aria-label="テーマ切替">
+          <span id="theme-icon" class="theme-icon">🌙</span>
+          <span id="theme-text" class="theme-text">ダーク</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ナビゲーションタブ -->
+  <nav class="nav-tabs">
+    <button id="tab-quiz" class="tab-btn active">🎯 4択クイズ</button>
+    <button id="tab-simulator" class="tab-btn">⚡ 5心シミュレーター</button>
+    <button id="tab-theorems" class="tab-btn">📐 チェバ・メネラウス</button>
+    <button id="tab-encyclopedia" class="tab-btn">📚 まとめの図鑑</button>
+  </nav>
+
+  <!-- メインコンテンツ -->
+  <main class="main-container">
+    
+    <!-- 1. クイズ開始画面 -->
+    <section id="view-start" class="card start-card">
+      <div class="start-icon">🔺</div>
+      <h2 class="start-title">三角形の性質をクイズでマスター！</h2>
+      <p class="start-desc">
+        中学校で学習する「重心・内心・外心」の定義、作図方法、中線の比、内接円・外接円の性質などを4択で確認できます。
+      </p>
+
+      <!-- 高校範囲（垂心・傍心）の追加選択ボタン -->
+      <div class="scope-setting-box">
+        <div class="setting-title">
+          <span>⚙️ 出題範囲のカスタマイズ（選択ボタン）</span>
+        </div>
+        <p class="setting-desc">
+          基本は「重心・内心・外心」（中学範囲）が出題されます。高校範囲の「垂心」「傍心」もボタンを押して出題対象に追加できます。
+        </p>
+
+        <div class="toggle-group">
+          <!-- 垂心ボタン -->
+          <button id="toggle-orthocenter" class="toggle-btn" type="button">
+            <div class="toggle-label">
+              <span>垂心（すいしん）</span>
+              <span id="badge-orthocenter" class="status-badge badge-off">OFF（高校範囲）</span>
+            </div>
+            <span class="toggle-sub">頂点から対辺に下ろした垂線の交点</span>
+          </button>
+
+          <!-- 傍心ボタン -->
+          <button id="toggle-excenter" class="toggle-btn" type="button">
+            <div class="toggle-label">
+              <span>傍心（ぼうしん）</span>
+              <span id="badge-excenter" class="status-badge badge-off">OFF（高校範囲）</span>
+            </div>
+            <span class="toggle-sub">1内角と2外角の二等分線の交点（3つ存在）</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 出題数の選択 -->
+      <div class="count-setting-box">
+        <div class="setting-title">
+          <span>🎲 出題数（3回に1回、定義問題が出題されます）</span>
+        </div>
+        <p class="setting-desc">
+          問題は毎回ランダムに出題され、3回に1回のペースで「重心・内心・外心の定義」が復習として登場します！
+        </p>
+        <div class="count-btn-group">
+          <button type="button" class="btn-quiz-count active" data-count="10">10問（おすすめ）</button>
+          <button type="button" class="btn-quiz-count" data-count="15">15問</button>
+          <button type="button" class="btn-quiz-count" data-count="all">全問チャレンジ</button>
+        </div>
+      </div>
+
+      <button id="btn-start" class="btn-primary">クイズをスタートする 🚀</button>
+    </section>
+
+    <!-- 2. クイズ解答画面 -->
+    <section id="view-quiz" class="card quiz-layout hidden">
+      <!-- 左側：問題と4択 -->
+      <div class="quiz-left-col">
+        <div class="quiz-header">
+          <div class="quiz-step-box">
+            <span class="quiz-step">第 <span id="q-current-index">1</span> 問 / 全 <span id="q-total">10</span> 問</span>
+            <span id="scope-badge" class="badge badge-junior">中学範囲</span>
+          </div>
+          <div id="quiz-streak-badge" class="streak-badge">
+            <span class="streak-fire">🔥</span> 連続正解: <strong id="streak-count">0</strong> 問
+          </div>
+        </div>
+
+        <div class="progress-container">
+          <div id="quiz-progress-bar" class="progress-bar"></div>
+        </div>
+
+        <div class="quiz-content">
+          <div id="q-text" class="quiz-question-text">問題文がここに入ります。</div>
+
+          <!-- 4択ボタンコンテナ -->
+          <div id="options-container" class="options-grid"></div>
+        </div>
+      </div>
+
+      <!-- 右側：正解・解説・次へボタン -->
+      <div class="quiz-right-col">
+        <!-- 未回答時の案内 -->
+        <div id="feedback-placeholder" class="feedback-placeholder">
+          <div class="placeholder-icon">👉</div>
+          <h3>解答待ち</h3>
+          <p>左側の選択肢から答えを1つ選んでください。</p>
+        </div>
+
+        <!-- 回答後の判定カード -->
+        <div id="feedback-card" class="feedback-card hidden">
+          <div class="feedback-status">
+            <span id="feedback-icon" class="feedback-icon">⭕</span>
+            <span id="feedback-title" class="feedback-title">正解！</span>
+          </div>
+
+          <!-- 正解の明示表示エリア（選択後に表示） -->
+          <div id="feedback-correct-answer" class="feedback-correct-answer">
+            <span class="correct-badge">正解</span>
+            <strong id="feedback-correct-text" class="correct-text">重心（G）</strong>
+          </div>
+
+          <p id="feedback-explanation" class="feedback-explanation">解説テキスト</p>
+          <div id="feedback-tip" class="feedback-tip">💡 覚え方のヒント</div>
+          <div id="quiz-svg-container" class="quiz-svg-container"></div>
+          
+          <div class="feedback-action">
+            <span id="auto-next-indicator" class="auto-next-indicator hidden">⚡ 自動で次の問題へ進みます...</span>
+            <button id="btn-next" class="btn-primary">次の問題へ ➔</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. 結果発表画面 -->
+    <section id="view-result" class="card result-card hidden">
+      <h2>🎉 クイズ終了！お疲れ様でした</h2>
+      
+      <div class="score-circle">
+        <div id="result-score" class="score-number">8</div>
+        <div class="score-total">/ <span id="result-total">10</span> 問正解</div>
+      </div>
+
+      <div class="result-stats-row">
+        <div id="result-percentage" class="result-percentage">正答率: 80%</div>
+        <div id="result-streak-box" class="result-streak-box">🔥 最長連続正解: <strong id="result-max-streak">0</strong> 問</div>
+      </div>
+      <p id="result-message" class="result-message">メッセージ</p>
+
+      <button id="btn-restart" class="btn-primary" style="margin-bottom: 1.5rem;">もう一度挑戦する 🔄</button>
+
+      <!-- 復習リスト -->
+      <div class="review-section">
+        <h3>📋 今回の問題と振り返り</h3>
+        <div id="result-review-list"></div>
+      </div>
+    </section>
+
+    <!-- 4. まとめ図鑑画面 -->
+    <section id="view-encyclopedia" class="hidden">
+      <div style="margin-bottom: 1rem;">
+        <h2 style="font-size: 1.3rem; margin-bottom: 0.3rem;">📖 三角形の五心 まとめ図鑑</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">
+          定義・作図方法・特徴的な性質をいつでも確認できるチートシートです。
+        </p>
+      </div>
+      <div id="encyclopedia-container" class="encyclo-container"></div>
+    </section>
+
+    <!-- 5. 5心シミュレーター画面 -->
+    <section id="view-simulator" class="card sim-layout hidden">
+      <!-- 左パネル: コントロール & 情報 -->
+      <div class="sim-panel">
+        <div class="sim-panel-header">
+          <h3>🎮 五心コントロール</h3>
+          <p class="sim-guide">頂点A, B, Cを直接ドラッグして動かせます！</p>
+        </div>
+
+        <!-- プリセットボタン -->
+        <div class="sim-control-group">
+          <label class="sim-label">三角形プリセット</label>
+          <div class="preset-btn-grid">
+            <button class="btn-preset" data-preset="acute" title="鋭角三角形">鋭角</button>
+            <button class="btn-preset" data-preset="right" title="直角三角形">直角</button>
+            <button class="btn-preset" data-preset="obtuse" title="鈍角三角形">鈍角</button>
+            <button class="btn-preset" data-preset="equilateral" title="正三角形">正△</button>
+          </div>
+        </div>
+
+        <!-- 表示切り替えトグル -->
+        <div class="sim-control-group">
+          <label class="sim-label">表示する「心」と図形</label>
+          <div class="sim-check-list">
+            <label class="sim-check-item sim-check-centroid">
+              <input type="checkbox" id="sim-show-centroid" checked>
+              <span class="sim-check-mark"></span>
+              <span class="sim-check-text"><strong>重心 (G)</strong> <small>中線</small></span>
+            </label>
+
+            <label class="sim-check-item sim-check-incenter">
+              <input type="checkbox" id="sim-show-incenter" checked>
+              <span class="sim-check-mark"></span>
+              <span class="sim-check-text"><strong>内心 (I)</strong> <small>内接円・二等分線</small></span>
+            </label>
+
+            <label class="sim-check-item sim-check-sub sim-check-formula" id="sim-formula-row" title="内接円の半径公式 S=1/2r(a+b+c) の導出図解を表示">
+              <input type="checkbox" id="sim-show-incenter-demo">
+              <span class="sim-check-mark"></span>
+              <span class="sim-check-text"><strong>↳ 📐 半径の求め方</strong> <small>3分割公式</small></span>
+            </label>
+
+            <label class="sim-check-item sim-check-circumcenter">
+              <input type="checkbox" id="sim-show-circumcenter" checked>
+              <span class="sim-check-mark"></span>
+              <span class="sim-check-text"><strong>外心 (O)</strong> <small>外接円・垂直二等分線</small></span>
+            </label>
+
+            <label class="sim-check-item sim-check-orthocenter">
+              <input type="checkbox" id="sim-show-orthocenter">
+              <span class="sim-check-mark"></span>
+              <span class="sim-check-text"><strong>垂心 (H)</strong> <small>垂線（高校）</small></span>
+            </label>
+
+            <label class="sim-check-item sim-check-excenter">
+              <input type="checkbox" id="sim-show-excenter">
+              <span class="sim-check-mark"></span>
+              <span class="sim-check-text"><strong>傍心 (I_A)</strong> <small>傍接円（高校）</small></span>
+            </label>
+
+            <label class="sim-check-item sim-check-euler">
+              <input type="checkbox" id="sim-show-euler">
+              <span class="sim-check-mark"></span>
+              <span class="sim-check-text"><strong>オイラー線</strong> <small>O-G-Hの一直線</small></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- リアルタイム情報 -->
+        <div class="sim-info-card">
+          <div class="sim-info-row">
+            <span class="sim-info-label">形状:</span>
+            <span id="sim-triangle-type" class="sim-type-badge">鋭角三角形</span>
+          </div>
+          <div class="sim-angles-row">
+            <span>∠A: <b id="sim-angle-a">60°</b></span>
+            <span>∠B: <b id="sim-angle-b">60°</b></span>
+            <span>∠C: <b id="sim-angle-c">60°</b></span>
+          </div>
+          <div id="sim-commentary" class="sim-commentary">
+            頂点を動かして、外心や垂心が内部から外部へ飛び出す様子や、直角三角形の斜辺中点に外心が乗る様子を観察してみましょう！
+          </div>
+        </div>
+      </div>
+
+      <!-- 右側：メインビュー（キャンバス ＋ 下部式バー） -->
+      <div class="sim-right-area">
+        <div class="sim-canvas-wrapper">
+          <svg id="sim-svg" viewBox="0 0 850 500" class="sim-svg">
+            <defs>
+              <pattern id="sim-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#f1f5f9" stroke-width="1" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#sim-grid)" rx="8" />
+
+            <g id="sim-root-layer">
+              <!-- 動的要素レイヤー -->
+              <g id="sim-layer-guides"></g>
+              <g id="sim-layer-circles"></g>
+              <g id="sim-layer-euler"></g>
+
+              <!-- 内心単独表示時の3分割三角形ハイライトレイヤー -->
+              <g id="sim-layer-incenter-demo"></g>
+
+              <!-- 三角形本体 -->
+              <polygon id="sim-poly-triangle" class="sim-triangle" />
+
+              <!-- 心の点レイヤー -->
+              <g id="sim-layer-centers"></g>
+
+              <!-- 頂点ドラッグハンドル -->
+              <g id="sim-layer-handles"></g>
+            </g>
+          </svg>
+        </div>
+
+        <!-- 図の下に大きく表示する内接円の半径公式バー -->
+        <div id="sim-formula-bar" class="sim-formula-bar hidden">
+          <div class="sf-section sf-derivation">
+            <div class="sf-tag">💡 内接円の半径公式の導出（3分割）</div>
+            <div class="sf-eq-group">
+              <span class="sf-area-s">S</span>
+              <span class="sf-eq">=</span>
+              <span class="sf-tri sf-tri-a" title="△IBC (底辺 a, 高さ r)">½ ar</span>
+              <span class="sf-plus">+</span>
+              <span class="sf-tri sf-tri-b" title="△ICA (底辺 b, 高さ r)">½ br</span>
+              <span class="sf-plus">+</span>
+              <span class="sf-tri sf-tri-c" title="△IAB (底辺 c, 高さ r)">½ cr</span>
+              <span class="sf-eq">=</span>
+              <span class="sf-factored">½(a + b + c)r</span>
+            </div>
+          </div>
+
+          <div class="sf-arrow">➔</div>
+
+          <div class="sf-section sf-target">
+            <div class="sf-target-title">半径 r の公式</div>
+            <div class="sf-frac-group">
+              <span class="sf-r-var">r</span>
+              <span class="sf-eq">=</span>
+              <div class="sf-fraction">
+                <span class="sf-num">2S</span>
+                <span class="sf-den">a + b + c</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="sf-section sf-calc">
+            <div class="sf-calc-row">周長 <i>a+b+c</i>: <b id="sim-bar-p">0</b></div>
+            <div class="sf-calc-row">面積 <i>S</i>: <b id="sim-bar-s">0</b></div>
+            <div class="sf-calc-row sf-calc-r">半径 <i>r</i> = <b id="sim-bar-r">0</b></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. チェバ・メネラウス シミュレーター画面 -->
+    <section id="view-theorems" class="card sim-layout hidden">
+      <!-- 左パネル: コントロール & 情報 -->
+      <div class="sim-panel">
+        <div class="sim-panel-header">
+          <h3>📐 チェバ・メネラウス</h3>
+          <p class="sim-guide">頂点A, B, Cや交点・直線をドラッグ！</p>
+        </div>
+
+        <!-- 定理選択セグメント -->
+        <div class="sim-control-group">
+          <label class="sim-label">定理の選択</label>
+          <div class="thm-mode-selector">
+            <button id="thm-mode-ceva" class="btn-thm-mode active" type="button">チェバの定理</button>
+            <button id="thm-mode-menelaus" class="btn-thm-mode" type="button">メネラウスの定理</button>
+          </div>
+        </div>
+
+        <!-- 出発点の選択 -->
+        <div class="sim-control-group">
+          <label class="sim-label">🏁 出発する頂点</label>
+          <div class="thm-start-selector">
+            <button class="btn-thm-start active" data-start="A" type="button">頂点 A</button>
+            <button class="btn-thm-start" data-start="B" type="button">頂点 B</button>
+            <button class="btn-thm-start" data-start="C" type="button">頂点 C</button>
+          </div>
+        </div>
+
+        <!-- プリセットボタン -->
+        <div class="sim-control-group">
+          <label class="sim-label">配置プリセット</label>
+          <div class="preset-btn-grid">
+            <button class="btn-preset btn-thm-preset" data-preset="default">標準</button>
+            <button class="btn-preset btn-thm-preset" data-preset="centroid" title="重心（比1:1:1）">重心</button>
+            <button class="btn-preset btn-thm-preset" data-preset="fox" title="キツネ型（基本）">キツネ型</button>
+            <button class="btn-preset btn-thm-preset" data-preset="midpoint" title="中点交差">中点</button>
+          </div>
+        </div>
+
+        <!-- 表示設定 -->
+        <div class="sim-control-group">
+          <label class="sim-label">表示オプション</label>
+          <div class="sim-check-list">
+            <label class="sim-check-item">
+              <input type="checkbox" id="thm-show-route" checked>
+              <span class="sim-check-mark"></span>
+              <span class="sim-check-text"><strong>🔄 巡回ルート（一筆書き）</strong> <small>矢印ガイド</small></span>
+            </label>
+            <label class="sim-check-item">
+              <input type="checkbox" id="thm-show-lengths" checked>
+              <span class="sim-check-mark"></span>
+              <span class="sim-check-text"><strong>📏 線分の長さ数値</strong> <small>比率ラベル</small></span>
+            </label>
+            <label class="sim-check-item">
+              <input type="checkbox" id="thm-show-extended" checked>
+              <span class="sim-check-mark"></span>
+              <span class="sim-check-text"><strong>✂️ 延長線ガイド</strong> <small>外分交点（点線）</small></span>
+            </label>
+            <label class="sim-check-item" id="thm-opt-line-handles-row">
+              <input type="checkbox" id="thm-show-line-handles" checked>
+              <span class="sim-check-mark"></span>
+              <span class="sim-check-text"><strong>📍 直線操作点 (L1, L2)</strong> <small>メネラウス制御点</small></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 解説カード -->
+        <div class="sim-info-card">
+          <div class="sim-info-row">
+            <span class="sim-info-label">要点解説:</span>
+          </div>
+          <div id="thm-explanation" class="sim-commentary">
+            頂点AまたはBからスタートして、対辺の分点を経由しながら一筆書きで一周すると、分数の積は常に「1」になります！
+          </div>
+        </div>
+      </div>
+
+      <!-- 右側：メインビュー（キャンバス ＋ 下部式バー） -->
+      <div class="sim-right-area">
+        <div class="sim-canvas-wrapper">
+          <svg id="thm-svg" viewBox="0 0 850 500" class="sim-svg">
+            <g id="thm-root-layer">
+              <!-- 延長線レイヤー -->
+              <g id="thm-layer-extended"></g>
+              <!-- 三角形本体 -->
+              <polygon id="thm-poly-triangle" class="sim-triangle" />
+              <!-- チェバ線 / メネラウス直線レイヤー -->
+              <g id="thm-layer-lines"></g>
+              <!-- 巡回ルート矢印レイヤー -->
+              <g id="thm-layer-route"></g>
+              <!-- 分点・交点レイヤー -->
+              <g id="thm-layer-points"></g>
+              <!-- ドラッグハンドルレイヤー -->
+              <g id="thm-layer-handles"></g>
+            </g>
+          </svg>
+        </div>
+
+        <!-- 図の下に大きく表示する数式バー -->
+        <div id="thm-formula-bar" class="sim-formula-bar">
+          <div class="sf-section sf-derivation">
+            <div id="thm-bar-title" class="sf-tag">📐 定理の等式</div>
+            <div class="thm-formula-row">
+              <div id="thm-frac-1" class="thm-formula-frac-box"></div>
+              <span class="sf-times">×</span>
+              <div id="thm-frac-2" class="thm-formula-frac-box"></div>
+              <span class="sf-times">×</span>
+              <div id="thm-frac-3" class="thm-formula-frac-box"></div>
+              <span class="sf-eq">=</span>
+              <span class="thm-formula-const">1</span>
+            </div>
+          </div>
+
+          <div class="sf-arrow">➔</div>
+
+          <div class="sf-section sf-target">
+            <div class="sf-target-title">現在の実長での計算</div>
+            <div class="thm-calc-row">
+              <div id="thm-val-1" class="thm-val-frac-box"></div>
+              <span class="sf-times">×</span>
+              <div id="thm-val-2" class="thm-val-frac-box"></div>
+              <span class="sf-times">×</span>
+              <div id="thm-val-3" class="thm-val-frac-box"></div>
+              <span class="sf-eq">=</span>
+              <div class="thm-product-badge">
+                <span id="thm-bar-product">1.00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- フッター -->
+  <footer class="app-footer">
+    <p>三角形の五心・チェバ・メネラウス 4択学習アプリ | 中学・高校数学サポート</p>
+  </footer>
+
+  <!-- スクリプト読み込み -->
+  <script src="questions.js"></script>
+  <script src="simulator.js"></script>
+  <script src="theorems.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
