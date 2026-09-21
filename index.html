@@ -91,7 +91,12 @@
         </div>
       </div>
 
-      <button id="btn-start" class="btn-primary">クイズをスタートする 🚀</button>
+      <div class="start-actions">
+        <button id="btn-start" class="btn-primary">クイズをスタートする 🚀</button>
+        <button id="btn-open-history" class="btn-secondary" type="button">
+          📜 挑戦履歴を見る <span id="history-count-badge" class="badge badge-count">0</span>
+        </button>
+      </div>
     </section>
 
     <!-- 2. クイズ解答画面 -->
@@ -103,14 +108,22 @@
             <span class="quiz-step">第 <span id="q-current-index">1</span> 問 / 全 <span id="q-total">10</span> 問</span>
             <span id="scope-badge" class="badge badge-junior">中学範囲</span>
           </div>
-          <div id="quiz-streak-badge" class="streak-badge">
-            <span class="streak-fire">🔥</span> 連続正解: <strong id="streak-count">0</strong> 問
+          <div class="quiz-header-right">
+            <div id="quiz-streak-badge" class="streak-badge">
+              <span class="streak-fire">🔥</span> 連続正解: <strong id="streak-count">0</strong> 問
+            </div>
+            <button id="btn-quiz-history" class="btn-header-history" type="button" title="過去の成績履歴を見る">
+              📜 履歴
+            </button>
           </div>
         </div>
 
         <div class="progress-container">
           <div id="quiz-progress-bar" class="progress-bar"></div>
         </div>
+
+        <!-- リアルタイム回答状況インジケーター -->
+        <div id="quiz-answer-tracker" class="quiz-answer-tracker"></div>
 
         <div class="quiz-content">
           <div id="q-text" class="quiz-question-text">問題文がここに入ります。</div>
@@ -167,9 +180,10 @@
         <div id="result-percentage" class="result-percentage">正答率: 80%</div>
         <div id="result-streak-box" class="result-streak-box">🔥 最長連続正解: <strong id="result-max-streak">0</strong> 問</div>
       </div>
-      <p id="result-message" class="result-message">メッセージ</p>
-
-      <button id="btn-restart" class="btn-primary" style="margin-bottom: 1.5rem;">もう一度挑戦する 🔄</button>
+      <div class="result-actions">
+        <button id="btn-restart" class="btn-primary">もう一度挑戦する 🔄</button>
+        <button id="btn-result-history" class="btn-secondary" type="button">📜 過去の挑戦履歴を見る 📊</button>
+      </div>
 
       <!-- 復習リスト -->
       <div class="review-section">
@@ -480,6 +494,46 @@
     </section>
 
   </main>
+
+  <!-- 挑戦履歴モーダル -->
+  <div id="modal-history" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-box">
+          <span class="modal-icon">📊</span>
+          <h3 class="modal-title">4択クイズ 挑戦履歴</h3>
+        </div>
+        <button id="btn-close-history" class="btn-modal-close" type="button" aria-label="閉じる">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- 総合統計サマリー -->
+        <div class="history-stats-grid">
+          <div class="stat-card">
+            <div id="stat-total-plays" class="stat-num">0</div>
+            <div class="stat-lbl">挑戦回数</div>
+          </div>
+          <div class="stat-card">
+            <div id="stat-avg-accuracy" class="stat-num">0%</div>
+            <div class="stat-lbl">平均正答率</div>
+          </div>
+          <div class="stat-card">
+            <div id="stat-best-streak" class="stat-num">0</div>
+            <div class="stat-lbl">最高連続正解</div>
+          </div>
+        </div>
+
+        <!-- 履歴リスト -->
+        <div class="history-list-header">
+          <h4>過去の成績一覧</h4>
+          <button id="btn-clear-history" class="btn-text-danger" type="button">履歴をリセット</button>
+        </div>
+        <div id="history-list-container" class="history-list-container">
+          <!-- JSで動的生成 -->
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- フッター -->
   <footer class="app-footer">

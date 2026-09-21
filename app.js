@@ -436,6 +436,23 @@ class TriangleQuizApp {
     // 出題数選択要素
     this.questionCount = '10';
     this.btnCountList = document.querySelectorAll('.btn-quiz-count');
+
+    // 挑戦履歴＆回答トラッカー要素
+    this.btnOpenHistory = document.getElementById('btn-open-history');
+    this.btnQuizHistory = document.getElementById('btn-quiz-history');
+    this.btnResultHistory = document.getElementById('btn-result-history');
+    this.btnCloseHistory = document.getElementById('btn-close-history');
+    this.btnClearHistory = document.getElementById('btn-clear-history');
+    this.modalHistory = document.getElementById('modal-history');
+    this.historyCountBadge = document.getElementById('history-count-badge');
+    this.historyListContainer = document.getElementById('history-list-container');
+    this.statTotalPlays = document.getElementById('stat-total-plays');
+    this.statAvgAccuracy = document.getElementById('stat-avg-accuracy');
+    this.statBestStreak = document.getElementById('stat-best-streak');
+    this.quizAnswerTracker = document.getElementById('quiz-answer-tracker');
+
+    // 履歴件数バッジを初期化
+    this.updateHistoryBadge();
   }
 
   updateStreakDisplay(isSuccess) {
@@ -483,6 +500,33 @@ class TriangleQuizApp {
     this.btnStart.addEventListener('click', () => this.startQuiz());
     this.btnRestart.addEventListener('click', () => this.showStartView());
     this.btnNext.addEventListener('click', () => this.nextQuestion());
+
+    // 挑戦履歴モーダル関連イベント
+    if (this.btnOpenHistory) {
+      this.btnOpenHistory.addEventListener('click', () => this.openHistoryModal());
+    }
+    if (this.btnQuizHistory) {
+      this.btnQuizHistory.addEventListener('click', () => this.openHistoryModal());
+    }
+    if (this.btnResultHistory) {
+      this.btnResultHistory.addEventListener('click', () => this.openHistoryModal());
+    }
+    if (this.btnCloseHistory) {
+      this.btnCloseHistory.addEventListener('click', () => this.closeHistoryModal());
+    }
+    if (this.btnClearHistory) {
+      this.btnClearHistory.addEventListener('click', () => this.clearQuizHistory());
+    }
+    if (this.modalHistory) {
+      this.modalHistory.addEventListener('click', (e) => {
+        if (e.target === this.modalHistory) this.closeHistoryModal();
+      });
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !this.modalHistory.classList.contains('hidden')) {
+          this.closeHistoryModal();
+        }
+      });
+    }
 
     // タブ切り替え
     this.tabQuiz.addEventListener('click', () => {
@@ -671,7 +715,21 @@ class TriangleQuizApp {
     this.viewResult.classList.add('hidden');
     this.viewQuiz.classList.remove('hidden');
 
+    this.initAnswerTracker();
     this.renderQuestion();
+  }
+
+  // 回答状況トラッカーの初期化
+  initAnswerTracker() {
+    if (!this.quizAnswerTracker) return;
+    this.quizAnswerTracker.innerHTML = '';
+    for (let i = 0; i < this.currentQuestions.length; i++) {
+      const pill = document.createElement('div');
+      pill.className = `tracker-pill ${i === 0 ? 'current' : ''}`;
+      pill.id = `tracker-pill-${i}`;
+      pill.textContent = `Q${i + 1}`;
+      this.quizAnswerTracker.appendChild(pill);
+    }
   }
 
   renderQuestion() {
@@ -685,6 +743,18 @@ class TriangleQuizApp {
     }
 
     const q = this.currentQuestions[this.currentIndex];
+
+    // トラッカーのカレント表示を更新
+    if (this.quizAnswerTracker) {
+      const pills = this.quizAnswerTracker.querySelectorAll('.tracker-pill');
+      pills.forEach((p, idx) => {
+        if (idx === this.currentIndex) {
+          p.classList.add('current');
+        } else {
+          p.classList.remove('current');
+        }
+      });
+    }
 
     // 進捗表示
     this.qIndexEl.textContent = this.currentIndex + 1;
@@ -743,6 +813,14 @@ class TriangleQuizApp {
     const q = this.currentQuestions[this.currentIndex];
     const isCorrect = selectedOpt.isCorrect;
     const correctChoiceText = q.options[q.answer];
+
+    // トラッカーを更新（正誤マークを付与）
+    const curPill = document.getElementById(`tracker-pill-${this.currentIndex}`);
+    if (curPill) {
+      curPill.classList.remove('current');
+      curPill.classList.add(isCorrect ? 'correct' : 'wrong');
+      curPill.textContent = `Q${this.currentIndex + 1} ${isCorrect ? '⭕' : '❌'}`;
+    }
 
     // 全ての選択肢ボタンのクリックを無効化し、正解ボタンを緑色にハイライト（選択後に正解を表示）
     const allButtons = this.optionsContainer.querySelectorAll('.option-btn');
@@ -901,6 +979,174 @@ class TriangleQuizApp {
       `;
       this.resultReviewList.appendChild(div);
     });
+
+    // 挑戦結果を永続履歴に自動保存
+    this.saveQuizResult(total, percent);
+  }
+
+  // ==========================================================
+  // 挑戦履歴（localStorage）マネージャー
+  // ==========================================================
+  getQuizHistory() {
+    try {
+      const data = localStorage.getItem('triangle_quiz_history');
+      return data ? JSON.parse(data) : [];
+    } catch (e) {
+      console.error('Failed to parse quiz history:', e);
+      return [];
+    }
+  }
+
+  saveQuizResult(total, percent) {
+    try {
+      const now = new Date();
+      const month = now.getMonth() + 1;
+      const date = now.getDate();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const mins = String(now.getMinutes()).padStart(2, '0');
+      const dateStr = `${month}/${date} ${hours}:${mins}`;
+
+      const record = {
+        id: 'qh_' + Date.now(),
+        dateStr: dateStr,
+        total: total,
+        score: this.score,
+        percent: percent,
+        maxStreak: this.maxStreak,
+        answers: this.answersHistory.map(a => ({
+          title: a.question.title,
+          question: a.question.question,
+          isCorrect: a.isCorrect,
+          userChoice: a.userChoice,
+          correctChoice: a.correctChoice,
+          tip: a.question.tip,
+          scope: a.question.scope
+        }))
+      };
+
+      const histories = this.getQuizHistory();
+      histories.unshift(record); // 最新順
+      if (histories.length > 50) histories.pop(); // 最大50件保持
+
+      localStorage.setItem('triangle_quiz_history', JSON.stringify(histories));
+      this.updateHistoryBadge();
+    } catch (e) {
+      console.error('Failed to save quiz history:', e);
+    }
+  }
+
+  updateHistoryBadge() {
+    if (!this.historyCountBadge) return;
+    const histories = this.getQuizHistory();
+    this.historyCountBadge.textContent = histories.length;
+  }
+
+  openHistoryModal() {
+    if (!this.modalHistory) return;
+    this.modalHistory.classList.remove('hidden');
+    this.renderHistoryModal();
+  }
+
+  closeHistoryModal() {
+    if (!this.modalHistory) return;
+    this.modalHistory.classList.add('hidden');
+  }
+
+  renderHistoryModal() {
+    const histories = this.getQuizHistory();
+
+    // 総合統計の算出
+    if (this.statTotalPlays) {
+      this.statTotalPlays.textContent = `${histories.length} 回`;
+    }
+    if (this.statAvgAccuracy) {
+      if (histories.length === 0) {
+        this.statAvgAccuracy.textContent = '0%';
+      } else {
+        const totalScore = histories.reduce((sum, h) => sum + h.score, 0);
+        const totalQuestions = histories.reduce((sum, h) => sum + h.total, 0);
+        const avgPercent = totalQuestions > 0 ? Math.round((totalScore / totalQuestions) * 100) : 0;
+        this.statAvgAccuracy.textContent = `${avgPercent}%`;
+      }
+    }
+    if (this.statBestStreak) {
+      const best = histories.reduce((max, h) => Math.max(max, h.maxStreak || 0), 0);
+      this.statBestStreak.textContent = `${best} 問`;
+    }
+
+    // リスト描画
+    if (!this.historyListContainer) return;
+    this.historyListContainer.innerHTML = '';
+
+    if (histories.length === 0) {
+      this.historyListContainer.innerHTML = `
+        <div class="history-empty-msg">
+          まだ挑戦履歴がありません。<br>クイズに挑戦すると、ここに毎回の成績や復習データが記録されます！🚀
+        </div>
+      `;
+      return;
+    }
+
+    histories.forEach((h, index) => {
+      const itemEl = document.createElement('div');
+      itemEl.className = 'history-item';
+
+      let badgeClass = 'low';
+      if (h.percent === 100) badgeClass = 'perfect';
+      else if (h.percent >= 80) badgeClass = 'high';
+      else if (h.percent >= 60) badgeClass = 'mid';
+
+      const detailsHtml = h.answers.map((ans, qIdx) => `
+        <div class="history-q-row">
+          <div class="history-q-header ${ans.isCorrect ? 'q-correct' : 'q-wrong'}">
+            <span>${ans.isCorrect ? '⭕' : '❌'}</span>
+            <span>Q${qIdx + 1}. ${ans.title}</span>
+          </div>
+          <div class="history-q-ans">あなたの回答: ${ans.userChoice} ${!ans.isCorrect ? ` / 正解: <strong>${ans.correctChoice}</strong>` : ''}</div>
+        </div>
+      `).join('');
+
+      itemEl.innerHTML = `
+        <div class="history-summary">
+          <div class="history-summary-left">
+            <span class="history-date">${h.dateStr} (第${histories.length - index}回)</span>
+            <span class="history-score-text">
+              スコア: <strong>${h.score}</strong> / ${h.total} 問正解
+              ${h.maxStreak >= 3 ? `<small style="margin-left: 0.4rem; color: #ea580c; font-size: 0.78rem;">🔥${h.maxStreak}連問</small>` : ''}
+            </span>
+          </div>
+          <div class="history-summary-right">
+            <span class="history-percent-badge ${badgeClass}">${h.percent}%</span>
+            <span class="history-toggle-icon">▼</span>
+          </div>
+        </div>
+        <div class="history-details hidden">
+          ${detailsHtml}
+        </div>
+      `;
+
+      // クリックでアコーディオン展開
+      const summaryEl = itemEl.querySelector('.history-summary');
+      const detailsEl = itemEl.querySelector('.history-details');
+      summaryEl.addEventListener('click', () => {
+        const isOpen = itemEl.classList.toggle('open');
+        if (isOpen) {
+          detailsEl.classList.remove('hidden');
+        } else {
+          detailsEl.classList.add('hidden');
+        }
+      });
+
+      this.historyListContainer.appendChild(itemEl);
+    });
+  }
+
+  clearQuizHistory() {
+    if (confirm('これまでのクイズ挑戦履歴をすべて削除しますか？\n（この操作は元に戻せません）')) {
+      localStorage.removeItem('triangle_quiz_history');
+      this.updateHistoryBadge();
+      this.renderHistoryModal();
+    }
   }
 
   renderEncyclopedia() {
