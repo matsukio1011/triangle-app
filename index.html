@@ -145,24 +145,33 @@
 
         <!-- 回答後の判定カード -->
         <div id="feedback-card" class="feedback-card hidden">
-          <div class="feedback-status">
-            <span id="feedback-icon" class="feedback-icon">⭕</span>
-            <span id="feedback-title" class="feedback-title">正解！</span>
+          <!-- 上部固定バー：判定ステータス ＆ 次の問題へボタン（スクロール一切不要で即座に押せる！） -->
+          <div class="feedback-header-bar">
+            <div class="feedback-status">
+              <span id="feedback-icon" class="feedback-icon">⭕</span>
+              <span id="feedback-title" class="feedback-title">正解！</span>
+            </div>
+            <button id="btn-next" class="btn-primary btn-next-top" type="button">次の問題へ ➔</button>
           </div>
 
-          <!-- 正解の明示表示エリア（選択後に表示） -->
-          <div id="feedback-correct-answer" class="feedback-correct-answer">
-            <span class="correct-badge">正解</span>
-            <strong id="feedback-correct-text" class="correct-text">重心（G）</strong>
+          <div id="auto-next-indicator" class="auto-next-indicator hidden">⚡ 自動で次の問題へ進みます...</div>
+
+          <!-- スクロール不要でコンパクトに収まる解説領域 -->
+          <div class="feedback-content-area">
+            <!-- 正解の明示表示エリア（選択後に表示） -->
+            <div id="feedback-correct-answer" class="feedback-correct-answer">
+              <span class="correct-badge">正解</span>
+              <strong id="feedback-correct-text" class="correct-text">重心（G）</strong>
+            </div>
+
+            <p id="feedback-explanation" class="feedback-explanation">解説テキスト</p>
+            <div id="feedback-tip" class="feedback-tip">💡 覚え方のヒント</div>
+            <div id="quiz-svg-container" class="quiz-svg-container"></div>
           </div>
 
-          <p id="feedback-explanation" class="feedback-explanation">解説テキスト</p>
-          <div id="feedback-tip" class="feedback-tip">💡 覚え方のヒント</div>
-          <div id="quiz-svg-container" class="quiz-svg-container"></div>
-          
-          <div class="feedback-action">
-            <span id="auto-next-indicator" class="auto-next-indicator hidden">⚡ 自動で次の問題へ進みます...</span>
-            <button id="btn-next" class="btn-primary">次の問題へ ➔</button>
+          <!-- 下部にも念のため配置（どちらでも押せます） -->
+          <div class="feedback-bottom-action">
+            <button id="btn-next-bottom" class="btn-secondary btn-next-sub" type="button">次の問題へ ➔</button>
           </div>
         </div>
       </div>

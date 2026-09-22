@@ -394,9 +394,9 @@ body {
   grid-template-columns: 1fr 1.05fr;
   gap: 1.2rem;
   padding: 1.1rem;
-  height: calc(100vh - 125px); /* スクロールなしで画面内にフィット */
+  height: calc(100vh - 130px);
   min-height: 480px;
-  max-height: 600px;
+  max-height: 720px;
   align-items: stretch;
 }
 
@@ -601,12 +601,13 @@ body {
   display: flex;
   flex-direction: column;
   height: 100%;
+  min-height: 0;
   position: relative;
   background: #fbfcfe;
   border-radius: var(--radius-sm);
-  padding: 0.7rem;
+  padding: 0.75rem;
   border: 1px solid #edf2f7;
-  overflow-y: auto;
+  overflow: hidden; /* 外側のはみ出しを防止し、ボタンを常時固定表示 */
 }
 
 /* 未解答時プレースホルダー */
@@ -648,6 +649,7 @@ body {
   display: flex;
   flex-direction: column;
   height: 100%;
+  min-height: 0;
   animation: fadeIn 0.2s ease;
 }
 
@@ -656,14 +658,54 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* 上部固定バー：判定結果 & 次の問題へボタン（スクロール一切不要！） */
+.feedback-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-bottom: 0.35rem;
+  flex-shrink: 0;
+}
+
 .feedback-status {
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.4rem 0.6rem;
+  padding: 0.35rem 0.6rem;
   border-radius: var(--radius-sm);
-  margin-bottom: 0.4rem;
+  flex: 1;
+}
+
+/* 最上部「次の問題へ」ボタン（常時目立つ＆スクロール不要） */
+.btn-next-top {
+  padding: 0.45rem 1.1rem;
+  font-size: 0.92rem;
+  font-weight: 800;
+  white-space: nowrap;
   flex-shrink: 0;
+  box-shadow: 0 3px 10px rgba(37, 99, 235, 0.35);
+  animation: pulseBtn 2s infinite ease-in-out;
+}
+
+@keyframes pulseBtn {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); box-shadow: 0 4px 14px rgba(37, 99, 235, 0.45); }
+}
+
+/* スクロール領域（解説や図解が長い場合でもここだけがスクロールし、ボタンは常に最上部に固定） */
+.feedback-content-area {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding-right: 2px;
+}
+
+.feedback-bottom-action {
+  display: none;
 }
 
 .feedback-correct .feedback-status {
@@ -755,15 +797,15 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  flex: 1;
-  min-height: 120px;
-  max-height: 160px;
+  flex-shrink: 0;
+  min-height: 80px;
+  max-height: 120px;
   overflow: hidden;
 }
 
 .geometry-svg {
   height: 100%;
-  max-height: 155px;
+  max-height: 115px;
   width: auto;
 }
 

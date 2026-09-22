@@ -384,6 +384,7 @@ class TriangleQuizApp {
     this.btnStart = document.getElementById('btn-start');
     this.btnRestart = document.getElementById('btn-restart');
     this.btnNext = document.getElementById('btn-next');
+    this.btnNextBottom = document.getElementById('btn-next-bottom');
     this.tabQuiz = document.getElementById('tab-quiz');
     this.tabHistory = document.getElementById('tab-history');
     this.tabSimulator = document.getElementById('tab-simulator');
@@ -505,10 +506,23 @@ class TriangleQuizApp {
       });
     });
 
-    // クイズ開始
+    // クイズ開始・進行
     this.btnStart.addEventListener('click', () => this.startQuiz());
     this.btnRestart.addEventListener('click', () => this.showStartView());
     this.btnNext.addEventListener('click', () => this.nextQuestion());
+    if (this.btnNextBottom) {
+      this.btnNextBottom.addEventListener('click', () => this.nextQuestion());
+    }
+
+    // キーボード操作：回答後に Enter または Space キーで即座に次の問題へ
+    window.addEventListener('keydown', (e) => {
+      if ((e.key === 'Enter' || e.key === ' ') && this.isAnswered && !this.viewQuiz.classList.contains('hidden')) {
+        if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+          e.preventDefault();
+          this.nextQuestion();
+        }
+      }
+    });
 
     // 挑戦履歴関連イベント（タブ画面へ直接遷移）
     if (this.btnOpenHistory) {
