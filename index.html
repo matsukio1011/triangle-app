@@ -210,7 +210,10 @@
           <h2 class="history-view-title">📊 4択クイズ 挑戦履歴</h2>
           <p class="history-view-desc">これまでのクイズ成績と、毎回の全問題・回答の復習ができます。</p>
         </div>
-        <button id="btn-view-clear-history" class="btn-text-danger" type="button">履歴をすべてリセット 🗑️</button>
+        <div style="display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap;">
+          <button id="btn-view-toggle-all" class="btn-secondary" style="font-size: 0.8rem; padding: 0.35rem 0.75rem;" type="button">すべて折りたたむ / 展開 ↕️</button>
+          <button id="btn-view-clear-history" class="btn-text-danger" type="button">履歴をすべてリセット 🗑️</button>
+        </div>
       </div>
 
       <!-- 統計サマリーカード -->
@@ -568,8 +571,11 @@
 
         <!-- 履歴リスト -->
         <div class="history-list-header">
-          <h4>過去の成績一覧</h4>
-          <button id="btn-clear-history" class="btn-text-danger" type="button">履歴をリセット</button>
+          <h4>過去の成績と問題一覧</h4>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <button id="btn-modal-toggle-all" class="btn-secondary" style="font-size: 0.75rem; padding: 0.25rem 0.55rem;" type="button">展開 / 折りたたみ ↕️</button>
+            <button id="btn-clear-history" class="btn-text-danger" type="button">履歴をリセット</button>
+          </div>
         </div>
         <div id="history-list-container" class="history-list-container">
           <!-- JSで動的生成 -->

@@ -457,6 +457,8 @@ class TriangleQuizApp {
 
     // 挑戦履歴タブ画面用要素
     this.historyViewList = document.getElementById('history-view-list');
+    this.btnViewToggleAll = document.getElementById('btn-view-toggle-all');
+    this.btnModalToggleAll = document.getElementById('btn-modal-toggle-all');
     this.statViewTotalPlays = document.getElementById('stat-view-total-plays');
     this.statViewAvgAccuracy = document.getElementById('stat-view-avg-accuracy');
     this.statViewBestStreak = document.getElementById('stat-view-best-streak');
@@ -542,6 +544,12 @@ class TriangleQuizApp {
     }
     if (this.btnViewClearHistory) {
       this.btnViewClearHistory.addEventListener('click', () => this.clearQuizHistory());
+    }
+    if (this.btnViewToggleAll) {
+      this.btnViewToggleAll.addEventListener('click', () => this.toggleAllHistoryItems(this.historyViewList));
+    }
+    if (this.btnModalToggleAll) {
+      this.btnModalToggleAll.addEventListener('click', () => this.toggleAllHistoryItems(this.historyListContainer));
     }
     if (this.modalHistory) {
       this.modalHistory.addEventListener('click', (e) => {
@@ -1106,6 +1114,113 @@ class TriangleQuizApp {
     this.modalHistory.classList.add('hidden');
   }
 
+  createHistoryQuestionRow(ans, qIdx) {
+    const questionText = ans.question || ans.title || `第${qIdx + 1}問`;
+    const isCorrect = ans.isCorrect;
+    const badgeLabel = ans.scope === 'junior' ? '中学' : '高校';
+    const badgeClass = ans.scope === 'junior' ? 'badge-junior' : 'badge-high';
+
+    return `
+      <div class="history-q-row ${isCorrect ? 'is-correct' : 'is-wrong'}">
+        <div class="history-q-header">
+          <span class="${isCorrect ? 'q-correct' : 'q-wrong'}">${isCorrect ? '⭕ 正解' : '❌ 不正解'}</span>
+          <span class="history-q-num">第${qIdx + 1}問</span>
+          ${ans.title ? `<span class="history-q-category">【${ans.title}】</span>` : ''}
+          <span class="badge ${badgeClass}" style="margin-left: auto;">${badgeLabel}</span>
+        </div>
+        <div class="history-q-text">
+          <span style="color: var(--primary); font-weight: 700; margin-right: 0.35rem;">問題:</span>${questionText}
+        </div>
+        <div class="history-q-answer-box">
+          <div class="history-q-ans-user">
+            あなたの回答: <strong style="color: ${isCorrect ? '#059669' : '#dc2626'};">${ans.userChoice || '未回答'}</strong>
+          </div>
+          ${!isCorrect ? `
+            <div class="history-q-ans-correct">
+              正解: <strong style="color: #059669;">${ans.correctChoice || ''}</strong>
+            </div>
+          ` : ''}
+        </div>
+        ${ans.tip ? `
+          <div class="history-q-tip">
+            💡 <strong>ポイント:</strong> ${ans.tip}
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }
+
+  createHistoryItemElement(h, index, totalCount) {
+    const itemEl = document.createElement('div');
+    itemEl.className = 'history-item';
+
+    // 最新の挑戦、または履歴が少ない場合は初期状態で展開して問題を表示
+    const shouldOpenDefault = (index === 0 || totalCount <= 2);
+    if (shouldOpenDefault) {
+      itemEl.classList.add('open');
+    }
+
+    let badgeClass = 'low';
+    if (h.percent === 100) badgeClass = 'perfect';
+    else if (h.percent >= 80) badgeClass = 'high';
+    else if (h.percent >= 60) badgeClass = 'mid';
+
+    const detailsHtml = (h.answers || []).map((ans, qIdx) => this.createHistoryQuestionRow(ans, qIdx)).join('');
+
+    itemEl.innerHTML = `
+      <div class="history-summary" title="クリックして問題一覧を開閉">
+        <div class="history-summary-left">
+          <span class="history-date">${h.dateStr} (第${totalCount - index}回)</span>
+          <span class="history-score-text">
+            スコア: <strong>${h.score}</strong> / ${h.total} 問正解
+            ${h.maxStreak >= 3 ? `<small style="margin-left: 0.4rem; color: #ea580c; font-size: 0.78rem;">🔥${h.maxStreak}問連続</small>` : ''}
+          </span>
+        </div>
+        <div class="history-summary-right">
+          <span class="history-percent-badge ${badgeClass}">${h.percent}%</span>
+          <span style="font-size: 0.75rem; color: var(--text-muted); margin-left: 0.2rem;">問題一覧</span>
+          <span class="history-toggle-icon">▼</span>
+        </div>
+      </div>
+      <div class="history-details ${shouldOpenDefault ? '' : 'hidden'}">
+        ${detailsHtml}
+      </div>
+    `;
+
+    // クリックでアコーディオン展開
+    const summaryEl = itemEl.querySelector('.history-summary');
+    const detailsEl = itemEl.querySelector('.history-details');
+    summaryEl.addEventListener('click', () => {
+      const isOpen = itemEl.classList.toggle('open');
+      if (isOpen) {
+        detailsEl.classList.remove('hidden');
+      } else {
+        detailsEl.classList.add('hidden');
+      }
+    });
+
+    return itemEl;
+  }
+
+  toggleAllHistoryItems(container) {
+    if (!container) return;
+    const items = container.querySelectorAll('.history-item');
+    if (items.length === 0) return;
+
+    // 1つでも閉じていれば「すべて展開」、すべて開いていれば「すべて折りたたむ」
+    const hasClosed = Array.from(items).some(item => !item.classList.contains('open'));
+    items.forEach(item => {
+      const detailsEl = item.querySelector('.history-details');
+      if (hasClosed) {
+        item.classList.add('open');
+        if (detailsEl) detailsEl.classList.remove('hidden');
+      } else {
+        item.classList.remove('open');
+        if (detailsEl) detailsEl.classList.add('hidden');
+      }
+    });
+  }
+
   renderHistoryModal() {
     const histories = this.getQuizHistory();
 
@@ -1135,62 +1250,14 @@ class TriangleQuizApp {
     if (histories.length === 0) {
       this.historyListContainer.innerHTML = `
         <div class="history-empty-msg">
-          まだ挑戦履歴がありません。<br>クイズに挑戦すると、ここに毎回の成績や復習データが記録されます！🚀
+          まだ挑戦履歴がありません。<br>クイズに挑戦すると、ここに毎回の成績や出題された問題と回答が記録されます！🚀
         </div>
       `;
       return;
     }
 
     histories.forEach((h, index) => {
-      const itemEl = document.createElement('div');
-      itemEl.className = 'history-item';
-
-      let badgeClass = 'low';
-      if (h.percent === 100) badgeClass = 'perfect';
-      else if (h.percent >= 80) badgeClass = 'high';
-      else if (h.percent >= 60) badgeClass = 'mid';
-
-      const detailsHtml = h.answers.map((ans, qIdx) => `
-        <div class="history-q-row">
-          <div class="history-q-header ${ans.isCorrect ? 'q-correct' : 'q-wrong'}">
-            <span>${ans.isCorrect ? '⭕' : '❌'}</span>
-            <span>Q${qIdx + 1}. ${ans.title}</span>
-          </div>
-          <div class="history-q-ans">あなたの回答: ${ans.userChoice} ${!ans.isCorrect ? ` / 正解: <strong>${ans.correctChoice}</strong>` : ''}</div>
-        </div>
-      `).join('');
-
-      itemEl.innerHTML = `
-        <div class="history-summary">
-          <div class="history-summary-left">
-            <span class="history-date">${h.dateStr} (第${histories.length - index}回)</span>
-            <span class="history-score-text">
-              スコア: <strong>${h.score}</strong> / ${h.total} 問正解
-              ${h.maxStreak >= 3 ? `<small style="margin-left: 0.4rem; color: #ea580c; font-size: 0.78rem;">🔥${h.maxStreak}連問</small>` : ''}
-            </span>
-          </div>
-          <div class="history-summary-right">
-            <span class="history-percent-badge ${badgeClass}">${h.percent}%</span>
-            <span class="history-toggle-icon">▼</span>
-          </div>
-        </div>
-        <div class="history-details hidden">
-          ${detailsHtml}
-        </div>
-      `;
-
-      // クリックでアコーディオン展開
-      const summaryEl = itemEl.querySelector('.history-summary');
-      const detailsEl = itemEl.querySelector('.history-details');
-      summaryEl.addEventListener('click', () => {
-        const isOpen = itemEl.classList.toggle('open');
-        if (isOpen) {
-          detailsEl.classList.remove('hidden');
-        } else {
-          detailsEl.classList.add('hidden');
-        }
-      });
-
+      const itemEl = this.createHistoryItemElement(h, index, histories.length);
       this.historyListContainer.appendChild(itemEl);
     });
   }
@@ -1242,60 +1309,7 @@ class TriangleQuizApp {
     }
 
     histories.forEach((h, index) => {
-      const itemEl = document.createElement('div');
-      itemEl.className = 'history-item';
-
-      let badgeClass = 'low';
-      if (h.percent === 100) badgeClass = 'perfect';
-      else if (h.percent >= 80) badgeClass = 'high';
-      else if (h.percent >= 60) badgeClass = 'mid';
-
-      const detailsHtml = h.answers.map((ans, qIdx) => `
-        <div class="history-q-row">
-          <div class="history-q-header ${ans.isCorrect ? 'q-correct' : 'q-wrong'}">
-            <span>${ans.isCorrect ? '⭕ 正解' : '❌ 不正解'}</span>
-            <span style="margin-left: 0.2rem;">Q${qIdx + 1}. ${ans.title}</span>
-            <span class="badge ${ans.scope === 'junior' ? 'badge-junior' : 'badge-high'}" style="margin-left: auto;">${ans.scope === 'junior' ? '中学' : '高校'}</span>
-          </div>
-          <div class="history-q-ans">
-            <div style="margin-bottom: 0.25rem;"><strong>問題:</strong> ${ans.question}</div>
-            <div style="margin-top: 0.2rem;">あなたの回答: <span style="font-weight: 700; color: ${ans.isCorrect ? '#059669' : '#dc2626'};">${ans.userChoice}</span> ${!ans.isCorrect ? ` / 正解: <strong style="color: #059669;">${ans.correctChoice}</strong>` : ''}</div>
-            ${ans.tip ? `<div style="font-size: 0.74rem; color: #92400e; margin-top: 0.3rem; background: #fffbeb; padding: 0.2rem 0.4rem; border-radius: 4px;">💡 ${ans.tip}</div>` : ''}
-          </div>
-        </div>
-      `).join('');
-
-      itemEl.innerHTML = `
-        <div class="history-summary">
-          <div class="history-summary-left">
-            <span class="history-date">${h.dateStr} (第${histories.length - index}回)</span>
-            <span class="history-score-text">
-              スコア: <strong>${h.score}</strong> / ${h.total} 問正解
-              ${h.maxStreak >= 3 ? `<small style="margin-left: 0.4rem; color: #ea580c; font-size: 0.78rem;">🔥${h.maxStreak}問連続</small>` : ''}
-            </span>
-          </div>
-          <div class="history-summary-right">
-            <span class="history-percent-badge ${badgeClass}">${h.percent}%</span>
-            <span class="history-toggle-icon">▼</span>
-          </div>
-        </div>
-        <div class="history-details hidden">
-          ${detailsHtml}
-        </div>
-      `;
-
-      // クリックでアコーディオン展開
-      const summaryEl = itemEl.querySelector('.history-summary');
-      const detailsEl = itemEl.querySelector('.history-details');
-      summaryEl.addEventListener('click', () => {
-        const isOpen = itemEl.classList.toggle('open');
-        if (isOpen) {
-          detailsEl.classList.remove('hidden');
-        } else {
-          detailsEl.classList.add('hidden');
-        }
-      });
-
+      const itemEl = this.createHistoryItemElement(h, index, histories.length);
       this.historyViewList.appendChild(itemEl);
     });
   }
