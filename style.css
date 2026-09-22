@@ -54,7 +54,7 @@ body {
   background-color: var(--bg-main);
   color: var(--text-main);
   line-height: 1.5;
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
@@ -177,11 +177,10 @@ body {
   max-width: 1380px;
   width: 100%;
   margin: 0.4rem auto;
-  padding: 0 0.8rem;
-  flex: 1;
+  padding: 0 0.8rem 2.5rem 0.8rem;
+  flex: 1 0 auto;
   display: flex;
   flex-direction: column;
-  min-height: 0; /* flexbox内のオーバーフロー制御 */
 }
 
 /* 共通カード */
@@ -1038,15 +1037,19 @@ body {
   color: #334155;
 }
 
-/* フッター（非表示または極薄） */
+/* フッター（コンテンツの最下部に正しく配置） */
 .app-footer {
   text-align: center;
-  padding: 0.4rem;
+  padding: 0.8rem 1rem;
   color: var(--text-muted);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   border-top: 1px solid var(--border-color);
   background: #ffffff;
+  margin-top: auto;
   flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+  width: 100%;
 }
 
 /* ==========================================================
@@ -2351,7 +2354,8 @@ body {
 
   body.mode-simulator .app-footer,
   body:has(#view-simulator:not(.hidden)) .app-footer,
-  body:has(#view-theorems:not(.hidden)) .app-footer {
+  body:has(#view-theorems:not(.hidden)) .app-footer,
+  body:has(#view-quiz:not(.hidden)) .app-footer {
     display: none;
   }
 
