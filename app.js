@@ -385,9 +385,11 @@ class TriangleQuizApp {
     this.btnRestart = document.getElementById('btn-restart');
     this.btnNext = document.getElementById('btn-next');
     this.tabQuiz = document.getElementById('tab-quiz');
+    this.tabHistory = document.getElementById('tab-history');
     this.tabSimulator = document.getElementById('tab-simulator');
     this.tabTheorems = document.getElementById('tab-theorems');
     this.tabEncyclopedia = document.getElementById('tab-encyclopedia');
+    this.viewHistory = document.getElementById('view-history');
     this.viewSimulator = document.getElementById('view-simulator');
     this.viewTheorems = document.getElementById('view-theorems');
 
@@ -437,12 +439,13 @@ class TriangleQuizApp {
     this.questionCount = '10';
     this.btnCountList = document.querySelectorAll('.btn-quiz-count');
 
-    // 挑戦履歴＆回答トラッカー要素
+    // 挑戦履歴（タブ画面 ＆ モーダル）要素
     this.btnOpenHistory = document.getElementById('btn-open-history');
     this.btnQuizHistory = document.getElementById('btn-quiz-history');
     this.btnResultHistory = document.getElementById('btn-result-history');
     this.btnCloseHistory = document.getElementById('btn-close-history');
     this.btnClearHistory = document.getElementById('btn-clear-history');
+    this.btnViewClearHistory = document.getElementById('btn-view-clear-history');
     this.modalHistory = document.getElementById('modal-history');
     this.historyCountBadge = document.getElementById('history-count-badge');
     this.historyListContainer = document.getElementById('history-list-container');
@@ -450,6 +453,12 @@ class TriangleQuizApp {
     this.statAvgAccuracy = document.getElementById('stat-avg-accuracy');
     this.statBestStreak = document.getElementById('stat-best-streak');
     this.quizAnswerTracker = document.getElementById('quiz-answer-tracker');
+
+    // 挑戦履歴タブ画面用要素
+    this.historyViewList = document.getElementById('history-view-list');
+    this.statViewTotalPlays = document.getElementById('stat-view-total-plays');
+    this.statViewAvgAccuracy = document.getElementById('stat-view-avg-accuracy');
+    this.statViewBestStreak = document.getElementById('stat-view-best-streak');
 
     // 履歴件数バッジを初期化
     this.updateHistoryBadge();
@@ -501,21 +510,24 @@ class TriangleQuizApp {
     this.btnRestart.addEventListener('click', () => this.showStartView());
     this.btnNext.addEventListener('click', () => this.nextQuestion());
 
-    // 挑戦履歴モーダル関連イベント
+    // 挑戦履歴関連イベント（タブ画面へ直接遷移）
     if (this.btnOpenHistory) {
-      this.btnOpenHistory.addEventListener('click', () => this.openHistoryModal());
+      this.btnOpenHistory.addEventListener('click', () => this.showHistoryView());
     }
     if (this.btnQuizHistory) {
-      this.btnQuizHistory.addEventListener('click', () => this.openHistoryModal());
+      this.btnQuizHistory.addEventListener('click', () => this.showHistoryView());
     }
     if (this.btnResultHistory) {
-      this.btnResultHistory.addEventListener('click', () => this.openHistoryModal());
+      this.btnResultHistory.addEventListener('click', () => this.showHistoryView());
     }
     if (this.btnCloseHistory) {
       this.btnCloseHistory.addEventListener('click', () => this.closeHistoryModal());
     }
     if (this.btnClearHistory) {
       this.btnClearHistory.addEventListener('click', () => this.clearQuizHistory());
+    }
+    if (this.btnViewClearHistory) {
+      this.btnViewClearHistory.addEventListener('click', () => this.clearQuizHistory());
     }
     if (this.modalHistory) {
       this.modalHistory.addEventListener('click', (e) => {
@@ -531,6 +543,7 @@ class TriangleQuizApp {
     // タブ切り替え
     this.tabQuiz.addEventListener('click', () => {
       this.setActiveTab(this.tabQuiz);
+      this.viewHistory.classList.add('hidden');
       this.viewEncyclopedia.classList.add('hidden');
       this.viewSimulator.classList.add('hidden');
       this.viewTheorems.classList.add('hidden');
@@ -543,11 +556,18 @@ class TriangleQuizApp {
       }
     });
 
+    if (this.tabHistory) {
+      this.tabHistory.addEventListener('click', () => {
+        this.showHistoryView();
+      });
+    }
+
     this.tabSimulator.addEventListener('click', () => {
       this.setActiveTab(this.tabSimulator);
       this.viewStart.classList.add('hidden');
       this.viewQuiz.classList.add('hidden');
       this.viewResult.classList.add('hidden');
+      this.viewHistory.classList.add('hidden');
       this.viewEncyclopedia.classList.add('hidden');
       this.viewTheorems.classList.add('hidden');
       this.viewSimulator.classList.remove('hidden');
@@ -561,6 +581,7 @@ class TriangleQuizApp {
       this.viewStart.classList.add('hidden');
       this.viewQuiz.classList.add('hidden');
       this.viewResult.classList.add('hidden');
+      this.viewHistory.classList.add('hidden');
       this.viewSimulator.classList.add('hidden');
       this.viewEncyclopedia.classList.add('hidden');
       this.viewTheorems.classList.remove('hidden');
@@ -574,6 +595,7 @@ class TriangleQuizApp {
       this.viewStart.classList.add('hidden');
       this.viewQuiz.classList.add('hidden');
       this.viewResult.classList.add('hidden');
+      this.viewHistory.classList.add('hidden');
       this.viewSimulator.classList.add('hidden');
       this.viewTheorems.classList.add('hidden');
       this.viewEncyclopedia.classList.remove('hidden');
@@ -581,7 +603,7 @@ class TriangleQuizApp {
   }
 
   setActiveTab(activeTabBtn) {
-    [this.tabQuiz, this.tabSimulator, this.tabTheorems, this.tabEncyclopedia].forEach(tab => {
+    [this.tabQuiz, this.tabHistory, this.tabSimulator, this.tabTheorems, this.tabEncyclopedia].forEach(tab => {
       if (tab) tab.classList.remove('active');
     });
     if (activeTabBtn) activeTabBtn.classList.add('active');
@@ -620,8 +642,24 @@ class TriangleQuizApp {
     this.viewQuiz.classList.add('hidden');
     this.viewEncyclopedia.classList.add('hidden');
     this.viewSimulator.classList.add('hidden');
+    this.viewTheorems.classList.add('hidden');
+    this.viewHistory.classList.add('hidden');
     this.viewStart.classList.remove('hidden');
     this.setActiveTab(this.tabQuiz);
+    this.updateHistoryBadge();
+  }
+
+  showHistoryView() {
+    this.setActiveTab(this.tabHistory);
+    this.viewStart.classList.add('hidden');
+    this.viewQuiz.classList.add('hidden');
+    this.viewResult.classList.add('hidden');
+    this.viewSimulator.classList.add('hidden');
+    this.viewTheorems.classList.add('hidden');
+    this.viewEncyclopedia.classList.add('hidden');
+    if (this.modalHistory) this.modalHistory.classList.add('hidden');
+    this.viewHistory.classList.remove('hidden');
+    this.renderHistoryView();
   }
 
   // クイズ問題リストの構築（ランダム出題 ＆ 3回に1回は重心・内心・外心の定義）
@@ -1141,11 +1179,117 @@ class TriangleQuizApp {
     });
   }
 
+  renderHistoryView() {
+    const histories = this.getQuizHistory();
+
+    // 総合統計の算出
+    if (this.statViewTotalPlays) {
+      this.statViewTotalPlays.textContent = `${histories.length} 回`;
+    }
+    if (this.statViewAvgAccuracy) {
+      if (histories.length === 0) {
+        this.statViewAvgAccuracy.textContent = '0%';
+      } else {
+        const totalScore = histories.reduce((sum, h) => sum + h.score, 0);
+        const totalQuestions = histories.reduce((sum, h) => sum + h.total, 0);
+        const avgPercent = totalQuestions > 0 ? Math.round((totalScore / totalQuestions) * 100) : 0;
+        this.statViewAvgAccuracy.textContent = `${avgPercent}%`;
+      }
+    }
+    if (this.statViewBestStreak) {
+      const best = histories.reduce((max, h) => Math.max(max, h.maxStreak || 0), 0);
+      this.statViewBestStreak.textContent = `${best} 問`;
+    }
+
+    // リスト描画
+    if (!this.historyViewList) return;
+    this.historyViewList.innerHTML = '';
+
+    if (histories.length === 0) {
+      this.historyViewList.innerHTML = `
+        <div class="history-empty-msg">
+          <div style="font-size: 2.8rem; margin-bottom: 0.6rem;">📝</div>
+          <p style="font-size: 1.05rem; font-weight: 700; color: var(--text-main);">まだ挑戦履歴がありません</p>
+          <p style="margin-top: 0.5rem; line-height: 1.5; color: var(--text-muted);">
+            4択クイズに挑戦すると、毎回のスコア・正答率や、<br>全問題とあなたの回答・正解・ヒントが自動でここに記録されます！
+          </p>
+          <button id="btn-history-start-quiz" class="btn-primary" style="margin-top: 1.2rem;">早速クイズに挑戦する 🚀</button>
+        </div>
+      `;
+      const btnGo = this.historyViewList.querySelector('#btn-history-start-quiz');
+      if (btnGo) {
+        btnGo.addEventListener('click', () => {
+          this.showStartView();
+        });
+      }
+      return;
+    }
+
+    histories.forEach((h, index) => {
+      const itemEl = document.createElement('div');
+      itemEl.className = 'history-item';
+
+      let badgeClass = 'low';
+      if (h.percent === 100) badgeClass = 'perfect';
+      else if (h.percent >= 80) badgeClass = 'high';
+      else if (h.percent >= 60) badgeClass = 'mid';
+
+      const detailsHtml = h.answers.map((ans, qIdx) => `
+        <div class="history-q-row">
+          <div class="history-q-header ${ans.isCorrect ? 'q-correct' : 'q-wrong'}">
+            <span>${ans.isCorrect ? '⭕ 正解' : '❌ 不正解'}</span>
+            <span style="margin-left: 0.2rem;">Q${qIdx + 1}. ${ans.title}</span>
+            <span class="badge ${ans.scope === 'junior' ? 'badge-junior' : 'badge-high'}" style="margin-left: auto;">${ans.scope === 'junior' ? '中学' : '高校'}</span>
+          </div>
+          <div class="history-q-ans">
+            <div style="margin-bottom: 0.25rem;"><strong>問題:</strong> ${ans.question}</div>
+            <div style="margin-top: 0.2rem;">あなたの回答: <span style="font-weight: 700; color: ${ans.isCorrect ? '#059669' : '#dc2626'};">${ans.userChoice}</span> ${!ans.isCorrect ? ` / 正解: <strong style="color: #059669;">${ans.correctChoice}</strong>` : ''}</div>
+            ${ans.tip ? `<div style="font-size: 0.74rem; color: #92400e; margin-top: 0.3rem; background: #fffbeb; padding: 0.2rem 0.4rem; border-radius: 4px;">💡 ${ans.tip}</div>` : ''}
+          </div>
+        </div>
+      `).join('');
+
+      itemEl.innerHTML = `
+        <div class="history-summary">
+          <div class="history-summary-left">
+            <span class="history-date">${h.dateStr} (第${histories.length - index}回)</span>
+            <span class="history-score-text">
+              スコア: <strong>${h.score}</strong> / ${h.total} 問正解
+              ${h.maxStreak >= 3 ? `<small style="margin-left: 0.4rem; color: #ea580c; font-size: 0.78rem;">🔥${h.maxStreak}問連続</small>` : ''}
+            </span>
+          </div>
+          <div class="history-summary-right">
+            <span class="history-percent-badge ${badgeClass}">${h.percent}%</span>
+            <span class="history-toggle-icon">▼</span>
+          </div>
+        </div>
+        <div class="history-details hidden">
+          ${detailsHtml}
+        </div>
+      `;
+
+      // クリックでアコーディオン展開
+      const summaryEl = itemEl.querySelector('.history-summary');
+      const detailsEl = itemEl.querySelector('.history-details');
+      summaryEl.addEventListener('click', () => {
+        const isOpen = itemEl.classList.toggle('open');
+        if (isOpen) {
+          detailsEl.classList.remove('hidden');
+        } else {
+          detailsEl.classList.add('hidden');
+        }
+      });
+
+      this.historyViewList.appendChild(itemEl);
+    });
+  }
+
   clearQuizHistory() {
     if (confirm('これまでのクイズ挑戦履歴をすべて削除しますか？\n（この操作は元に戻せません）')) {
       localStorage.removeItem('triangle_quiz_history');
       this.updateHistoryBadge();
       this.renderHistoryModal();
+      this.renderHistoryView();
     }
   }
 

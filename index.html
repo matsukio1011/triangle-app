@@ -30,6 +30,7 @@
   <!-- ナビゲーションタブ -->
   <nav class="nav-tabs">
     <button id="tab-quiz" class="tab-btn active">🎯 4択クイズ</button>
+    <button id="tab-history" class="tab-btn">📊 挑戦履歴</button>
     <button id="tab-simulator" class="tab-btn">⚡ 5心シミュレーター</button>
     <button id="tab-theorems" class="tab-btn">📐 チェバ・メネラウス</button>
     <button id="tab-encyclopedia" class="tab-btn">📚 まとめの図鑑</button>
@@ -189,6 +190,38 @@
       <div class="review-section">
         <h3>📋 今回の問題と振り返り</h3>
         <div id="result-review-list"></div>
+      </div>
+    </section>
+
+    <!-- 挑戦履歴画面（タブから常時直接アクセス可能） -->
+    <section id="view-history" class="card history-view-card hidden">
+      <div class="history-view-header">
+        <div>
+          <h2 class="history-view-title">📊 4択クイズ 挑戦履歴</h2>
+          <p class="history-view-desc">これまでのクイズ成績と、毎回の全問題・回答の復習ができます。</p>
+        </div>
+        <button id="btn-view-clear-history" class="btn-text-danger" type="button">履歴をすべてリセット 🗑️</button>
+      </div>
+
+      <!-- 統計サマリーカード -->
+      <div class="history-stats-grid">
+        <div class="stat-card">
+          <div id="stat-view-total-plays" class="stat-num">0 回</div>
+          <div class="stat-lbl">挑戦回数</div>
+        </div>
+        <div class="stat-card">
+          <div id="stat-view-avg-accuracy" class="stat-num">0%</div>
+          <div class="stat-lbl">平均正答率</div>
+        </div>
+        <div class="stat-card">
+          <div id="stat-view-best-streak" class="stat-num">0 問</div>
+          <div class="stat-lbl">最高連続正解</div>
+        </div>
+      </div>
+
+      <!-- 履歴一覧 -->
+      <div class="history-view-body">
+        <div id="history-view-list" class="history-list-container"></div>
       </div>
     </section>
 
