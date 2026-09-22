@@ -982,18 +982,25 @@ class TriangleQuizApp {
       }
     }
 
-    // SVG図解（視覚的理解）
-    if (this.svgContainer) {
-      this.svgContainer.innerHTML = GeometryIllustrator.renderSvg(q.category);
-    }
-
-    // 回答履歴に保存（結果画面で正解や解説を表示するため）
+    // 回答履歴に保存（結果画面・挑戦履歴で問題と回答を記録するため最優先で実行）
     this.answersHistory.push({
       question: q,
       isCorrect: isCorrect,
       userChoice: selectedOpt.text,
       correctChoice: correctChoiceText
     });
+
+    // SVG図解（視覚的理解）
+    if (this.svgContainer) {
+      try {
+        const svgType = q.figureType || q.category;
+        if (typeof SVG_GENERATOR !== 'undefined' && typeof SVG_GENERATOR.generate === 'function') {
+          this.svgContainer.innerHTML = SVG_GENERATOR.generate(svgType) || '';
+        }
+      } catch (err) {
+        console.warn('SVG render warning:', err);
+      }
+    }
 
     // プレースホルダーを非表示にし、判定カードを表示
     if (this.feedbackPlaceholder) {
