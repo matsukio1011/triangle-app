@@ -2940,6 +2940,19 @@ body {
   background: #0f172a;
 }
 
+.history-q-options {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  padding: 0.3rem 0.5rem;
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+[data-theme="dark"] .history-q-options {
+  background: #1e293b;
+}
+
 .history-q-answer-box {
   display: flex;
   flex-wrap: wrap;

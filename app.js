@@ -779,6 +779,34 @@ class TriangleQuizApp {
     this.renderQuestion();
   }
 
+  // 履歴等から指定した問題リストでクイズを開始
+  startQuizWithQuestions(questionList) {
+    if (!questionList || questionList.length === 0) return;
+    this.currentQuestions = questionList;
+    this.currentIndex = 0;
+    this.score = 0;
+    this.currentStreak = 0;
+    this.maxStreak = 0;
+    this.answersHistory = [];
+    this.isAnswered = false;
+
+    if (this.autoNextTimer) {
+      clearTimeout(this.autoNextTimer);
+      this.autoNextTimer = null;
+    }
+    this.updateStreakDisplay(false);
+
+    this.setActiveTab(this.tabQuiz);
+    this.viewStart.classList.add('hidden');
+    this.viewResult.classList.add('hidden');
+    this.viewHistory.classList.add('hidden');
+    if (this.modalHistory) this.modalHistory.classList.add('hidden');
+    this.viewQuiz.classList.remove('hidden');
+
+    this.initAnswerTracker();
+    this.renderQuestion();
+  }
+
   // 回答状況トラッカーの初期化
   initAnswerTracker() {
     if (!this.quizAnswerTracker) return;
@@ -1076,13 +1104,16 @@ class TriangleQuizApp {
         percent: percent,
         maxStreak: this.maxStreak,
         answers: this.answersHistory.map(a => ({
-          title: a.question.title,
-          question: a.question.question,
+          id: a.question ? a.question.id : '',
+          title: a.question ? a.question.title : '',
+          question: a.question ? a.question.question : '',
+          options: a.question ? a.question.options : [],
+          explanation: a.question ? a.question.explanation : '',
           isCorrect: a.isCorrect,
           userChoice: a.userChoice,
           correctChoice: a.correctChoice,
-          tip: a.question.tip,
-          scope: a.question.scope
+          tip: a.question ? a.question.tip : '',
+          scope: a.question ? a.question.scope : 'junior'
         }))
       };
 
@@ -1115,22 +1146,66 @@ class TriangleQuizApp {
   }
 
   createHistoryQuestionRow(ans, qIdx) {
-    const questionText = ans.question || ans.title || `第${qIdx + 1}問`;
-    const isCorrect = ans.isCorrect;
-    const badgeLabel = ans.scope === 'junior' ? '中学' : '高校';
-    const badgeClass = ans.scope === 'junior' ? 'badge-junior' : 'badge-high';
+    if (!ans) return '';
+
+    // もし ans.question がない場合、QUIZ_QUESTIONS から検索して自動補完
+    let questionText = ans.question;
+    let tipText = ans.tip;
+    let explanationText = ans.explanation;
+    let options = ans.options;
+    let scope = ans.scope || 'junior';
+    let title = ans.title || '';
+
+    if (typeof QUIZ_QUESTIONS !== 'undefined') {
+      const found = QUIZ_QUESTIONS.find(q => 
+        (ans.id && q.id === ans.id) || 
+        (ans.title && q.title === ans.title) || 
+        (ans.question && q.question === ans.question)
+      );
+      if (found) {
+        if (!questionText) questionText = found.question;
+        if (!tipText) tipText = found.tip;
+        if (!explanationText) explanationText = found.explanation;
+        if (!options || options.length === 0) options = found.options;
+        if (!title) title = found.title;
+        scope = found.scope || scope;
+      }
+    }
+
+    if (!questionText) {
+      questionText = title ? `【${title}】に関する問題` : `第${qIdx + 1}問`;
+    }
+
+    const isCorrect = !!ans.isCorrect;
+    const badgeLabel = scope === 'junior' ? '中学' : '高校';
+    const badgeClass = scope === 'junior' ? 'badge-junior' : 'badge-high';
+
+    const optionsHtml = (options && options.length > 0) ? `
+      <div class="history-q-options">
+        <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700; margin-right: 0.25rem;">選択肢:</span>
+        ${options.map((opt, oIdx) => {
+          const isUser = opt === ans.userChoice;
+          const isAns = opt === ans.correctChoice;
+          let optStyle = '';
+          if (isAns) optStyle = 'font-weight: 700; color: #059669; text-decoration: underline;';
+          else if (isUser && !isCorrect) optStyle = 'font-weight: 700; color: #dc2626; text-decoration: line-through;';
+          return `<span style="${optStyle}">(${oIdx + 1}) ${opt}</span>`;
+        }).join(' / ')}
+      </div>
+    ` : '';
 
     return `
       <div class="history-q-row ${isCorrect ? 'is-correct' : 'is-wrong'}">
         <div class="history-q-header">
           <span class="${isCorrect ? 'q-correct' : 'q-wrong'}">${isCorrect ? '⭕ 正解' : '❌ 不正解'}</span>
           <span class="history-q-num">第${qIdx + 1}問</span>
-          ${ans.title ? `<span class="history-q-category">【${ans.title}】</span>` : ''}
+          ${title ? `<span class="history-q-category">【${title}】</span>` : ''}
           <span class="badge ${badgeClass}" style="margin-left: auto;">${badgeLabel}</span>
         </div>
         <div class="history-q-text">
           <span style="color: var(--primary); font-weight: 700; margin-right: 0.35rem;">問題:</span>${questionText}
         </div>
+        ${optionsHtml}
         <div class="history-q-answer-box">
           <div class="history-q-ans-user">
             あなたの回答: <strong style="color: ${isCorrect ? '#059669' : '#dc2626'};">${ans.userChoice || '未回答'}</strong>
@@ -1141,9 +1216,14 @@ class TriangleQuizApp {
             </div>
           ` : ''}
         </div>
-        ${ans.tip ? `
+        ${explanationText ? `
+          <div style="font-size: 0.78rem; color: var(--text-main); margin-top: 0.2rem; line-height: 1.4;">
+            📖 <strong>解説:</strong> ${explanationText}
+          </div>
+        ` : ''}
+        ${tipText ? `
           <div class="history-q-tip">
-            💡 <strong>ポイント:</strong> ${ans.tip}
+            💡 <strong>ポイント:</strong> ${tipText}
           </div>
         ` : ''}
       </div>
@@ -1152,20 +1232,24 @@ class TriangleQuizApp {
 
   createHistoryItemElement(h, index, totalCount) {
     const itemEl = document.createElement('div');
-    itemEl.className = 'history-item';
-
-    // 最新の挑戦、または履歴が少ない場合は初期状態で展開して問題を表示
-    const shouldOpenDefault = (index === 0 || totalCount <= 2);
-    if (shouldOpenDefault) {
-      itemEl.classList.add('open');
-    }
+    itemEl.className = 'history-item open'; // 常に最初から全展開して問題を表示
 
     let badgeClass = 'low';
     if (h.percent === 100) badgeClass = 'perfect';
     else if (h.percent >= 80) badgeClass = 'high';
     else if (h.percent >= 60) badgeClass = 'mid';
 
-    const detailsHtml = (h.answers || []).map((ans, qIdx) => this.createHistoryQuestionRow(ans, qIdx)).join('');
+    const answersList = h.answers || [];
+    let detailsHtml = '';
+    if (answersList.length === 0) {
+      detailsHtml = `
+        <div style="padding: 0.8rem; color: var(--text-muted); font-size: 0.85rem; text-align: center;">
+          （この回の問題詳細データが記録されていません。次回以降のクイズから詳細が記録されます）
+        </div>
+      `;
+    } else {
+      detailsHtml = answersList.map((ans, qIdx) => this.createHistoryQuestionRow(ans, qIdx)).join('');
+    }
 
     itemEl.innerHTML = `
       <div class="history-summary" title="クリックして問題一覧を開閉">
@@ -1176,18 +1260,40 @@ class TriangleQuizApp {
             ${h.maxStreak >= 3 ? `<small style="margin-left: 0.4rem; color: #ea580c; font-size: 0.78rem;">🔥${h.maxStreak}問連続</small>` : ''}
           </span>
         </div>
-        <div class="history-summary-right">
+        <div class="history-summary-right" style="display: flex; align-items: center; gap: 0.4rem;">
+          <button type="button" class="btn-history-retry btn-secondary" style="font-size: 0.75rem; padding: 0.2rem 0.55rem; border-radius: 4px;" title="この回の問題をもう一度解く">この回を再挑戦 🔄</button>
           <span class="history-percent-badge ${badgeClass}">${h.percent}%</span>
-          <span style="font-size: 0.75rem; color: var(--text-muted); margin-left: 0.2rem;">問題一覧</span>
           <span class="history-toggle-icon">▼</span>
         </div>
       </div>
-      <div class="history-details ${shouldOpenDefault ? '' : 'hidden'}">
+      <div class="history-details">
         ${detailsHtml}
       </div>
     `;
 
-    // クリックでアコーディオン展開
+    // 再挑戦ボタンのイベント
+    const btnRetry = itemEl.querySelector('.btn-history-retry');
+    if (btnRetry) {
+      btnRetry.addEventListener('click', (e) => {
+        e.stopPropagation(); // アコーディオンのトグルを防ぐ
+        const retryQuestions = [];
+        answersList.forEach(ans => {
+          const found = QUIZ_QUESTIONS.find(q => 
+            (ans.id && q.id === ans.id) || 
+            (ans.question && q.question === ans.question) || 
+            (ans.title && q.title === ans.title)
+          );
+          if (found) retryQuestions.push(found);
+        });
+        if (retryQuestions.length > 0) {
+          this.startQuizWithQuestions(retryQuestions);
+        } else {
+          alert('問題データを復元できませんでした。');
+        }
+      });
+    }
+
+    // クリックでアコーディオン展開/折りたたみ
     const summaryEl = itemEl.querySelector('.history-summary');
     const detailsEl = itemEl.querySelector('.history-details');
     summaryEl.addEventListener('click', () => {
