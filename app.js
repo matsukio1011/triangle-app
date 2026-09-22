@@ -1012,7 +1012,9 @@ class TriangleQuizApp {
     } else {
       msg = '📖 お疲れ様でした！まずは「まとめ図鑑」タブで各心の名前と作図の仕方を復習してみるのがおすすめです！';
     }
-    this.resultMessageEl.textContent = msg;
+    if (this.resultMessageEl) {
+      this.resultMessageEl.textContent = msg;
+    }
 
     // 復習リストの表示
     this.resultReviewList.innerHTML = '';
