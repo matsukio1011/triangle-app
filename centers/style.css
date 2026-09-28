@@ -1751,7 +1751,8 @@ body {
   cursor: grabbing;
 }
 
-.sim-handle-hit {
+.sim-handle-hit,
+.sim-handle-hitarea {
   fill: transparent;
   cursor: grab;
   pointer-events: all;

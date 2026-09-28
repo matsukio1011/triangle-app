@@ -120,7 +120,8 @@ class TheoremsSimulator {
       // 当たり判定用（広め）
       const hit = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
       hit.setAttribute('r', '26');
-      hit.setAttribute('class', 'sim-handle-hitarea');
+      hit.setAttribute('class', 'sim-handle-hit sim-handle-hitarea');
+      hit.setAttribute('fill', 'transparent');
       hit.style.cursor = 'grab';
 
       // 表示用リング
