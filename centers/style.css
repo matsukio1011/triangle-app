@@ -1322,16 +1322,18 @@ body {
 /* 図の下に大きく表示する内接円半径の公式バー */
 .sim-formula-bar {
   background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-  border: 2px solid #7dd3fc;
+  border: 2px solid #38bdf8;
   border-radius: var(--radius-sm);
-  padding: 0.45rem 0.9rem;
+  padding: 0.5rem 1rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.8rem;
-  box-shadow: 0 3px 8px rgba(2, 132, 199, 0.1);
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.18);
   flex-shrink: 0;
   animation: slideUp 0.2s ease-out;
+  position: relative;
+  z-index: 5;
 }
 
 @keyframes slideUp {
@@ -2057,8 +2059,8 @@ body {
 /* 図の下の大きな公式バー（ダーク） */
 [data-theme="dark"] .sim-formula-bar {
   background: linear-gradient(135deg, #0c1e33 0%, #0f172a 100%);
-  border-color: #0284c7;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  border-color: #38bdf8;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
 }
 
 [data-theme="dark"] .sf-tag {
@@ -2418,10 +2420,10 @@ body {
   body.mode-simulator .sim-canvas-wrapper,
   body:has(#view-simulator:not(.hidden)) .sim-canvas-wrapper,
   body:has(#view-theorems:not(.hidden)) .sim-canvas-wrapper {
-    flex: 1;
+    flex: 1 1 0;
     min-height: 0;
     width: 100%;
-    height: 100%;
+    height: auto;
     padding: 0;
   }
 
