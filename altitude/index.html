@@ -1,0 +1,2960 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>直角三角形の面積を利用した垂線の長さ - 4択クイズ</title>
+  <!-- KaTeX for beautiful math rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <style>
+    :root {
+      --bg-base: #0b1120;
+      --bg-card: #1e293b;
+      --bg-card-header: #172033;
+      --border-color: #334155;
+      --primary: #38bdf8;
+      --primary-hover: #0284c7;
+      --accent: #f59e0b;
+      --success: #10b981;
+      --danger: #ef4444;
+      --gold: #fbbf24;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", "BIZ UDPGothic", Meiryo, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100vh;
+      max-height: 100vh;
+      overflow: hidden; /* No scroll on PC screen */
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      font-family: var(--font-family);
+      line-height: 1.4;
+    }
+
+    /* Screen shake animation for dramatic error */
+    @keyframes screenShake {
+      0% { transform: translate(0, 0); }
+      15% { transform: translate(-7px, -5px); }
+      30% { transform: translate(7px, 5px); }
+      45% { transform: translate(-6px, 4px); }
+      60% { transform: translate(6px, -3px); }
+      75% { transform: translate(-3px, 2px); }
+      100% { transform: translate(0, 0); }
+    }
+
+    body.shake {
+      animation: screenShake 0.42s cubic-bezier(.36,.07,.19,.97) both;
+    }
+
+    /* Outer Wrapper */
+    .app-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      max-height: 100vh;
+      padding: 8px 14px;
+      gap: 8px;
+      position: relative;
+    }
+
+    /* Top Bar */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 6px 14px;
+      flex-shrink: 0;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.25);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .title-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge-qno {
+      background: linear-gradient(135deg, #0284c7, #38bdf8);
+      color: #0b1120;
+      font-size: 0.78rem;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 6px;
+      letter-spacing: 0.05em;
+    }
+
+    .app-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .portal-back-btn {
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      color: #38bdf8;
+      font-size: 0.76rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 6px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .portal-back-btn:hover {
+      background: rgba(56, 189, 248, 0.25);
+      border-color: #38bdf8;
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    .mode-nav {
+      display: flex;
+      background: rgba(11, 17, 32, 0.7);
+      padding: 2px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      gap: 2px;
+    }
+
+    .mode-tab {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.76rem;
+      font-weight: 600;
+      padding: 4px 9px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .mode-tab:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .mode-tab.active {
+      background: var(--primary);
+      color: #0b1120;
+      font-weight: 700;
+    }
+
+    .mode-tab.test-tab {
+      background: rgba(245, 158, 11, 0.12);
+      color: var(--gold);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .mode-tab.test-tab:hover {
+      background: rgba(245, 158, 11, 0.25);
+    }
+
+    .mode-tab.test-tab.active {
+      background: linear-gradient(135deg, #d97706, #fbbf24);
+      color: #0b1120;
+      font-weight: 800;
+      border-color: #fbbf24;
+      box-shadow: 0 0 10px rgba(251, 191, 36, 0.35);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Test Mode Challenge Progress Pill */
+    .test-progress-pill {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+    }
+
+    .test-progress-pill.show {
+      display: flex;
+    }
+
+    .test-stage-tag {
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: 4px;
+      background: #d97706;
+      color: #fff;
+    }
+
+    .test-meter-track {
+      width: 70px;
+      height: 7px;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .test-meter-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #f59e0b, #fbbf24);
+      transition: width 0.3s ease;
+    }
+
+    .test-score-text {
+      font-weight: 800;
+      color: var(--gold);
+    }
+
+    .stat-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      background: rgba(11, 17, 32, 0.6);
+      padding: 3px 9px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+    }
+
+    .stat-val {
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .ctrl-icon-btn {
+      background: rgba(11, 17, 32, 0.6);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      border-radius: 6px;
+      padding: 4px 7px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .ctrl-icon-btn:hover {
+      color: var(--text-main);
+      border-color: var(--primary);
+    }
+
+    /* Main Grid: 2 Columns */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 1fr;
+      gap: 10px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* Card Panels */
+    .panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Left Panel: Diagram */
+    .panel-header {
+      padding: 7px 12px;
+      background: var(--bg-card-header);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.84rem;
+      flex-shrink: 0;
+    }
+
+    .fig-tag {
+      font-weight: 700;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .panel-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-hyp-toggle {
+      background: rgba(51, 65, 85, 0.6);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      font-size: 0.74rem;
+      font-weight: 600;
+      padding: 4px 9px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s;
+    }
+
+    .btn-hyp-toggle:hover {
+      border-color: #10b981;
+      color: var(--text-main);
+    }
+
+    .btn-hyp-toggle.active {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: #10b981;
+      color: #34d399;
+    }
+
+    .btn-hyp-toggle kbd, .btn-rotate kbd, .btn-rat-toggle kbd {
+      background: rgba(0,0,0,0.3);
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-size: 0.68rem;
+    }
+
+    .btn-rotate {
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      color: var(--primary);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 9px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s;
+    }
+
+    .btn-rotate:hover {
+      background: rgba(56, 189, 248, 0.25);
+    }
+
+    .canvas-box {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 0;
+      padding: 6px;
+      background: radial-gradient(circle at center, #17253d 0%, #0b1120 100%);
+      position: relative;
+    }
+
+    #figure-svg {
+      width: 100%;
+      height: 100%;
+      max-height: 100%;
+    }
+
+    .panel-footer {
+      padding: 5px 12px;
+      font-size: 0.77rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-color);
+      background: var(--bg-card-header);
+      display: flex;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    /* Right Panel: Quiz & Explanation */
+    .question-section {
+      padding: 9px 15px;
+      border-bottom: 1px solid var(--border-color);
+      background: rgba(11, 17, 32, 0.3);
+      flex-shrink: 0;
+    }
+
+    .question-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 3px;
+    }
+
+    .question-hint-title {
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+    }
+
+    .btn-rat-toggle {
+      background: rgba(51, 65, 85, 0.5);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      font-size: 0.73rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s;
+    }
+
+    .btn-rat-toggle:hover {
+      border-color: var(--primary);
+      color: var(--text-main);
+    }
+
+    .btn-rat-toggle.unrationalized {
+      background: rgba(245, 158, 11, 0.15);
+      border-color: #f59e0b;
+      color: #fbbf24;
+    }
+
+    .question-main-text {
+      font-size: 1.01rem;
+      font-weight: 600;
+      color: var(--text-main);
+      line-height: 1.38;
+    }
+
+    .target-highlight {
+      color: #38bdf8;
+      font-weight: 700;
+      background: rgba(56, 189, 248, 0.15);
+      padding: 1px 7px;
+      border-radius: 4px;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    /* 4 Options Grid */
+    .options-grid {
+      padding: 9px 15px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+      flex-shrink: 0;
+    }
+
+    .opt-btn {
+      background: #1e293b;
+      border: 2px solid #334155;
+      border-radius: 9px;
+      padding: 8px 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.15s ease-out;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .opt-btn:hover:not(:disabled) {
+      border-color: var(--primary);
+      background: #25334a;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px rgba(56, 189, 248, 0.18);
+    }
+
+    .opt-btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .opt-key {
+      width: 25px;
+      height: 25px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .opt-btn:hover:not(:disabled) .opt-key {
+      background: var(--primary);
+      color: #0b1120;
+      border-color: var(--primary);
+    }
+
+    .opt-val {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--text-main);
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    @keyframes correctPulse {
+      0% { transform: scale(1); }
+      40% { transform: scale(1.035); }
+      100% { transform: scale(1); }
+    }
+    .opt-btn.correct {
+      border-color: var(--success) !important;
+      background: rgba(16, 185, 129, 0.22) !important;
+      color: #34d399 !important;
+      animation: correctPulse 0.35s ease-out;
+      box-shadow: 0 0 16px rgba(16, 185, 129, 0.4) !important;
+    }
+    .opt-btn.correct .opt-key {
+      background: var(--success);
+      color: #fff;
+    }
+
+    .opt-btn.wrong {
+      border-color: var(--danger) !important;
+      background: rgba(239, 68, 68, 0.25) !important;
+      color: #f87171 !important;
+      opacity: 0.95;
+      box-shadow: 0 0 14px rgba(239, 68, 68, 0.4) !important;
+    }
+    .opt-btn.wrong .opt-key {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    .opt-btn:disabled {
+      cursor: default;
+    }
+
+    /* Explanation & Feedback Area */
+    .result-section {
+      flex: 1;
+      min-height: 0;
+      padding: 0 15px 8px 15px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: all 0.22s ease-out;
+      pointer-events: none;
+    }
+
+    .result-section.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .explanation-container {
+      background: rgba(11, 17, 32, 0.65);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 7px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      overflow-y: auto;
+      max-height: calc(100% - 42px);
+    }
+
+    .feedback-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.92rem;
+      font-weight: 700;
+    }
+    .feedback-badge.correct {
+      color: var(--success);
+    }
+    .feedback-badge.wrong {
+      color: var(--danger);
+    }
+
+    .steps-wrapper {
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      line-height: 1.33;
+    }
+
+    .step-row {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+    .step-index {
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 0.76rem;
+      flex-shrink: 0;
+    }
+
+    .action-row {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-top: 4px;
+    }
+
+    .btn-next-step {
+      background: linear-gradient(135deg, #0284c7, #38bdf8);
+      border: none;
+      color: #0b1120;
+      font-weight: 800;
+      font-size: 0.88rem;
+      padding: 7px 18px;
+      border-radius: 7px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.18s;
+      box-shadow: 0 4px 10px rgba(56, 189, 248, 0.3);
+    }
+
+    .btn-next-step:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba(56, 189, 248, 0.45);
+    }
+
+    .kbd-tag {
+      font-size: 0.7rem;
+      color: rgba(11, 17, 32, 0.8);
+      background: rgba(255, 255, 255, 0.35);
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+
+    /* Victory Modal & Confetti Overlay */
+    .modal-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(11, 17, 32, 0.85);
+      backdrop-filter: blur(6px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .victory-card {
+      background: #1e293b;
+      border: 2px solid var(--gold);
+      box-shadow: 0 0 35px rgba(251, 191, 36, 0.4);
+      border-radius: 14px;
+      padding: 24px 32px;
+      text-align: center;
+      max-width: 480px;
+      width: 90%;
+      animation: modalPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes modalPop {
+      0% { transform: scale(0.85); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .victory-badge-icon {
+      font-size: 3.2rem;
+      margin-bottom: 8px;
+    }
+
+    .victory-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--gold);
+      margin-bottom: 8px;
+      letter-spacing: -0.01em;
+    }
+
+    .victory-desc {
+      font-size: 0.95rem;
+      color: #e2e8f0;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    .victory-btn {
+      background: linear-gradient(135deg, #d97706, #fbbf24);
+      color: #0b1120;
+      font-weight: 800;
+      font-size: 1rem;
+      padding: 10px 28px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+      transition: all 0.2s;
+    }
+
+    .victory-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(251, 191, 36, 0.6);
+    }
+
+    #confetti-canvas {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 101;
+    }
+
+    /* Fallback Math Styling */
+    .fraction {
+      display: inline-flex;
+      flex-direction: column;
+      vertical-align: middle;
+      text-align: center;
+      padding: 0 2px;
+      line-height: 1.05;
+      font-size: 0.92em;
+    }
+    .numerator {
+      border-bottom: 1.5px solid currentColor;
+      padding-bottom: 1px;
+    }
+    .denominator {
+      padding-top: 1px;
+    }
+    .sqrt {
+      display: inline-flex;
+      align-items: center;
+    }
+    .sqrt-symbol {
+      font-size: 1.1em;
+      margin-right: 1px;
+    }
+    .sqrt-content {
+      border-top: 1.5px solid currentColor;
+      padding-top: 1px;
+    }
+
+    /* SVG Graphics Styling */
+    .geom-poly {
+      fill: rgba(56, 189, 248, 0.06);
+      stroke: #38bdf8;
+      stroke-width: 2.2;
+      stroke-linejoin: round;
+      stroke-linecap: round;
+    }
+    .geom-hidden {
+      stroke: #64748b;
+      stroke-width: 1.8;
+      stroke-dasharray: 4 3;
+      fill: none;
+    }
+    .geom-plane {
+      stroke: #f59e0b;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+    }
+    .geom-plane-dashed {
+      stroke: #f59e0b;
+      stroke-width: 2;
+      stroke-dasharray: 5 3;
+    }
+    .geom-altitude {
+      stroke: #ef4444;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+    }
+    .geom-right-angle {
+      fill: none;
+      stroke: #e2e8f0;
+      stroke-width: 1.6;
+    }
+    .geom-dim-arc {
+      fill: none;
+      stroke: #94a3b8;
+      stroke-width: 1.2;
+      stroke-dasharray: 3 3;
+    }
+    .geom-dim-arc-hyp {
+      fill: none;
+      stroke: #34d399;
+      stroke-width: 1.3;
+      stroke-dasharray: 3 3;
+    }
+    .geom-vtx-text {
+      font-family: var(--font-family);
+      font-size: 14px;
+      font-weight: 700;
+      fill: #f8fafc;
+      text-anchor: middle;
+      dominant-baseline: central;
+      paint-order: stroke;
+      stroke: #0b1120;
+      stroke-width: 3px;
+    }
+    .geom-dim-text {
+      font-family: var(--font-family);
+      font-size: 13px;
+      font-weight: 800;
+      fill: #fbbf24;
+      text-anchor: middle;
+      dominant-baseline: central;
+      paint-order: stroke;
+      stroke: #0b1120;
+      stroke-width: 3px;
+    }
+    .geom-hyp-text {
+      font-family: var(--font-family);
+      font-size: 13px;
+      font-weight: 800;
+      fill: #34d399;
+      text-anchor: middle;
+      dominant-baseline: central;
+      paint-order: stroke;
+      stroke: #0b1120;
+      stroke-width: 3px;
+    }
+    .geom-target-text {
+      font-family: var(--font-family);
+      font-size: 15px;
+      font-weight: 800;
+      fill: #ef4444;
+      text-anchor: middle;
+      dominant-baseline: central;
+      paint-order: stroke;
+      stroke: #0b1120;
+      stroke-width: 3px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-wrapper" id="app-wrapper">
+    <!-- Canvas for Confetti -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- Victory Modal -->
+    <div class="modal-overlay" id="victory-modal">
+      <div class="victory-card">
+        <div class="victory-badge-icon">🏆</div>
+        <div class="victory-title">合格おめでとうございます！</div>
+        <div class="victory-desc">
+          10問連続正解達成！<br>
+          平面図形（4問）から高難度の立体図形（6問）まで、直角三角形の面積と垂線の長さを完全にマスターしました！
+        </div>
+        <button class="victory-btn" id="btn-victory-restart">もう一度挑戦する</button>
+      </div>
+    </div>
+
+    <!-- Top Bar -->
+    <header>
+      <div class="header-left">
+        <a href="../index.html" class="portal-back-btn" title="幾何学ポータルへ戻る">🏠 ポータル</a>
+        <div class="title-group">
+          <span class="badge-qno" id="qno-badge">第 1 問</span>
+          <h1 class="app-title">直角三角形の面積を利用した垂線の長さ</h1>
+        </div>
+        <div class="mode-nav">
+          <button class="mode-tab active" data-mode="all">全問ランダム</button>
+          <button class="mode-tab" data-mode="triangle">① 直角三角形</button>
+          <button class="mode-tab" data-mode="rectangle">② 長方形</button>
+          <button class="mode-tab" data-mode="cube">③ 立方体</button>
+          <button class="mode-tab" data-mode="prism">④ 直方体</button>
+          <button class="mode-tab test-tab" data-mode="test">🏆 テストモード</button>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <!-- Test Mode Progress Indicator -->
+        <div class="test-progress-pill" id="test-progress-pill">
+          <span class="test-stage-tag" id="test-stage-tag">平面</span>
+          <div class="test-meter-track">
+            <div class="test-meter-fill" id="test-meter-fill"></div>
+          </div>
+          <span class="test-score-text" id="test-progress-text">0 / 10 問</span>
+        </div>
+
+        <div class="stat-pill" id="practice-score-pill">
+          <span>正解数:</span>
+          <span class="stat-val" id="score-text">0 / 0</span>
+        </div>
+        <div class="stat-pill" id="practice-streak-pill">
+          <span>連勝:</span>
+          <span class="stat-val" id="streak-text">0</span>
+        </div>
+        <button class="ctrl-icon-btn" id="sound-btn" title="効果音 切り替え">
+          <svg id="sound-icon-on" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          </svg>
+          <svg id="sound-icon-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
+          </svg>
+        </button>
+        <button class="ctrl-icon-btn" id="fullscreen-btn" title="全画面表示 切り替え [F]">
+          <svg id="fullscreen-icon-enter" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+          </svg>
+          <svg id="fullscreen-icon-exit" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+            <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="main-grid">
+      <!-- Left Panel: Diagram Card -->
+      <section class="panel">
+        <div class="panel-header">
+          <div class="fig-tag" id="fig-tag">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 2 22 22 22"></polygon>
+            </svg>
+            <span id="fig-title">直角三角形ABC</span>
+          </div>
+
+          <div class="panel-actions">
+            <!-- Hypotenuse Show/Hide Toggle Button -->
+            <button class="btn-hyp-toggle" id="hyp-toggle-btn" title="斜辺の長さの表示/非表示を切り替え (Hキー)">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <span id="hyp-toggle-label">斜辺: OFF</span>
+              <kbd>H</kbd>
+            </button>
+
+            <!-- Rotate Button -->
+            <button class="btn-rotate" id="rotate-btn" title="図形の向きを変更 (Rキー)">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+              </svg>
+              <span>向きを変える</span>
+              <kbd>R</kbd>
+            </button>
+          </div>
+        </div>
+
+        <div class="canvas-box">
+          <svg id="figure-svg" viewBox="0 0 460 370"></svg>
+        </div>
+
+        <div class="panel-footer">
+          <span id="fig-desc">直角三角形の面積を利用して求めます</span>
+          <span id="fig-rot-info">向き: ランダム</span>
+        </div>
+      </section>
+
+      <!-- Right Panel: Question, Options, Explanation -->
+      <section class="panel">
+        <div class="question-section">
+          <div class="question-top-row">
+            <div class="question-hint-title" id="stage-hint-text">問題</div>
+            <!-- Rationalization Toggle Button -->
+            <button class="btn-rat-toggle" id="rat-toggle-btn" title="答えの有理化の有無を切り替え (Uキー)">
+              <span id="rat-toggle-label">有理化: あり</span>
+              <kbd>U</kbd>
+            </button>
+          </div>
+          <div class="question-main-text" id="question-text">
+            図において、直角三角形の面積を利用して、垂線 <span class="target-highlight" id="target-name">AH</span> の長さを求めなさい。（単位は不要）
+          </div>
+        </div>
+
+        <!-- 4 Option Buttons -->
+        <div class="options-grid" id="options-grid">
+          <button class="opt-btn" data-index="0">
+            <span class="opt-key">1</span>
+            <span class="opt-val">--</span>
+          </button>
+          <button class="opt-btn" data-index="1">
+            <span class="opt-key">2</span>
+            <span class="opt-val">--</span>
+          </button>
+          <button class="opt-btn" data-index="2">
+            <span class="opt-key">3</span>
+            <span class="opt-val">--</span>
+          </button>
+          <button class="opt-btn" data-index="3">
+            <span class="opt-key">4</span>
+            <span class="opt-val">--</span>
+          </button>
+        </div>
+
+        <!-- Explanation / Feedback Section -->
+        <div class="result-section" id="result-section">
+          <div class="explanation-container" id="explanation-container">
+            <div class="feedback-badge" id="feedback-badge">
+              <span id="feedback-icon">✔</span>
+              <span id="feedback-msg">正解！</span>
+            </div>
+            <div class="steps-wrapper" id="steps-wrapper">
+              <!-- Steps generated dynamically -->
+            </div>
+          </div>
+          <div class="action-row">
+            <button class="btn-next-step" id="btn-next-step">
+              <span>次の問題へ</span>
+              <span class="kbd-tag">Enter ↵</span>
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    /* ==========================================================================
+       1. SOUND EFFECTS & DRAMATIC AUDIO ENGINE (Web Audio API)
+       ========================================================================== */
+    let audioCtx = null;
+    let soundEnabled = true;
+
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playSound(type) {
+      if (!soundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        const now = ctx.currentTime;
+
+        if (type === 'correct') {
+          // Cheerful ascending chime
+          const osc1 = ctx.createOscillator();
+          const gain1 = ctx.createGain();
+          osc1.type = 'sine';
+          osc1.frequency.setValueAtTime(523.25, now);
+          gain1.gain.setValueAtTime(0.2, now);
+          gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.18);
+          osc1.connect(gain1);
+          gain1.connect(ctx.destination);
+          osc1.start(now);
+          osc1.stop(now + 0.18);
+
+          const osc2 = ctx.createOscillator();
+          const gain2 = ctx.createGain();
+          osc2.type = 'sine';
+          osc2.frequency.setValueAtTime(783.99, now + 0.1);
+          gain2.gain.setValueAtTime(0.25, now + 0.1);
+          gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.42);
+          osc2.connect(gain2);
+          gain2.connect(ctx.destination);
+          osc2.start(now + 0.1);
+          osc2.stop(now + 0.42);
+        } else if (type === 'wrong') {
+          // 通常モード：落ち着いたシンプルな「ブブー」（控えめな2音トーン）
+          const notes = [
+            { f: 220.00, start: 0, dur: 0.12 },     // A3
+            { f: 185.00, start: 0.13, dur: 0.22 }   // F#3
+          ];
+          notes.forEach(n => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(n.f, now + n.start);
+            gain.gain.setValueAtTime(0.18, now + n.start);
+            gain.gain.exponentialRampToValueAtTime(0.005, now + n.start + n.dur);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now + n.start);
+            osc.stop(now + n.start + n.dur);
+          });
+        } else if (type === 'wrong_dramatic') {
+          // ★ テストモード専用：派手な間違い音（劇的な重低音クラッシュ + 下降不協和音 + バズ）
+          // 1. 低音衝撃波（ボム・衝撃音）
+          const oscBass = ctx.createOscillator();
+          const gainBass = ctx.createGain();
+          oscBass.type = 'sawtooth';
+          oscBass.frequency.setValueAtTime(170, now);
+          oscBass.frequency.exponentialRampToValueAtTime(32, now + 0.48);
+          gainBass.gain.setValueAtTime(0.4, now);
+          gainBass.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+          oscBass.connect(gainBass);
+          gainBass.connect(ctx.destination);
+          oscBass.start(now);
+          oscBass.stop(now + 0.5);
+
+          // 2. 不協和音 1 (減5度トリトーンの下降グリッサンド)
+          const osc1 = ctx.createOscillator();
+          const gain1 = ctx.createGain();
+          osc1.type = 'sawtooth';
+          osc1.frequency.setValueAtTime(370, now); // F#4
+          osc1.frequency.linearRampToValueAtTime(165, now + 0.45);
+          gain1.gain.setValueAtTime(0.28, now);
+          gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.48);
+          osc1.connect(gain1);
+          gain1.connect(ctx.destination);
+          osc1.start(now);
+          osc1.stop(now + 0.48);
+
+          // 3. 不協和音 2
+          const osc2 = ctx.createOscillator();
+          const gain2 = ctx.createGain();
+          osc2.type = 'square';
+          osc2.frequency.setValueAtTime(262, now); // C4
+          osc2.frequency.linearRampToValueAtTime(120, now + 0.45);
+          gain2.gain.setValueAtTime(0.22, now);
+          gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.48);
+          osc2.connect(gain2);
+          gain2.connect(ctx.destination);
+          osc2.start(now);
+          osc2.stop(now + 0.48);
+
+          // 4. 金属的バズアタック
+          const oscBuzz = ctx.createOscillator();
+          const gainBuzz = ctx.createGain();
+          oscBuzz.type = 'sawtooth';
+          oscBuzz.frequency.setValueAtTime(95, now);
+          gainBuzz.gain.setValueAtTime(0.35, now);
+          gainBuzz.gain.exponentialRampToValueAtTime(0.01, now + 0.22);
+          oscBuzz.connect(gainBuzz);
+          gainBuzz.connect(ctx.destination);
+          oscBuzz.start(now);
+          oscBuzz.stop(now + 0.22);
+        } else if (type === 'victory') {
+          // ★ 合格ファンファーレ音
+          const notes = [
+            { f: 523.25, start: 0, dur: 0.12 },     // C5
+            { f: 659.25, start: 0.12, dur: 0.12 },  // E5
+            { f: 783.99, start: 0.24, dur: 0.12 },  // G5
+            { f: 1046.50, start: 0.36, dur: 0.7 }   // C6
+          ];
+          notes.forEach(n => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(n.f, now + n.start);
+            gain.gain.setValueAtTime(0.3, now + n.start);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + n.start + n.dur);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now + n.start);
+            osc.stop(now + n.start + n.dur);
+          });
+        } else if (type === 'click') {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(800, now);
+          gain.gain.setValueAtTime(0.04, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.05);
+        }
+      } catch (e) {
+        console.warn('Audio play error', e);
+      }
+    }
+
+    /* ==========================================================================
+       2. MATH EXPRESSION ENGINE
+       ========================================================================== */
+    function gcd(a, b) {
+      a = Math.abs(Math.round(a));
+      b = Math.abs(Math.round(b));
+      while (b) {
+        let t = b;
+        b = a % b;
+        a = t;
+      }
+      return a || 1;
+    }
+
+    function simplifyRadical(n) {
+      if (n <= 0) return { k: 0, m: 0 };
+      let k = 1;
+      let m = n;
+      for (let i = 2; i * i <= m; i++) {
+        while (m % (i * i) === 0) {
+          k *= i;
+          m /= (i * i);
+        }
+      }
+      return { k, m };
+    }
+
+    class MathExpr {
+      constructor(coeff, radical, den) {
+        this.coeff = coeff || 0;
+        this.radical = radical || 1;
+        this.den = den || 1;
+        this.simplify();
+      }
+
+      simplify() {
+        if (this.coeff === 0) {
+          this.radical = 1;
+          this.den = 1;
+          return;
+        }
+        const radSimp = simplifyRadical(this.radical);
+        this.coeff *= radSimp.k;
+        this.radical = radSimp.m;
+
+        if (this.den < 0) {
+          this.coeff = -this.coeff;
+          this.den = -this.den;
+        }
+
+        const g = gcd(this.coeff, this.den);
+        this.coeff /= g;
+        this.den /= g;
+      }
+
+      toTex() {
+        if (this.coeff === 0) return '0';
+        let numStr = '';
+        if (this.radical === 1) {
+          numStr = `${this.coeff}`;
+        } else {
+          const cStr = (this.coeff === 1) ? '' : (this.coeff === -1 ? '-' : `${this.coeff}`);
+          numStr = `${cStr}\\sqrt{${this.radical}}`;
+        }
+
+        if (this.den === 1) {
+          return numStr;
+        }
+        return `\\frac{${numStr}}{${this.den}}`;
+      }
+
+      toHtml() {
+        if (typeof window.katex !== 'undefined') {
+          try {
+            return window.katex.renderToString(this.toTex(), { throwOnError: false });
+          } catch(e) {}
+        }
+        if (this.coeff === 0) return '0';
+        let numPart = '';
+        if (this.radical === 1) {
+          numPart = `${this.coeff}`;
+        } else {
+          const cStr = (this.coeff === 1) ? '' : (this.coeff === -1 ? '-' : `${this.coeff}`);
+          numPart = `${cStr}<span class="sqrt"><span class="sqrt-symbol">√</span><span class="sqrt-content">${this.radical}</span></span>`;
+        }
+
+        if (this.den === 1) {
+          return numPart;
+        }
+        return `<span class="fraction"><span class="numerator">${numPart}</span><span class="denominator">${this.den}</span></span>`;
+      }
+
+      key() {
+        return `${this.coeff},${this.radical},${this.den}`;
+      }
+    }
+
+    class AltitudeExpr {
+      constructor(numCoeff, numRad, denCoeff, denRad) {
+        this.numCoeff = numCoeff || 1;
+        this.numRad = numRad || 1;
+        this.denCoeff = denCoeff || 1;
+        this.denRad = denRad || 1;
+        this.simplify();
+      }
+
+      simplify() {
+        const rNum = simplifyRadical(this.numRad);
+        this.numCoeff *= rNum.k;
+        this.numRad = rNum.m;
+
+        const rDen = simplifyRadical(this.denRad);
+        this.denCoeff *= rDen.k;
+        this.denRad = rDen.m;
+
+        const gRad = gcd(this.numRad, this.denRad);
+        if (gRad > 1) {
+          this.numRad /= gRad;
+          this.denRad /= gRad;
+        }
+
+        const gCoeff = gcd(this.numCoeff, this.denCoeff);
+        this.numCoeff /= gCoeff;
+        this.denCoeff /= gCoeff;
+
+        if (this.denCoeff < 0) {
+          this.numCoeff = -this.numCoeff;
+          this.denCoeff = -this.denCoeff;
+        }
+      }
+
+      toRationalizedExpr() {
+        const newRad = this.numRad * this.denRad;
+        const newDen = this.denCoeff * this.denRad;
+        return new MathExpr(this.numCoeff, newRad, newDen);
+      }
+
+      toTex(rationalize = true) {
+        if (rationalize || this.denRad === 1) {
+          return this.toRationalizedExpr().toTex();
+        }
+        let nStr = '';
+        if (this.numRad === 1) {
+          nStr = `${this.numCoeff}`;
+        } else {
+          const cStr = this.numCoeff === 1 ? '' : (this.numCoeff === -1 ? '-' : `${this.numCoeff}`);
+          nStr = `${cStr}\\sqrt{${this.numRad}}`;
+        }
+
+        let dStr = '';
+        if (this.denRad === 1) {
+          dStr = `${this.denCoeff}`;
+        } else {
+          const cStr = this.denCoeff === 1 ? '' : `${this.denCoeff}`;
+          dStr = `${cStr}\\sqrt{${this.denRad}}`;
+        }
+
+        return `\\frac{${nStr}}{${dStr}}`;
+      }
+
+      toHtml(rationalize = true) {
+        if (rationalize || this.denRad === 1) {
+          return this.toRationalizedExpr().toHtml();
+        }
+        const tex = this.toTex(false);
+        if (typeof window.katex !== 'undefined') {
+          try {
+            return window.katex.renderToString(tex, { throwOnError: false });
+          } catch(e) {}
+        }
+        const numPart = (this.numRad === 1) ? `${this.numCoeff}` : `${this.numCoeff === 1 ? '' : this.numCoeff}<span class="sqrt"><span class="sqrt-symbol">√</span><span class="sqrt-content">${this.numRad}</span></span>`;
+        const denPart = (this.denRad === 1) ? `${this.denCoeff}` : `${this.denCoeff === 1 ? '' : this.denCoeff}<span class="sqrt"><span class="sqrt-symbol">√</span><span class="sqrt-content">${this.denRad}</span></span>`;
+        return `<span class="fraction"><span class="numerator">${numPart}</span><span class="denominator">${denPart}</span></span>`;
+      }
+
+      key(rationalize = true) {
+        if (rationalize || this.denRad === 1) {
+          return this.toRationalizedExpr().key();
+        }
+        return `unrat:${this.numCoeff},${this.numRad},${this.denCoeff},${this.denRad}`;
+      }
+    }
+
+    function renderTeXInline(text) {
+      if (typeof window.katex !== 'undefined') {
+        return text.replace(/\$(.*?)\$/g, (match, tex) => {
+          try {
+            return window.katex.renderToString(tex, { throwOnError: false });
+          } catch(e) {
+            return match;
+          }
+        });
+      }
+      return text.replace(/\$(.*?)\$/g, (match, tex) => {
+        let s = tex;
+        s = s.replace(/\\triangle/g, '△');
+        s = s.replace(/\\angle/g, '∠');
+        s = s.replace(/\\perp/g, '⊥');
+        s = s.replace(/\\circ/g, '°');
+        s = s.replace(/\\times/g, ' × ');
+        s = s.replace(/\\sqrt\{([^}]+)\}/g, '<span class="sqrt"><span class="sqrt-symbol">√</span><span class="sqrt-content">$1</span></span>');
+        s = s.replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '<span class="fraction"><span class="numerator">$1</span><span class="denominator">$2</span></span>');
+        return s;
+      });
+    }
+
+    function formatRadicalString(n) {
+      const r = simplifyRadical(n);
+      if (r.m === 1) return `${r.k}`;
+      const kStr = r.k === 1 ? '' : `${r.k}`;
+      return `${kStr}\\sqrt{${r.m}}`;
+    }
+
+    function formatHypotenusePlain(n) {
+      const r = simplifyRadical(n);
+      if (r.m === 1) return `${r.k}`;
+      const kStr = r.k === 1 ? '' : `${r.k}`;
+      return `${kStr}√${r.m}`;
+    }
+
+    function choice(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function generateRandom2DOrientation() {
+      const rot = Math.floor(Math.random() * 24) * 15;
+      const flip = Math.random() > 0.5;
+      const flipStr = flip ? ' (反転)' : '';
+      return {
+        rot,
+        flip,
+        name: `${rot}° 回転${flipStr}`
+      };
+    }
+
+    /* ==========================================================================
+       3. 3D SOLID TRIANGLE SPECIFICATIONS
+       ========================================================================== */
+    const SOLID_TRIANGLE_DEFS = [
+      {
+        id: 'AFD',
+        name: '△AFD',
+        vRight: 'A', vHyp1: 'F', vHyp2: 'D',
+        footName: 'P',
+        edgeName: 'AD', edgeVal: (x, y, z) => x,
+        faceName: 'AF', facePlane: '左側面ABFE', faceSq: (x, y, z) => y*y + z*z,
+        hypName: 'FD',
+        reasonText: (x, y, z) => '辺 $AD$ は左側面ABFEに垂直なので、$AD \\perp AF$（$\\angle FAD = 90^\\circ$）です。'
+      },
+      {
+        id: 'AEG',
+        name: '△AEG',
+        vRight: 'E', vHyp1: 'A', vHyp2: 'G',
+        footName: 'P',
+        edgeName: 'AE', edgeVal: (x, y, z) => z,
+        faceName: 'EG', facePlane: '底面EFGH', faceSq: (x, y, z) => x*x + y*y,
+        hypName: 'AG',
+        reasonText: (x, y, z) => '辺 $AE$ は底面EFGHに垂直なので、$AE \\perp EG$（$\\angle AEG = 90^\\circ$）です。'
+      },
+      {
+        id: 'ACG',
+        name: '△ACG',
+        vRight: 'C', vHyp1: 'A', vHyp2: 'G',
+        footName: 'P',
+        edgeName: 'CG', edgeVal: (x, y, z) => z,
+        faceName: 'AC', facePlane: '上面ABCD', faceSq: (x, y, z) => x*x + y*y,
+        hypName: 'AG',
+        reasonText: (x, y, z) => '辺 $CG$ は上面ABCDに垂直なので、$CG \\perp AC$（$\\angle ACG = 90^\\circ$）です。'
+      },
+      {
+        id: 'BDH',
+        name: '△BDH',
+        vRight: 'D', vHyp1: 'B', vHyp2: 'H',
+        footName: 'P',
+        edgeName: 'DH', edgeVal: (x, y, z) => z,
+        faceName: 'BD', facePlane: '上面ABCD', faceSq: (x, y, z) => x*x + y*y,
+        hypName: 'BH',
+        reasonText: (x, y, z) => '辺 $DH$ は上面ABCDに垂直なので、$DH \\perp BD$（$\\angle BDH = 90^\\circ$）です。'
+      },
+      {
+        id: 'BFH',
+        name: '△BFH',
+        vRight: 'F', vHyp1: 'B', vHyp2: 'H',
+        footName: 'P',
+        edgeName: 'BF', edgeVal: (x, y, z) => z,
+        faceName: 'FH', facePlane: '底面EFGH', faceSq: (x, y, z) => x*x + y*y,
+        hypName: 'BH',
+        reasonText: (x, y, z) => '辺 $BF$ は底面EFGHに垂直なので、$BF \\perp FH$（$\\angle BFH = 90^\\circ$）です。'
+      },
+      {
+        id: 'ABH',
+        name: '△ABH',
+        vRight: 'A', vHyp1: 'B', vHyp2: 'H',
+        footName: 'P',
+        edgeName: 'AB', edgeVal: (x, y, z) => y,
+        faceName: 'AH', facePlane: '奥面ADHE', faceSq: (x, y, z) => x*x + z*z,
+        hypName: 'BH',
+        reasonText: (x, y, z) => '辺 $AB$ は奥面ADHEに垂直なので、$AB \\perp AH$（$\\angle BAH = 90^\\circ$）です。'
+      },
+      {
+        id: 'BCE',
+        name: '△BCE',
+        vRight: 'B', vHyp1: 'C', vHyp2: 'E',
+        footName: 'P',
+        edgeName: 'BC', edgeVal: (x, y, z) => x,
+        faceName: 'BE', facePlane: '左側面ABFE', faceSq: (x, y, z) => y*y + z*z,
+        hypName: 'CE',
+        reasonText: (x, y, z) => '辺 $BC$ は左側面ABFEに垂直なので、$BC \\perp BE$（$\\angle CBE = 90^\\circ$）です。'
+      },
+      {
+        id: 'CDE',
+        name: '△CDE',
+        vRight: 'D', vHyp1: 'C', vHyp2: 'E',
+        footName: 'P',
+        edgeName: 'CD', edgeVal: (x, y, z) => y,
+        faceName: 'DE', facePlane: '奥面ADHE', faceSq: (x, y, z) => x*x + z*z,
+        hypName: 'CE',
+        reasonText: (x, y, z) => '辺 $CD$ は奥面ADHEに垂直なので、$CD \\perp DE$（$\\angle CDE = 90^\\circ$）です。'
+      }
+    ];
+
+    /* ==========================================================================
+       4. QUESTION GENERATORS
+       ========================================================================== */
+
+    // Generator 1: 直角三角形ABC
+    function generateTriangleQuestion() {
+      const presets = [
+        { b: 3, c: 4 }, { b: 4, c: 3 }, { b: 6, c: 8 }, { b: 8, c: 6 },
+        { b: 5, c: 12 }, { b: 12, c: 5 }, { b: 8, c: 15 }, { b: 9, c: 12 },
+        { b: 2, c: 3 }, { b: 3, c: 2 }, { b: 1, c: 2 }, { b: 2, c: 4 },
+        { b: 3, c: 5 }, { b: 2, c: 5 }, { b: 4, c: 5 }, { b: 1, c: 3 }
+      ];
+
+      const item = choice(presets);
+      const b = item.b;
+      const c = item.c;
+      const hypSq = b * b + c * c;
+
+      const correctAltitude = new AltitudeExpr(b * c, 1, 1, hypSq);
+
+      const distractors = [];
+      const usedKeys = new Set([correctAltitude.key(true), correctAltitude.key(false)]);
+
+      const hypSimp = simplifyRadical(hypSq);
+      const candAltitudes = [
+        new AltitudeExpr(b * c, 1, 1, Math.max(1, hypSq - 2)),
+        new AltitudeExpr(b * c, 1, 1, hypSq + 2),
+        new AltitudeExpr(Math.round((b * c) / 2) || 1, 1, 1, hypSq),
+        new AltitudeExpr(b * c + 1, 1, 1, hypSq),
+        new AltitudeExpr(Math.max(1, b * c - 1), 1, 1, hypSq),
+        new AltitudeExpr(b + c, 1, 2, 1)
+      ];
+
+      if (hypSimp.m === 1) {
+        const hVal = hypSimp.k;
+        candAltitudes.push(
+          new AltitudeExpr(b * c, 1, hVal + 1, 1),
+          new AltitudeExpr(b * c, 1, Math.max(1, hVal - 1), 1),
+          new AltitudeExpr(b * c * 2, 1, hVal, 1)
+        );
+      }
+
+      for (const cand of candAltitudes) {
+        const kTrue = cand.key(true);
+        if (!usedKeys.has(kTrue)) {
+          usedKeys.add(kTrue);
+          distractors.push(cand);
+          if (distractors.length >= 3) break;
+        }
+      }
+
+      let dOffset = 1;
+      while (distractors.length < 3) {
+        const fallback = new AltitudeExpr(b * c + dOffset, 1, 1, hypSq);
+        const kTrue = fallback.key(true);
+        if (!usedKeys.has(kTrue)) {
+          usedKeys.add(kTrue);
+          distractors.push(fallback);
+        }
+        dOffset++;
+      }
+
+      const ori = generateRandom2DOrientation();
+      const bcStr = formatRadicalString(hypSq);
+      const bcPlain = formatHypotenusePlain(hypSq);
+
+      return {
+        type: 'triangle',
+        title: '直角三角形ABC',
+        targetName: 'AH',
+        b, c, hypSq,
+        hypStr: bcStr,
+        hypPlain: bcPlain,
+        correct: correctAltitude,
+        distractors: distractors.slice(0, 3),
+        orientation: ori,
+        getExplanationSteps: (rationalize) => {
+          const ansTex = correctAltitude.toTex(rationalize);
+          const fullAnsTex = rationalize
+            ? (correctAltitude.denRad !== 1 ? `\\frac{${b*c}}{${bcStr}} = ${ansTex}` : `${ansTex}`)
+            : (correctAltitude.denRad !== 1 ? `${ansTex} \\; (有理化すると ${correctAltitude.toTex(true)})` : `${ansTex}`);
+
+          return [
+            `三平方の定理より、斜辺 $BC = \\sqrt{${b}^2 + ${c}^2} = \\sqrt{${hypSq}} = ${bcStr}$`,
+            `直角三角形ABCの面積を2通りの式で表します：`,
+            `① 直角を挟む2辺より： $S = \\frac{1}{2} \\times ${b} \\times ${c} = ${new MathExpr(b*c, 1, 2).toTex()}$`,
+            `② 底辺 $BC$ と高さ $AH$ より： $S = \\frac{1}{2} \\times ${bcStr} \\times AH$`,
+            `① と ② が等しいので、$\\frac{1}{2} \\times ${bcStr} \\times AH = \\frac{1}{2} \\times ${b*c}$`,
+            `よって $AH = ${fullAnsTex}$`
+          ];
+        }
+      };
+    }
+
+    // Generator 2: 長方形ABCD
+    function generateRectangleQuestion() {
+      const presets = [
+        { width: 3, height: 2 }, { width: 4, height: 3 }, { width: 5, height: 2 },
+        { width: 5, height: 3 }, { width: 6, height: 2 }, { width: 6, height: 4 },
+        { width: 7, height: 3 }, { width: 8, height: 6 }, { width: 12, height: 5 },
+        { width: 4, height: 2 }, { width: 5, height: 4 }
+      ];
+
+      const item = choice(presets);
+      const isSwapped = Math.random() > 0.5;
+      const w = isSwapped ? item.height : item.width;
+      const h = isSwapped ? item.width : item.height;
+
+      const diagSq = w * w + h * h;
+      const correctAltitude = new AltitudeExpr(w * h, 1, 1, diagSq);
+
+      const dropConfigs = [
+        { dropFrom: 'A', diag1: 'B', diag2: 'D', tri: '△ABD', rightAngle: 'A', diagName: 'BD', targetName: 'AH' },
+        { dropFrom: 'C', diag1: 'B', diag2: 'D', tri: '△CBD', rightAngle: 'C', diagName: 'BD', targetName: 'CH' },
+        { dropFrom: 'B', diag1: 'A', diag2: 'C', tri: '△BAC', rightAngle: 'B', diagName: 'AC', targetName: 'BH' },
+        { dropFrom: 'D', diag1: 'A', diag2: 'C', tri: '△DAC', rightAngle: 'D', diagName: 'AC', targetName: 'DH' }
+      ];
+      const dropConfig = choice(dropConfigs);
+
+      const distractors = [];
+      const usedKeys = new Set([correctAltitude.key(true), correctAltitude.key(false)]);
+
+      const diagSimp = simplifyRadical(diagSq);
+      const candAltitudes = [
+        new AltitudeExpr(w * h, 1, 1, Math.max(1, diagSq - 2)),
+        new AltitudeExpr(w * h, 1, 1, diagSq + 2),
+        new AltitudeExpr(Math.round((w * h) / 2) || 1, 1, 1, diagSq),
+        new AltitudeExpr(w * h + 1, 1, 1, diagSq),
+        new AltitudeExpr(Math.max(1, w * h - 1), 1, 1, diagSq),
+        new AltitudeExpr(w + h, 1, 2, 1)
+      ];
+
+      if (diagSimp.m === 1) {
+        candAltitudes.push(
+          new AltitudeExpr(w * h, 1, diagSimp.k + 1, 1),
+          new AltitudeExpr(w * h, 1, Math.max(1, diagSimp.k - 1), 1),
+          new AltitudeExpr(Math.round(w * h / 2) || 1, 1, diagSimp.k, 1)
+        );
+      }
+
+      for (const cand of candAltitudes) {
+        const kTrue = cand.key(true);
+        if (!usedKeys.has(kTrue)) {
+          usedKeys.add(kTrue);
+          distractors.push(cand);
+          if (distractors.length >= 3) break;
+        }
+      }
+
+      let dOffset = 1;
+      while (distractors.length < 3) {
+        const fallback = new AltitudeExpr(w * h + dOffset, 1, 1, diagSq);
+        const kTrue = fallback.key(true);
+        if (!usedKeys.has(kTrue)) {
+          usedKeys.add(kTrue);
+          distractors.push(fallback);
+        }
+        dOffset++;
+      }
+
+      const ori = generateRandom2DOrientation();
+      const diagStr = formatRadicalString(diagSq);
+      const diagPlain = formatHypotenusePlain(diagSq);
+
+      return {
+        type: 'rectangle',
+        title: '長方形ABCD',
+        targetName: dropConfig.targetName,
+        dropConfig,
+        width: w,
+        height: h,
+        diagSq,
+        diagStr,
+        hypPlain: diagPlain,
+        correct: correctAltitude,
+        distractors: distractors.slice(0, 3),
+        orientation: ori,
+        getExplanationSteps: (rationalize) => {
+          const ansTex = correctAltitude.toTex(rationalize);
+          const fullAnsTex = rationalize
+            ? (correctAltitude.denRad !== 1 ? `\\frac{${w*h}}{${diagStr}} = ${ansTex}` : `${ansTex}`)
+            : (correctAltitude.denRad !== 1 ? `${ansTex} \\; (有理化すると ${correctAltitude.toTex(true)})` : `${ansTex}`);
+
+          return [
+            `長方形の直角三角形${dropConfig.tri}に着目します（$\\angle ${dropConfig.rightAngle} = 90^\\circ$）。`,
+            `三平方の定理より、対角線 $${dropConfig.diagName} = \\sqrt{${w}^2 + ${h}^2} = \\sqrt{${diagSq}} = ${diagStr}$`,
+            `${dropConfig.tri} の面積を2通りで表します：`,
+            `① $S = \\frac{1}{2} \\times ${w} \\times ${h} = ${new MathExpr(w*h, 1, 2).toTex()}$`,
+            `② $S = \\frac{1}{2} \\times ${dropConfig.diagName} \\times ${dropConfig.targetName} = \\frac{1}{2} \\times ${diagStr} \\times ${dropConfig.targetName}$`,
+            `① と ② より、$${dropConfig.targetName} = ${fullAnsTex}$`
+          ];
+        }
+      };
+    }
+
+    // Generator 3 & 4: 立体（立方体 & 直方体）
+    function generateSolidQuestion(solidType = 'prism') {
+      let x, y, z, title;
+
+      if (solidType === 'cube') {
+        const sideLengths = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+        const a = choice(sideLengths);
+        x = a; y = a; z = a;
+        title = `1辺 ${a} の立方体`;
+      } else {
+        const presets = [
+          { x: 3, y: 2, z: 6 }, { x: 2, y: 1, z: 2 }, { x: 4, y: 4, z: 2 },
+          { x: 4, y: 1, z: 8 }, { x: 4, y: 7, z: 4 }, { x: 12, y: 3, z: 4 },
+          { x: 6, y: 2, z: 9 }, { x: 2, y: 3, z: 4 }, { x: 4, y: 2, z: 3 },
+          { x: 3, y: 3, z: 2 }, { x: 2, y: 2, z: 3 }, { x: 3, y: 4, z: 5 },
+          { x: 2, y: 2, z: 1 }, { x: 5, y: 5, z: 2 }
+        ];
+        const p = choice(presets);
+        x = p.x; y = p.y; z = p.z;
+        title = `直方体ABCD-EFGH（横${x}, 縦${y}, 高さ${z}）`;
+      }
+
+      const triDef = choice(SOLID_TRIANGLE_DEFS);
+      const edgeLen = triDef.edgeVal(x, y, z);
+      const faceSq = triDef.faceSq(x, y, z);
+      const diagSq = x*x + y*y + z*z;
+
+      const correctAltitude = new AltitudeExpr(edgeLen, faceSq, 1, diagSq);
+      const targetName = `${triDef.vRight}${triDef.footName}`;
+
+      const distractors = [];
+      const usedKeys = new Set([correctAltitude.key(true), correctAltitude.key(false)]);
+
+      const diagSimp = simplifyRadical(diagSq);
+      const faceSimp = simplifyRadical(faceSq);
+
+      const candAltitudes = [
+        new AltitudeExpr(edgeLen + 1, faceSq, 1, diagSq),
+        new AltitudeExpr(Math.max(1, edgeLen - 1), faceSq, 1, diagSq),
+        new AltitudeExpr(edgeLen, diagSq, 1, faceSq),
+        new AltitudeExpr(edgeLen * 2, faceSq, 1, diagSq),
+        new AltitudeExpr(Math.round(edgeLen / 2) || 1, faceSq, 1, diagSq)
+      ];
+
+      if (diagSimp.m === 1) {
+        candAltitudes.push(
+          new AltitudeExpr(edgeLen * faceSimp.k, faceSimp.m, diagSimp.k + 1, 1),
+          new AltitudeExpr(edgeLen * faceSimp.k, faceSimp.m, Math.max(1, diagSimp.k - 1), 1)
+        );
+      }
+
+      for (const cand of candAltitudes) {
+        const kTrue = cand.key(true);
+        if (!usedKeys.has(kTrue)) {
+          usedKeys.add(kTrue);
+          distractors.push(cand);
+          if (distractors.length >= 3) break;
+        }
+      }
+
+      let dOffset = 1;
+      while (distractors.length < 3) {
+        const fallback = new AltitudeExpr(edgeLen + dOffset, faceSq, 1, diagSq);
+        const kTrue = fallback.key(true);
+        if (!usedKeys.has(kTrue)) {
+          usedKeys.add(kTrue);
+          distractors.push(fallback);
+        }
+        dOffset++;
+      }
+
+      const orientations = [
+        { rotMode: 'standard', name: '標準見取り図（右奥向き）' },
+        { rotMode: 'flipped', name: '左右反転（左奥向き）' },
+        { rotMode: 'shallow', name: '浅いアングル（正面寄り）' },
+        { rotMode: 'deep', name: '深いアングル（見下ろし）' }
+      ];
+      const ori = choice(orientations);
+
+      const faceStr = formatRadicalString(faceSq);
+      const diagStr = formatRadicalString(diagSq);
+
+      return {
+        type: solidType,
+        title,
+        targetName,
+        triDef,
+        x, y, z,
+        edgeLen, faceSq, diagSq,
+        faceStr, diagStr,
+        correct: correctAltitude,
+        distractors: distractors.slice(0, 3),
+        orientation: ori,
+        getExplanationSteps: (rationalize) => {
+          const ansTex = correctAltitude.toTex(rationalize);
+          const fullAnsTex = rationalize
+            ? (correctAltitude.denRad !== 1 ? `\\frac{${edgeLen} \\times ${faceStr}}{${diagStr}} = ${ansTex}` : `${ansTex}`)
+            : (correctAltitude.denRad !== 1 ? `${ansTex} \\; (有理化すると ${correctAltitude.toTex(true)})` : `${ansTex}`);
+
+          return [
+            `${triDef.reasonText(x, y, z)}`,
+            `${triDef.name}の3辺を求めます：`,
+            `・直角を挟む辺 $${triDef.edgeName} = ${edgeLen}$`,
+            `・${triDef.facePlane}の対角線 $${triDef.faceName} = \\sqrt{${faceSq}} = ${faceStr}$`,
+            `・立体の対角線 $${triDef.hypName} = \\sqrt{${x}^2 + ${y}^2 + ${z}^2} = \\sqrt{${diagSq}} = ${diagStr}$`,
+            `${triDef.name}の面積 $S$ を2通りで表します：`,
+            `① $S = \\frac{1}{2} \\times ${triDef.edgeName} \\times ${triDef.faceName} = \\frac{1}{2} \\times ${edgeLen} \\times ${faceStr}$`,
+            `② $S = \\frac{1}{2} \\times ${triDef.hypName} \\times ${targetName} = \\frac{1}{2} \\times ${diagStr} \\times ${targetName}$`,
+            `① と ② より、$${targetName} = ${fullAnsTex}$`
+          ];
+        }
+      };
+    }
+
+    /* ==========================================================================
+       5. SVG DRAWING ENGINE
+       ========================================================================== */
+    const SVG_NS = "http://www.w3.org/2000/svg";
+
+    function clearSvg(svg) {
+      while (svg.firstChild) {
+        svg.removeChild(svg.firstChild);
+      }
+    }
+
+    function createSvgElem(tag, attrs = {}) {
+      const el = document.createElementNS(SVG_NS, tag);
+      for (const [k, v] of Object.entries(attrs)) {
+        el.setAttribute(k, v);
+      }
+      return el;
+    }
+
+    function drawRightAngleMark(svg, p, p1, p2, size = 12) {
+      const v1x = p1.x - p.x;
+      const v1y = p1.y - p.y;
+      const len1 = Math.hypot(v1x, v1y) || 1;
+      const u1x = (v1x / len1) * size;
+      const u1y = (v1y / len1) * size;
+
+      const v2x = p2.x - p.x;
+      const v2y = p2.y - p.y;
+      const len2 = Math.hypot(v2x, v2y) || 1;
+      const u2x = (v2x / len2) * size;
+      const u2y = (v2y / len2) * size;
+
+      const p_arm1 = { x: p.x + u1x, y: p.y + u1y };
+      const p_corner = { x: p.x + u1x + u2x, y: p.y + u1y + u2y };
+      const p_arm2 = { x: p.x + u2x, y: p.y + u2y };
+
+      const path = createSvgElem('path', {
+        d: `M ${p_arm1.x.toFixed(1)} ${p_arm1.y.toFixed(1)} L ${p_corner.x.toFixed(1)} ${p_corner.y.toFixed(1)} L ${p_arm2.x.toFixed(1)} ${p_arm2.y.toFixed(1)}`,
+        class: 'geom-right-angle'
+      });
+      svg.appendChild(path);
+    }
+
+    function drawDimArc(svg, p1, p2, dist, label, centerPt, isHyp = false) {
+      const mx = (p1.x + p2.x) / 2;
+      const my = (p1.y + p2.y) / 2;
+      const dx = p2.x - p1.x;
+      const dy = p2.y - p1.y;
+      const len = Math.hypot(dx, dy) || 1;
+      const nx = -dy / len;
+      const ny = dx / len;
+
+      const toMidX = mx - centerPt.x;
+      const toMidY = my - centerPt.y;
+      const dot = nx * toMidX + ny * toMidY;
+      const sign = dot >= 0 ? 1 : -1;
+
+      const ctrlX = mx + nx * dist * sign;
+      const ctrlY = my + ny * dist * sign;
+
+      const path = createSvgElem('path', {
+        d: `M ${p1.x.toFixed(1)} ${p1.y.toFixed(1)} Q ${ctrlX.toFixed(1)} ${ctrlY.toFixed(1)} ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`,
+        class: isHyp ? 'geom-dim-arc-hyp' : 'geom-dim-arc'
+      });
+      svg.appendChild(path);
+
+      const text = createSvgElem('text', {
+        x: (ctrlX + nx * 12 * sign).toFixed(1),
+        y: (ctrlY + ny * 12 * sign).toFixed(1),
+        class: isHyp ? 'geom-hyp-text' : 'geom-dim-text'
+      });
+      text.textContent = label;
+      svg.appendChild(text);
+    }
+
+    function renderTriangle(svg, qData, showHyp) {
+      clearSvg(svg);
+      const { b, c, orientation, hypPlain } = qData;
+
+      const hyp = Math.hypot(b, c);
+      const ahLen = (b * c) / hyp;
+      const bhLen = (b * b) / hyp;
+      const chLen = (c * c) / hyp;
+
+      const scale = 270 / hyp;
+
+      let pB = { x: -bhLen * scale, y: 0 };
+      let pC = { x: chLen * scale, y: 0 };
+      let pA = { x: 0, y: -ahLen * scale };
+      let pH = { x: 0, y: 0 };
+
+      const rotRad = (orientation.rot * Math.PI) / 180;
+      const cosR = Math.cos(rotRad);
+      const sinR = Math.sin(rotRad);
+      const flipSign = orientation.flip ? -1 : 1;
+
+      function transform(p) {
+        const x = p.x * flipSign;
+        const y = p.y;
+        return {
+          x: x * cosR - y * sinR,
+          y: x * sinR + y * cosR
+        };
+      }
+
+      pA = transform(pA);
+      pB = transform(pB);
+      pC = transform(pC);
+      pH = transform(pH);
+
+      const minX = Math.min(pA.x, pB.x, pC.x);
+      const maxX = Math.max(pA.x, pB.x, pC.x);
+      const minY = Math.min(pA.y, pB.y, pC.y);
+      const maxY = Math.max(pA.y, pB.y, pC.y);
+
+      const offsetX = 230 - (minX + maxX) / 2;
+      const offsetY = 185 - (minY + maxY) / 2;
+
+      [pA, pB, pC, pH].forEach(p => {
+        p.x += offsetX;
+        p.y += offsetY;
+      });
+
+      const centroid = {
+        x: (pA.x + pB.x + pC.x) / 3,
+        y: (pA.y + pB.y + pC.y) / 3
+      };
+
+      const triPoly = createSvgElem('polygon', {
+        points: `${pA.x.toFixed(1)},${pA.y.toFixed(1)} ${pB.x.toFixed(1)},${pB.y.toFixed(1)} ${pC.x.toFixed(1)},${pC.y.toFixed(1)}`,
+        class: 'geom-poly'
+      });
+      svg.appendChild(triPoly);
+
+      const altLine = createSvgElem('line', {
+        x1: pA.x.toFixed(1), y1: pA.y.toFixed(1),
+        x2: pH.x.toFixed(1), y2: pH.y.toFixed(1),
+        class: 'geom-altitude'
+      });
+      svg.appendChild(altLine);
+
+      drawRightAngleMark(svg, pA, pB, pC, 13);
+      drawRightAngleMark(svg, pH, pA, pC, 11);
+
+      drawDimArc(svg, pA, pB, 22, `${b}`, centroid);
+      drawDimArc(svg, pA, pC, 22, `${c}`, centroid);
+
+      if (showHyp) {
+        drawDimArc(svg, pB, pC, 24, `${hypPlain}`, centroid, true);
+      }
+
+      function addLabel(p, awayFrom, text, isTarget = false) {
+        const dx = p.x - awayFrom.x;
+        const dy = p.y - awayFrom.y;
+        const len = Math.hypot(dx, dy) || 1;
+        const lx = p.x + (dx / len) * 18;
+        const ly = p.y + (dy / len) * 18;
+
+        const el = createSvgElem('text', {
+          x: lx.toFixed(1),
+          y: ly.toFixed(1),
+          class: isTarget ? 'geom-target-text' : 'geom-vtx-text'
+        });
+        el.textContent = text;
+        svg.appendChild(el);
+      }
+
+      addLabel(pA, centroid, 'A');
+      addLabel(pB, centroid, 'B');
+      addLabel(pC, centroid, 'C');
+      addLabel(pH, pA, 'H', true);
+    }
+
+    function renderRectangle(svg, qData, showHyp) {
+      clearSvg(svg);
+      const { width: w, height: h, orientation, dropConfig, hypPlain } = qData;
+
+      const maxDim = Math.max(w, h);
+      const scale = 230 / maxDim;
+      const pw = w * scale;
+      const ph = h * scale;
+
+      let pA = { x: -pw / 2, y: -ph / 2 };
+      let pB = { x: -pw / 2, y:  ph / 2 };
+      let pC = { x:  pw / 2, y:  ph / 2 };
+      let pD = { x:  pw / 2, y: -ph / 2 };
+
+      const rotRad = (orientation.rot * Math.PI) / 180;
+      const cosR = Math.cos(rotRad);
+      const sinR = Math.sin(rotRad);
+      const flipSign = orientation.flip ? -1 : 1;
+
+      function transform(p) {
+        const x = p.x * flipSign;
+        const y = p.y;
+        return {
+          x: x * cosR - y * sinR,
+          y: x * sinR + y * cosR
+        };
+      }
+
+      pA = transform(pA);
+      pB = transform(pB);
+      pC = transform(pC);
+      pD = transform(pD);
+
+      const offsetX = 230;
+      const offsetY = 185;
+      [pA, pB, pC, pD].forEach(p => {
+        p.x += offsetX;
+        p.y += offsetY;
+      });
+
+      const pts = { A: pA, B: pB, C: pC, D: pD };
+      const center = { x: 230, y: 185 };
+
+      const pDrop = pts[dropConfig.dropFrom];
+      const pDiag1 = pts[dropConfig.diag1];
+      const pDiag2 = pts[dropConfig.diag2];
+
+      const vDiagX = pDiag2.x - pDiag1.x;
+      const vDiagY = pDiag2.y - pDiag1.y;
+      const lenSq = vDiagX * vDiagX + vDiagY * vDiagY;
+      const vArmX = pDrop.x - pDiag1.x;
+      const vArmY = pDrop.y - pDiag1.y;
+      const t = (vArmX * vDiagX + vArmY * vDiagY) / lenSq;
+
+      const pH = {
+        x: pDiag1.x + t * vDiagX,
+        y: pDiag1.y + t * vDiagY
+      };
+
+      const rectPoly = createSvgElem('polygon', {
+        points: `${pA.x.toFixed(1)},${pA.y.toFixed(1)} ${pD.x.toFixed(1)},${pD.y.toFixed(1)} ${pC.x.toFixed(1)},${pC.y.toFixed(1)} ${pB.x.toFixed(1)},${pB.y.toFixed(1)}`,
+        class: 'geom-poly'
+      });
+      svg.appendChild(rectPoly);
+
+      const diagLine = createSvgElem('line', {
+        x1: pDiag1.x.toFixed(1), y1: pDiag1.y.toFixed(1),
+        x2: pDiag2.x.toFixed(1), y2: pDiag2.y.toFixed(1),
+        stroke: showHyp ? '#34d399' : '#94a3b8',
+        'stroke-width': showHyp ? '2.2' : '2'
+      });
+      svg.appendChild(diagLine);
+
+      const altLine = createSvgElem('line', {
+        x1: pDrop.x.toFixed(1), y1: pDrop.y.toFixed(1),
+        x2: pH.x.toFixed(1), y2: pH.y.toFixed(1),
+        class: 'geom-altitude'
+      });
+      svg.appendChild(altLine);
+
+      drawRightAngleMark(svg, pH, pDrop, pDiag2, 11);
+
+      drawDimArc(svg, pA, pD, 18, `${w}`, center);
+      drawDimArc(svg, pD, pC, 18, `${h}`, center);
+
+      if (showHyp) {
+        const midDiagX = (pDiag1.x + pDiag2.x) / 2;
+        const midDiagY = (pDiag1.y + pDiag2.y) / 2;
+
+        const dLen = Math.sqrt(lenSq) || 1;
+        const normX = -vDiagY / dLen;
+        const normY = vDiagX / dLen;
+
+        const toFootX = pH.x - midDiagX;
+        const toFootY = pH.y - midDiagY;
+        const shiftSign = (normX * toFootX + normY * toFootY) >= 0 ? -1 : 1;
+
+        const badgeX = midDiagX + normX * 18 * shiftSign;
+        const badgeY = midDiagY + normY * 18 * shiftSign;
+
+        const badgeBg = createSvgElem('rect', {
+          x: (badgeX - 18).toFixed(1),
+          y: (badgeY - 11).toFixed(1),
+          width: 36,
+          height: 22,
+          rx: 5,
+          fill: 'rgba(11, 17, 32, 0.88)',
+          stroke: '#34d399',
+          'stroke-width': '1.5'
+        });
+        svg.appendChild(badgeBg);
+
+        const badgeTxt = createSvgElem('text', {
+          x: badgeX.toFixed(1),
+          y: (badgeY + 1).toFixed(1),
+          class: 'geom-hyp-text'
+        });
+        badgeTxt.textContent = hypPlain;
+        svg.appendChild(badgeTxt);
+      }
+
+      function addLabel(p, awayFrom, text, isTarget = false) {
+        const dx = p.x - awayFrom.x;
+        const dy = p.y - awayFrom.y;
+        const len = Math.hypot(dx, dy) || 1;
+        const lx = p.x + (dx / len) * 18;
+        const ly = p.y + (dy / len) * 18;
+
+        const el = createSvgElem('text', {
+          x: lx.toFixed(1),
+          y: ly.toFixed(1),
+          class: isTarget ? 'geom-target-text' : 'geom-vtx-text'
+        });
+        el.textContent = text;
+        svg.appendChild(el);
+      }
+
+      addLabel(pA, center, 'A');
+      addLabel(pB, center, 'B');
+      addLabel(pC, center, 'C');
+      addLabel(pD, center, 'D');
+      addLabel(pH, pDrop, 'H', true);
+    }
+
+    function renderSolid(svg, qData) {
+      clearSvg(svg);
+      const { x, y, z, triDef, orientation } = qData;
+
+      const isFlipped = orientation.rotMode === 'flipped';
+      let depthAngle = 35;
+      let depthRatio = 0.55;
+
+      if (orientation.rotMode === 'shallow') {
+        depthAngle = 25;
+        depthRatio = 0.45;
+      } else if (orientation.rotMode === 'deep') {
+        depthAngle = 45;
+        depthRatio = 0.65;
+      }
+
+      const rad = (depthAngle * Math.PI) / 180;
+      const cosD = Math.cos(rad) * depthRatio * (isFlipped ? -1 : 1);
+      const sinD = -Math.sin(rad) * depthRatio;
+
+      const maxDim = Math.max(x, y, z);
+      const baseUnit = 175 / maxDim;
+
+      const pw = Math.max(70, Math.min(230, x * baseUnit));
+      const ph = Math.max(70, Math.min(210, z * baseUnit));
+      const pd = Math.max(60, Math.min(180, y * baseUnit));
+
+      const shiftX = cosD * pd;
+      const shiftY = sinD * pd;
+
+      let pF, pG, pC, pB, pE, pH_box, pD, pA;
+
+      if (!isFlipped) {
+        pF = { x: 0, y: ph };
+        pG = { x: pw, y: ph };
+        pC = { x: pw, y: 0 };
+        pB = { x: 0, y: 0 };
+
+        pE = { x: pF.x + shiftX, y: pF.y + shiftY };
+        pH_box = { x: pG.x + shiftX, y: pG.y + shiftY };
+        pD = { x: pC.x + shiftX, y: pC.y + shiftY };
+        pA = { x: pB.x + shiftX, y: pB.y + shiftY };
+      } else {
+        pG = { x: 0, y: ph };
+        pF = { x: -pw, y: ph };
+        pB = { x: -pw, y: 0 };
+        pC = { x: 0, y: 0 };
+
+        pH_box = { x: pG.x + shiftX, y: pG.y + shiftY };
+        pE = { x: pF.x + shiftX, y: pF.y + shiftY };
+        pA = { x: pB.x + shiftX, y: pB.y + shiftY };
+        pD = { x: pC.x + shiftX, y: pC.y + shiftY };
+      }
+
+      const pts = { A: pA, B: pB, C: pC, D: pD, E: pE, F: pF, G: pG, H: pH_box };
+
+      let allX = Object.values(pts).map(p => p.x);
+      let allY = Object.values(pts).map(p => p.y);
+      let minX = Math.min(...allX);
+      let maxX = Math.max(...allX);
+      let minY = Math.min(...allY);
+      let maxY = Math.max(...allY);
+
+      const offsetX = 230 - (minX + maxX) / 2;
+      const offsetY = 185 - (minY + maxY) / 2;
+
+      for (let k in pts) {
+        pts[k].x += offsetX;
+        pts[k].y += offsetY;
+      }
+
+      const hiddenVertex = !isFlipped ? 'E' : 'H';
+
+      const topFace = createSvgElem('polygon', {
+        points: `${pts.A.x.toFixed(1)},${pts.A.y.toFixed(1)} ${pts.D.x.toFixed(1)},${pts.D.y.toFixed(1)} ${pts.C.x.toFixed(1)},${pts.C.y.toFixed(1)} ${pts.B.x.toFixed(1)},${pts.B.y.toFixed(1)}`,
+        fill: 'rgba(56, 189, 248, 0.08)'
+      });
+      svg.appendChild(topFace);
+
+      const sideFace = createSvgElem('polygon', {
+        points: !isFlipped
+          ? `${pts.C.x.toFixed(1)},${pts.C.y.toFixed(1)} ${pts.D.x.toFixed(1)},${pts.D.y.toFixed(1)} ${pts.H.x.toFixed(1)},${pts.H.y.toFixed(1)} ${pts.G.x.toFixed(1)},${pts.G.y.toFixed(1)}`
+          : `${pts.B.x.toFixed(1)},${pts.B.y.toFixed(1)} ${pts.A.x.toFixed(1)},${pts.A.y.toFixed(1)} ${pts.E.x.toFixed(1)},${pts.E.y.toFixed(1)} ${pts.F.x.toFixed(1)},${pts.F.y.toFixed(1)}`,
+        fill: 'rgba(56, 189, 248, 0.04)'
+      });
+      svg.appendChild(sideFace);
+
+      const allEdges = [
+        ['B', 'C'], ['C', 'D'], ['D', 'A'], ['A', 'B'],
+        ['F', 'G'], ['G', 'H'], ['H', 'E'], ['E', 'F'],
+        ['B', 'F'], ['C', 'G'], ['D', 'H'], ['A', 'E']
+      ];
+
+      allEdges.forEach(([v1, v2]) => {
+        const isHidden = (v1 === hiddenVertex || v2 === hiddenVertex);
+        const line = createSvgElem('line', {
+          x1: pts[v1].x.toFixed(1), y1: pts[v1].y.toFixed(1),
+          x2: pts[v2].x.toFixed(1), y2: pts[v2].y.toFixed(1),
+          class: isHidden ? 'geom-hidden' : 'geom-poly'
+        });
+        svg.appendChild(line);
+      });
+
+      const pR = pts[triDef.vRight];
+      const pH1 = pts[triDef.vHyp1];
+      const pH2 = pts[triDef.vHyp2];
+
+      const triPoly = createSvgElem('polygon', {
+        points: `${pR.x.toFixed(1)},${pR.y.toFixed(1)} ${pH1.x.toFixed(1)},${pH1.y.toFixed(1)} ${pH2.x.toFixed(1)},${pH2.y.toFixed(1)}`,
+        fill: 'rgba(245, 158, 11, 0.15)'
+      });
+      svg.appendChild(triPoly);
+
+      const line1 = createSvgElem('line', {
+        x1: pR.x.toFixed(1), y1: pR.y.toFixed(1),
+        x2: pH1.x.toFixed(1), y2: pH1.y.toFixed(1),
+        class: (triDef.vRight === hiddenVertex || triDef.vHyp1 === hiddenVertex) ? 'geom-plane-dashed' : 'geom-plane'
+      });
+      svg.appendChild(line1);
+
+      const line2 = createSvgElem('line', {
+        x1: pR.x.toFixed(1), y1: pR.y.toFixed(1),
+        x2: pH2.x.toFixed(1), y2: pH2.y.toFixed(1),
+        class: (triDef.vRight === hiddenVertex || triDef.vHyp2 === hiddenVertex) ? 'geom-plane-dashed' : 'geom-plane'
+      });
+      svg.appendChild(line2);
+
+      const lineHyp = createSvgElem('line', {
+        x1: pH1.x.toFixed(1), y1: pH1.y.toFixed(1),
+        x2: pH2.x.toFixed(1), y2: pH2.y.toFixed(1),
+        class: 'geom-plane'
+      });
+      svg.appendChild(lineHyp);
+
+      const vHypX = pH2.x - pH1.x;
+      const vHypY = pH2.y - pH1.y;
+      const lenSq = vHypX * vHypX + vHypY * vHypY;
+      const vArmX = pR.x - pH1.x;
+      const vArmY = pR.y - pH1.y;
+      const t = (vArmX * vHypX + vArmY * vHypY) / lenSq;
+
+      const pFoot = {
+        x: pH1.x + t * vHypX,
+        y: pH1.y + t * vHypY
+      };
+
+      const lineAlt = createSvgElem('line', {
+        x1: pR.x.toFixed(1), y1: pR.y.toFixed(1),
+        x2: pFoot.x.toFixed(1), y2: pFoot.y.toFixed(1),
+        class: 'geom-altitude'
+      });
+      svg.appendChild(lineAlt);
+
+      drawRightAngleMark(svg, pFoot, pR, pH2, 11);
+
+      if (qData.type === 'cube') {
+        const dX = !isFlipped ? (pts.G.x + pts.H.x) / 2 + 16 : (pts.F.x + pts.E.x) / 2 - 16;
+        const dY = !isFlipped ? (pts.G.y + pts.H.y) / 2 + 10 : (pts.F.y + pts.E.y) / 2 + 10;
+        const dimEl = createSvgElem('text', {
+          x: dX.toFixed(1), y: dY.toFixed(1),
+          class: 'geom-dim-text'
+        });
+        dimEl.textContent = `${x}`;
+        svg.appendChild(dimEl);
+      } else {
+        const wX = (pts.F.x + pts.G.x) / 2;
+        const wY = pts.F.y + 16;
+        const dimW = createSvgElem('text', { x: wX.toFixed(1), y: wY.toFixed(1), class: 'geom-dim-text' });
+        dimW.textContent = `${x}`;
+        svg.appendChild(dimW);
+
+        const hPt1 = !isFlipped ? pts.C : pts.B;
+        const hPt2 = !isFlipped ? pts.G : pts.F;
+        const hX = hPt1.x + (!isFlipped ? 16 : -16);
+        const hY = (hPt1.y + hPt2.y) / 2;
+        const dimH = createSvgElem('text', { x: hX.toFixed(1), y: hY.toFixed(1), class: 'geom-dim-text' });
+        dimH.textContent = `${z}`;
+        svg.appendChild(dimH);
+
+        const dPt1 = !isFlipped ? pts.G : pts.F;
+        const dPt2 = !isFlipped ? pts.H : pts.E;
+        const dX = (dPt1.x + dPt2.x) / 2 + (!isFlipped ? 16 : -16);
+        const dY = (dPt1.y + dPt2.y) / 2 + 10;
+        const dimD = createSvgElem('text', { x: dX.toFixed(1), y: dY.toFixed(1), class: 'geom-dim-text' });
+        dimD.textContent = `${y}`;
+        svg.appendChild(dimD);
+      }
+
+      function addLabel(pt, offset, text, isTarget = false) {
+        const lx = pt.x + offset.x;
+        const ly = pt.y + offset.y;
+        const el = createSvgElem('text', {
+          x: lx.toFixed(1),
+          y: ly.toFixed(1),
+          class: isTarget ? 'geom-target-text' : 'geom-vtx-text'
+        });
+        el.textContent = text;
+        svg.appendChild(el);
+      }
+
+      if (!isFlipped) {
+        addLabel(pts.A, { x: 0, y: -14 }, 'A');
+        addLabel(pts.B, { x: -14, y: -6 }, 'B');
+        addLabel(pts.C, { x: 12, y: -10 }, 'C');
+        addLabel(pts.D, { x: 14, y: -8 }, 'D');
+        addLabel(pts.E, { x: -14, y: 10 }, 'E');
+        addLabel(pts.F, { x: -14, y: 12 }, 'F');
+        addLabel(pts.G, { x: 4, y: 16 }, 'G');
+        addLabel(pts.H, { x: 16, y: 10 }, 'H');
+      } else {
+        addLabel(pts.A, { x: -14, y: -8 }, 'A');
+        addLabel(pts.B, { x: -12, y: -10 }, 'B');
+        addLabel(pts.C, { x: 14, y: -6 }, 'C');
+        addLabel(pts.D, { x: 0, y: -14 }, 'D');
+        addLabel(pts.E, { x: -16, y: 10 }, 'E');
+        addLabel(pts.F, { x: -4, y: 16 }, 'F');
+        addLabel(pts.G, { x: 14, y: 12 }, 'G');
+        addLabel(pts.H, { x: 16, y: 10 }, 'H');
+      }
+
+      addLabel(pFoot, { x: 14, y: -2 }, triDef.footName, true);
+    }
+
+    /* ==========================================================================
+       6. APPLICATION CONTROLLER & TEST MODE ENGINE
+       ========================================================================== */
+    let currentMode = 'all'; // 'all', 'triangle', 'rectangle', 'cube', 'prism', 'test'
+    let currentQuestion = null;
+    let isAnswered = false;
+    let questionNumber = 1;
+    let score = 0;
+    let totalAttempts = 0;
+    let streak = 0;
+
+    // Test Mode State
+    let testStreak = 0; // Target: 10
+    const TEST_TARGET = 10;
+
+    let showHypotenuse = false;
+    let rationalizeAnswers = true;
+    let autoNextTimer = null;
+
+    const qnoBadge = document.getElementById('qno-badge');
+    const figTitle = document.getElementById('fig-title');
+    const figRotInfo = document.getElementById('fig-rot-info');
+    const figureSvg = document.getElementById('figure-svg');
+    const rotateBtn = document.getElementById('rotate-btn');
+    const hypToggleBtn = document.getElementById('hyp-toggle-btn');
+    const hypToggleLabel = document.getElementById('hyp-toggle-label');
+    const ratToggleBtn = document.getElementById('rat-toggle-btn');
+    const ratToggleLabel = document.getElementById('rat-toggle-label');
+    const stageHintText = document.getElementById('stage-hint-text');
+    const targetNameEl = document.getElementById('target-name');
+    const optionsGrid = document.getElementById('options-grid');
+    const optButtons = Array.from(document.querySelectorAll('.opt-btn'));
+    const resultSection = document.getElementById('result-section');
+    const feedbackBadge = document.getElementById('feedback-badge');
+    const feedbackIcon = document.getElementById('feedback-icon');
+    const feedbackMsg = document.getElementById('feedback-msg');
+    const stepsWrapper = document.getElementById('steps-wrapper');
+    const btnNextStep = document.getElementById('btn-next-step');
+    const scoreText = document.getElementById('score-text');
+    const streakText = document.getElementById('streak-text');
+    const soundBtn = document.getElementById('sound-btn');
+    const soundIconOn = document.getElementById('sound-icon-on');
+    const soundIconOff = document.getElementById('sound-icon-off');
+    const fullscreenBtn = document.getElementById('fullscreen-btn');
+    const fullscreenIconEnter = document.getElementById('fullscreen-icon-enter');
+    const fullscreenIconExit = document.getElementById('fullscreen-icon-exit');
+    const modeTabs = document.querySelectorAll('.mode-tab');
+
+    // Test mode DOM elements
+    const testProgressPill = document.getElementById('test-progress-pill');
+    const testStageTag = document.getElementById('test-stage-tag');
+    const testMeterFill = document.getElementById('test-meter-fill');
+    const testProgressText = document.getElementById('test-progress-text');
+    const practiceScorePill = document.getElementById('practice-score-pill');
+    const practiceStreakPill = document.getElementById('practice-streak-pill');
+    const victoryModal = document.getElementById('victory-modal');
+    const btnVictoryRestart = document.getElementById('btn-victory-restart');
+
+    function shuffle(array) {
+      const arr = array.slice();
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function updateControlSettingsUI() {
+      // In Test Mode: Hypotenuse forced OFF, Rationalization forced ON
+      if (currentMode === 'test') {
+        showHypotenuse = false;
+        rationalizeAnswers = true;
+
+        hypToggleBtn.classList.remove('active');
+        hypToggleLabel.textContent = '斜辺: OFF (固定)';
+        hypToggleBtn.style.opacity = '0.35';
+        hypToggleBtn.style.pointerEvents = 'none';
+        hypToggleBtn.title = 'テストモードでは斜辺表示はオフ固定です';
+
+        ratToggleBtn.classList.remove('unrationalized');
+        ratToggleLabel.textContent = '有理化: あり (固定)';
+        ratToggleBtn.style.opacity = '0.35';
+        ratToggleBtn.style.pointerEvents = 'none';
+        ratToggleBtn.title = 'テストモードでは有理化あり固定です';
+
+        testProgressPill.classList.add('show');
+        practiceScorePill.style.display = 'none';
+        practiceStreakPill.style.display = 'none';
+        updateTestProgressUI();
+      } else {
+        testProgressPill.classList.remove('show');
+        practiceScorePill.style.display = 'flex';
+        practiceStreakPill.style.display = 'flex';
+        stageHintText.textContent = '問題';
+
+        // Practice Mode settings
+        if (showHypotenuse) {
+          hypToggleBtn.classList.add('active');
+          hypToggleLabel.textContent = '斜辺: ON';
+        } else {
+          hypToggleBtn.classList.remove('active');
+          hypToggleLabel.textContent = '斜辺: OFF';
+        }
+
+        if (currentQuestion && (currentQuestion.type === 'cube' || currentQuestion.type === 'prism')) {
+          hypToggleBtn.style.opacity = '0.35';
+          hypToggleBtn.style.pointerEvents = 'none';
+          hypToggleBtn.title = '直角三角形・長方形専用の機能です';
+        } else {
+          hypToggleBtn.style.opacity = '1';
+          hypToggleBtn.style.pointerEvents = 'auto';
+          hypToggleBtn.title = '斜辺の長さの表示/非表示を切り替え (Hキー)';
+        }
+
+        if (rationalizeAnswers) {
+          ratToggleBtn.classList.remove('unrationalized');
+          ratToggleLabel.textContent = '有理化: あり';
+        } else {
+          ratToggleBtn.classList.add('unrationalized');
+          ratToggleLabel.textContent = '有理化: なし';
+        }
+        ratToggleBtn.style.opacity = '1';
+        ratToggleBtn.style.pointerEvents = 'auto';
+        ratToggleBtn.title = '答えの有理化の有無を切り替え (Uキー)';
+      }
+    }
+
+    function updateTestProgressUI() {
+      if (currentMode !== 'test') return;
+      const isPlane = testStreak < 4;
+      testStageTag.textContent = isPlane ? '第1部: 平面' : '第2部: 立体';
+      testStageTag.style.background = isPlane ? '#0284c7' : '#d97706';
+      stageHintText.textContent = isPlane
+        ? `テスト ${testStreak + 1}/10 問目（平面ステージ）`
+        : `テスト ${testStreak + 1}/10 問目（立体ステージ）`;
+
+      const pct = (testStreak / TEST_TARGET) * 100;
+      testMeterFill.style.width = `${pct}%`;
+      testProgressText.textContent = `${testStreak} / ${TEST_TARGET} 問連続正解`;
+    }
+
+    function toggleHypotenuse() {
+      if (currentMode === 'test') return;
+      if (currentQuestion && (currentQuestion.type === 'cube' || currentQuestion.type === 'prism')) return;
+      showHypotenuse = !showHypotenuse;
+      playSound('click');
+      updateControlSettingsUI();
+      renderCurrentFigure();
+    }
+
+    function toggleRationalize() {
+      if (currentMode === 'test') return;
+      rationalizeAnswers = !rationalizeAnswers;
+      playSound('click');
+      updateControlSettingsUI();
+
+      if (currentQuestion && currentQuestion.choices) {
+        optButtons.forEach((btn, idx) => {
+          const valSpan = btn.querySelector('.opt-val');
+          valSpan.innerHTML = currentQuestion.choices[idx].expr.toHtml(rationalizeAnswers);
+        });
+
+        if (isAnswered) {
+          renderExplanation();
+        }
+      }
+    }
+
+    function generateNextQuestion() {
+      let qType;
+
+      if (currentMode === 'test') {
+        // ★ テストモード出題カリキュラム
+        // 連続正解 4問目まで (index 0, 1, 2, 3) は平面
+        // 5問目以降 (index 4..9) は立体
+        if (testStreak < 4) {
+          qType = choice(['triangle', 'rectangle']);
+        } else {
+          qType = choice(['cube', 'prism']);
+        }
+      } else if (currentMode === 'all') {
+        const types = ['triangle', 'rectangle', 'cube', 'prism', 'prism'];
+        qType = choice(types);
+      } else {
+        qType = currentMode;
+      }
+
+      let qData;
+      if (qType === 'triangle') {
+        qData = generateTriangleQuestion();
+      } else if (qType === 'rectangle') {
+        qData = generateRectangleQuestion();
+      } else if (qType === 'cube') {
+        qData = generateSolidQuestion('cube');
+      } else {
+        qData = generateSolidQuestion('prism');
+      }
+
+      currentQuestion = qData;
+      isAnswered = false;
+
+      // Update Header Text & Problem statement
+      if (currentMode === 'test') {
+        qnoBadge.textContent = `テスト Q. ${testStreak + 1}`;
+      } else {
+        qnoBadge.textContent = `第 ${questionNumber} 問`;
+      }
+      figTitle.textContent = qData.title;
+      figRotInfo.textContent = `向き: ${qData.orientation.name}`;
+      targetNameEl.textContent = qData.targetName;
+
+      updateControlSettingsUI();
+      renderCurrentFigure();
+
+      // Setup 4 Options
+      const allChoices = [
+        { expr: qData.correct, isCorrect: true },
+        { expr: qData.distractors[0], isCorrect: false },
+        { expr: qData.distractors[1], isCorrect: false },
+        { expr: qData.distractors[2], isCorrect: false }
+      ];
+
+      const shuffledChoices = shuffle(allChoices);
+      currentQuestion.choices = shuffledChoices;
+
+      optButtons.forEach((btn, idx) => {
+        btn.disabled = false;
+        btn.className = 'opt-btn';
+        const valSpan = btn.querySelector('.opt-val');
+        valSpan.innerHTML = shuffledChoices[idx].expr.toHtml(rationalizeAnswers);
+      });
+
+      resultSection.classList.remove('show');
+    }
+
+    function renderCurrentFigure() {
+      if (!currentQuestion) return;
+      if (currentQuestion.type === 'triangle') {
+        renderTriangle(figureSvg, currentQuestion, showHypotenuse);
+      } else if (currentQuestion.type === 'rectangle') {
+        renderRectangle(figureSvg, currentQuestion, showHypotenuse);
+      } else {
+        renderSolid(figureSvg, currentQuestion);
+      }
+    }
+
+    function renderExplanation() {
+      if (!currentQuestion || !currentQuestion.getExplanationSteps) return;
+      stepsWrapper.innerHTML = '';
+      const steps = currentQuestion.getExplanationSteps(rationalizeAnswers);
+      steps.forEach((step, sIdx) => {
+        const row = document.createElement('div');
+        row.className = 'step-row';
+
+        const idxSpan = document.createElement('span');
+        idxSpan.className = 'step-index';
+        idxSpan.textContent = `[${sIdx + 1}]`;
+
+        const txtSpan = document.createElement('span');
+        txtSpan.innerHTML = renderTeXInline(step);
+
+        row.appendChild(idxSpan);
+        row.appendChild(txtSpan);
+        stepsWrapper.appendChild(row);
+      });
+    }
+
+    function triggerScreenShake() {
+      document.body.classList.remove('shake');
+      // trigger reflow
+      void document.body.offsetWidth;
+      document.body.classList.add('shake');
+      setTimeout(() => {
+        document.body.classList.remove('shake');
+      }, 500);
+    }
+
+    function handleAnswer(selectedIndex) {
+      if (isAnswered) return;
+      isAnswered = true;
+      totalAttempts++;
+
+      const chosen = currentQuestion.choices[selectedIndex];
+      const isCorrect = chosen.isCorrect;
+
+      if (isCorrect) {
+        score++;
+        streak++;
+        if (currentMode === 'test') {
+          testStreak++;
+        }
+        playSound('correct');
+      } else {
+        streak = 0;
+        if (currentMode === 'test') {
+          testStreak = 0; // Reset in test mode
+          // ★ テストモードの時だけ派手な間違い音 ＆ 画面シェイク！
+          playSound('wrong_dramatic');
+          triggerScreenShake();
+        } else {
+          // 通常練習モード：シンプルな間違い音
+          playSound('wrong');
+        }
+      }
+
+      scoreText.textContent = `${score} / ${totalAttempts}`;
+      streakText.textContent = `${streak}`;
+      updateTestProgressUI();
+
+      optButtons.forEach((btn, idx) => {
+        btn.disabled = true;
+        if (currentQuestion.choices[idx].isCorrect) {
+          btn.classList.add('correct');
+        } else if (idx === selectedIndex) {
+          btn.classList.add('wrong');
+        }
+      });
+
+      if (isCorrect) {
+        feedbackBadge.className = 'feedback-badge correct';
+        feedbackIcon.textContent = '✔';
+        stepsWrapper.innerHTML = '';
+
+        if (currentMode === 'test' && testStreak >= TEST_TARGET) {
+          // ★ 10問連続正解！合格達成！
+          feedbackMsg.textContent = '🎉 10問連続正解！テスト合格です！';
+          resultSection.classList.add('show');
+          triggerVictoryCelebration();
+          return;
+        }
+
+        feedbackMsg.textContent = (currentMode === 'test')
+          ? `正解！ (${testStreak}/${TEST_TARGET}問達成) 次の問題へ...`
+          : '正解！次の問題へ...';
+        resultSection.classList.add('show');
+
+        // Automatically advance to next question
+        autoNextTimer = setTimeout(() => {
+          advanceToNext();
+        }, 750);
+      } else {
+        feedbackBadge.className = 'feedback-badge wrong';
+        feedbackIcon.textContent = '✖';
+        feedbackMsg.textContent = (currentMode === 'test')
+          ? '不正解！連続正解リセット（0問から再挑戦）'
+          : '不正解！解法を確認しましょう。';
+        renderExplanation();
+        resultSection.classList.add('show');
+      }
+    }
+
+    function advanceToNext() {
+      if (autoNextTimer) {
+        clearTimeout(autoNextTimer);
+        autoNextTimer = null;
+      }
+      questionNumber++;
+      generateNextQuestion();
+    }
+
+    function rotateCurrentFigure() {
+      if (!currentQuestion) return;
+      playSound('click');
+
+      if (currentQuestion.type === 'triangle' || currentQuestion.type === 'rectangle') {
+        currentQuestion.orientation.rot = (currentQuestion.orientation.rot + 30) % 360;
+        const flipStr = currentQuestion.orientation.flip ? ' (反転)' : '';
+        currentQuestion.orientation.name = `${currentQuestion.orientation.rot}° 回転${flipStr}`;
+      } else {
+        const modes = ['standard', 'flipped', 'shallow', 'deep'];
+        const curIdx = modes.indexOf(currentQuestion.orientation.rotMode);
+        const nextMode = modes[(curIdx + 1) % modes.length];
+        const modeNames = {
+          standard: '標準見取り図（右奥向き）',
+          flipped: '左右反転（左奥向き）',
+          shallow: '浅いアングル（正面寄り）',
+          deep: '深いアングル（見下ろし）'
+        };
+        currentQuestion.orientation.rotMode = nextMode;
+        currentQuestion.orientation.name = modeNames[nextMode];
+      }
+
+      figRotInfo.textContent = `向き: ${currentQuestion.orientation.name}`;
+      renderCurrentFigure();
+    }
+
+    /* ==========================================================================
+       7. CONFETTI & VICTORY CELEBRATION
+       ========================================================================== */
+    let confettiAnimationId = null;
+    const confettiCanvas = document.getElementById('confetti-canvas');
+    const confettiCtx = confettiCanvas.getContext('2d');
+    let confettiParticles = [];
+
+    function resizeConfetti() {
+      confettiCanvas.width = window.innerWidth;
+      confettiCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeConfetti);
+
+    function createConfettiParticles() {
+      confettiParticles = [];
+      const colors = ['#f59e0b', '#38bdf8', '#10b981', '#fbbf24', '#ec4899', '#a855f7'];
+      for (let i = 0; i < 90; i++) {
+        confettiParticles.push({
+          x: Math.random() * confettiCanvas.width,
+          y: Math.random() * confettiCanvas.height - confettiCanvas.height,
+          w: Math.random() * 9 + 6,
+          h: Math.random() * 5 + 4,
+          color: choice(colors),
+          vy: Math.random() * 3 + 2.5,
+          vx: Math.random() * 2 - 1,
+          rot: Math.random() * 360,
+          vrot: Math.random() * 6 - 3
+        });
+      }
+    }
+
+    function renderConfetti() {
+      confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+      confettiParticles.forEach(p => {
+        p.y += p.vy;
+        p.x += p.vx;
+        p.rot += p.vrot;
+
+        confettiCtx.save();
+        confettiCtx.translate(p.x, p.y);
+        confettiCtx.rotate((p.rot * Math.PI) / 180);
+        confettiCtx.fillStyle = p.color;
+        confettiCtx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        confettiCtx.restore();
+
+        if (p.y > confettiCanvas.height) {
+          p.y = -10;
+          p.x = Math.random() * confettiCanvas.width;
+        }
+      });
+      confettiAnimationId = requestAnimationFrame(renderConfetti);
+    }
+
+    function triggerVictoryCelebration() {
+      playSound('victory');
+      resizeConfetti();
+      createConfettiParticles();
+      if (!confettiAnimationId) {
+        renderConfetti();
+      }
+      victoryModal.classList.add('show');
+    }
+
+    function hideVictoryCelebration() {
+      victoryModal.classList.remove('show');
+      if (confettiAnimationId) {
+        cancelAnimationFrame(confettiAnimationId);
+        confettiAnimationId = null;
+      }
+      confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+    }
+
+    /* ==========================================================================
+       8. USER INTERACTIONS
+       ========================================================================== */
+    optButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.dataset.index, 10);
+        handleAnswer(idx);
+      });
+    });
+
+    btnNextStep.addEventListener('click', () => {
+      playSound('click');
+      advanceToNext();
+    });
+
+    rotateBtn.addEventListener('click', () => {
+      rotateCurrentFigure();
+    });
+
+    hypToggleBtn.addEventListener('click', () => {
+      toggleHypotenuse();
+    });
+
+    ratToggleBtn.addEventListener('click', () => {
+      toggleRationalize();
+    });
+
+    modeTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        modeTabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        currentMode = tab.dataset.mode;
+        if (currentMode === 'test') {
+          testStreak = 0;
+        }
+        playSound('click');
+        generateNextQuestion();
+      });
+    });
+
+    btnVictoryRestart.addEventListener('click', () => {
+      hideVictoryCelebration();
+      testStreak = 0;
+      playSound('click');
+      generateNextQuestion();
+    });
+
+    soundBtn.addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      soundIconOn.style.display = soundEnabled ? 'block' : 'none';
+      soundIconOff.style.display = soundEnabled ? 'none' : 'block';
+      if (soundEnabled) playSound('click');
+    });
+
+    /* Fullscreen Functions & Handlers */
+    function isFullscreen() {
+      return !!(
+        document.fullscreenElement ||
+        document.webkitFullscreenElement ||
+        document.mozFullScreenElement ||
+        document.msFullscreenElement
+      );
+    }
+
+    function updateFullscreenUI() {
+      const active = isFullscreen();
+      fullscreenIconEnter.style.display = active ? 'none' : 'block';
+      fullscreenIconExit.style.display = active ? 'block' : 'none';
+      fullscreenBtn.title = active ? '全画面表示 解除 [F]' : '全画面表示 切り替え [F]';
+    }
+
+    function toggleFullscreen() {
+      if (!isFullscreen()) {
+        const docElm = document.documentElement;
+        if (docElm.requestFullscreen) {
+          docElm.requestFullscreen().catch(err => console.warn('Fullscreen error:', err));
+        } else if (docElm.webkitRequestFullscreen) {
+          docElm.webkitRequestFullscreen();
+        } else if (docElm.mozRequestFullScreen) {
+          docElm.mozRequestFullScreen();
+        } else if (docElm.msRequestFullscreen) {
+          docElm.msRequestFullscreen();
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen().catch(err => console.warn('Exit fullscreen error:', err));
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+          document.mozCancelFullScreen();
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
+        }
+      }
+    }
+
+    fullscreenBtn.addEventListener('click', () => {
+      playSound('click');
+      toggleFullscreen();
+    });
+
+    document.addEventListener('fullscreenchange', updateFullscreenUI);
+    document.addEventListener('webkitfullscreenchange', updateFullscreenUI);
+    document.addEventListener('mozfullscreenchange', updateFullscreenUI);
+    document.addEventListener('MSFullscreenChange', updateFullscreenUI);
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key >= '1' && e.key <= '4') {
+        const idx = parseInt(e.key, 10) - 1;
+        if (!isAnswered && idx >= 0 && idx < 4) {
+          handleAnswer(idx);
+        }
+      } else if (e.key === 'Enter' || e.key === ' ') {
+        if (victoryModal.classList.contains('show')) {
+          e.preventDefault();
+          btnVictoryRestart.click();
+        } else if (isAnswered) {
+          e.preventDefault();
+          advanceToNext();
+        }
+      } else if (e.key.toLowerCase() === 'r') {
+        rotateCurrentFigure();
+      } else if (e.key.toLowerCase() === 'h') {
+        toggleHypotenuse();
+      } else if (e.key.toLowerCase() === 'u') {
+        toggleRationalize();
+      } else if (e.key.toLowerCase() === 'f') {
+        toggleFullscreen();
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      resizeConfetti();
+      generateNextQuestion();
+    });
+  </script>
+</body>
+</html>

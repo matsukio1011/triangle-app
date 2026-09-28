@@ -3,596 +3,826 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>三角形の心 4択マスター | 重心・内心・外心・垂心・傍心</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Geometry Lab 〜 数学・幾何学アプリ ポータル 〜</title>
+  <style>
+    :root {
+      --bg-base: #070c18;
+      --bg-card: #0f172a;
+      --bg-card-hover: #16223d;
+      --border-color: #1e293b;
+      --primary: #38bdf8;
+      --primary-glow: rgba(56, 189, 248, 0.35);
+      --secondary: #818cf8;
+      --secondary-glow: rgba(129, 140, 248, 0.35);
+      --accent: #f59e0b;
+      --accent-glow: rgba(245, 158, 11, 0.35);
+      --success: #10b981;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", "BIZ UDPGothic", Meiryo, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100vh;
+      max-height: 100vh;
+      overflow: hidden; /* No scroll on PC screen */
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      font-family: var(--font-family);
+      line-height: 1.45;
+    }
+
+    /* Ambient background grid pattern */
+    body::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: 
+        radial-gradient(circle at 15% 20%, rgba(56, 189, 248, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 85% 80%, rgba(129, 140, 248, 0.08) 0%, transparent 40%),
+        linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* App Wrapper */
+    .portal-container {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      max-height: 100vh;
+      padding: 12px 24px 14px;
+      gap: 12px;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 8px 18px;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon-box {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, #0284c7, #6366f1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+    }
+
+    .brand-icon-box svg {
+      width: 22px;
+      height: 22px;
+      stroke: #ffffff;
+    }
+
+    .brand-text h1 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      background: linear-gradient(135deg, #f8fafc 40%, #38bdf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 1px 6px;
+      border-radius: 4px;
+      -webkit-text-fill-color: #38bdf8;
+    }
+
+    .brand-text p {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ctrl-btn {
+      background: rgba(11, 17, 32, 0.6);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      border-radius: 7px;
+      padding: 5px 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .ctrl-btn:hover {
+      color: var(--text-main);
+      border-color: var(--primary);
+      background: rgba(56, 189, 248, 0.1);
+      transform: translateY(-1px);
+    }
+
+    /* Main Showcase Grid: 2 Cards Side-by-Side */
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      min-height: 0;
+    }
+
+    /* Portal Card */
+    .app-card {
+      position: relative;
+      background: linear-gradient(145deg, rgba(15, 23, 42, 0.85) 0%, rgba(11, 17, 32, 0.95) 100%);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 18px 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+      overflow: hidden;
+      transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+    }
+
+    .app-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--card-accent, #38bdf8), transparent);
+      opacity: 0.6;
+      transition: opacity 0.25s;
+    }
+
+    .app-card:hover {
+      transform: translateY(-4px) scale(1.008);
+      border-color: var(--card-accent, #38bdf8);
+      box-shadow: 0 20px 35px -8px rgba(0, 0, 0, 0.6), 0 0 30px var(--card-glow, rgba(56, 189, 248, 0.25));
+    }
+
+    .app-card:hover::before {
+      opacity: 1;
+      height: 4px;
+    }
+
+    /* Card Themes */
+    .card-centers {
+      --card-accent: #818cf8;
+      --card-glow: var(--secondary-glow);
+    }
+
+    .card-altitude {
+      --card-accent: #38bdf8;
+      --card-glow: var(--primary-glow);
+    }
+
+    /* Card Header */
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .card-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      letter-spacing: 0.02em;
+    }
+
+    .badge-scope {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #e2e8f0;
+    }
+
+    .badge-feature {
+      background: rgba(129, 140, 248, 0.15);
+      border: 1px solid rgba(129, 140, 248, 0.35);
+      color: #a5b4fc;
+    }
+
+    .card-altitude .badge-feature {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      color: #7dd3fc;
+    }
+
+    .shortcut-badge {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--text-muted);
+      font-family: monospace;
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 3px 7px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .shortcut-badge kbd {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 1px 5px;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+
+    /* Card Visual / Diagram Preview */
+    .card-preview {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 10px 0 8px;
+    }
+
+    .preview-art {
+      width: 72px;
+      height: 72px;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: transform 0.25s ease;
+    }
+
+    .app-card:hover .preview-art {
+      transform: scale(1.08) rotate(-2deg);
+      border-color: var(--card-accent);
+    }
+
+    .card-title-group h2 {
+      font-size: 1.22rem;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1.25;
+      margin-bottom: 4px;
+      transition: color 0.2s;
+    }
+
+    .app-card:hover .card-title-group h2 {
+      color: var(--card-accent);
+    }
+
+    .card-title-group .card-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Feature List */
+    .feature-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      margin: 6px 0 10px;
+    }
+
+    .feature-list li {
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      line-height: 1.35;
+    }
+
+    .feature-icon {
+      font-size: 0.85rem;
+      flex-shrink: 0;
+      line-height: 1.35;
+    }
+
+    .feature-list strong {
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    /* Card Footer / Action Button */
+    .card-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .target-scope-text {
+      font-size: 0.74rem;
+      color: var(--text-dim);
+    }
+
+    .launch-btn {
+      background: linear-gradient(135deg, var(--btn-grad-start, #4f46e5), var(--btn-grad-end, #818cf8));
+      color: #ffffff;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    .card-centers .launch-btn {
+      --btn-grad-start: #4338ca;
+      --btn-grad-end: #6366f1;
+    }
+
+    .card-altitude .launch-btn {
+      --btn-grad-start: #0284c7;
+      --btn-grad-end: #38bdf8;
+      color: #081020;
+    }
+
+    .app-card:hover .launch-btn {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px var(--card-glow);
+    }
+
+    .launch-btn svg {
+      transition: transform 0.2s ease;
+    }
+
+    .app-card:hover .launch-btn svg {
+      transform: translateX(3px);
+    }
+
+    /* Bottom Info Bar */
+    footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 6px 16px;
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .shortcut-hints {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .shortcut-hints span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .shortcut-hints kbd {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+
+    .github-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: color 0.2s;
+    }
+
+    .github-link:hover {
+      color: var(--primary);
+    }
+  </style>
 </head>
 <body>
-  <!-- ヘッダー -->
-  <header class="app-header">
-    <div class="header-container">
-      <div class="header-content">
-        <h1>📐 三角形の心 4択マスター</h1>
-        <p class="app-subtitle">中学幾何（重心・内心・外心）から高校発展（垂心・傍心）まで完全攻略</p>
+
+  <div class="portal-container">
+    <!-- Top Bar -->
+    <header>
+      <div class="brand-group">
+        <div class="brand-icon-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 2 22 22 22"></polygon>
+            <circle cx="12" cy="14" r="3" stroke-dasharray="2 2"></circle>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>
+            Geometry Lab
+            <span class="brand-badge">幾何学ポータル</span>
+          </h1>
+          <p>中学・高校数学の図形と定理を、視覚的・インタラクティブに探究する学習スイート</p>
+        </div>
       </div>
-      <div class="header-actions">
-        <button id="btn-sound-toggle" class="sound-toggle-btn" type="button" title="効果音 ON/OFF" aria-label="効果音切替">
-          <span id="sound-icon" class="sound-icon">🔊</span>
-          <span id="sound-text" class="sound-text">音 ON</span>
+
+      <div class="header-controls">
+        <button class="ctrl-btn" id="sound-btn" title="効果音 切り替え">
+          <svg id="sound-icon-on" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          </svg>
+          <svg id="sound-icon-off" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
+          </svg>
+          <span id="sound-text">効果音 ON</span>
         </button>
-        <button id="btn-theme-toggle" class="theme-toggle-btn" type="button" title="ダークモード/ライトモード切替" aria-label="テーマ切替">
-          <span id="theme-icon" class="theme-icon">🌙</span>
-          <span id="theme-text" class="theme-text">ダーク</span>
-        </button>
-      </div>
-    </div>
-  </header>
 
-  <!-- ナビゲーションタブ -->
-  <nav class="nav-tabs">
-    <button id="tab-quiz" class="tab-btn active">🎯 4択クイズ</button>
-    <button id="tab-history" class="tab-btn">📊 挑戦履歴</button>
-    <button id="tab-simulator" class="tab-btn">⚡ 5心シミュレーター</button>
-    <button id="tab-theorems" class="tab-btn">📐 チェバ・メネラウス</button>
-    <button id="tab-encyclopedia" class="tab-btn">📚 まとめの図鑑</button>
-  </nav>
-
-  <!-- メインコンテンツ -->
-  <main class="main-container">
-    
-    <!-- 1. クイズ開始画面 -->
-    <section id="view-start" class="card start-card">
-      <div class="start-icon">🔺</div>
-      <h2 class="start-title">三角形の性質をクイズでマスター！</h2>
-      <p class="start-desc">
-        中学校で学習する「重心・内心・外心」の定義、作図方法、中線の比、内接円・外接円の性質などを4択で確認できます。
-      </p>
-
-      <!-- 高校範囲（垂心・傍心）の追加選択ボタン -->
-      <div class="scope-setting-box">
-        <div class="setting-title">
-          <span>⚙️ 出題範囲のカスタマイズ（選択ボタン）</span>
-        </div>
-        <p class="setting-desc">
-          基本は「重心・内心・外心」（中学範囲）が出題されます。高校範囲の「垂心」「傍心」もボタンを押して出題対象に追加できます。
-        </p>
-
-        <div class="toggle-group">
-          <!-- 垂心ボタン -->
-          <button id="toggle-orthocenter" class="toggle-btn" type="button">
-            <div class="toggle-label">
-              <span>垂心（すいしん）</span>
-              <span id="badge-orthocenter" class="status-badge badge-off">OFF（高校範囲）</span>
-            </div>
-            <span class="toggle-sub">頂点から対辺に下ろした垂線の交点</span>
-          </button>
-
-          <!-- 傍心ボタン -->
-          <button id="toggle-excenter" class="toggle-btn" type="button">
-            <div class="toggle-label">
-              <span>傍心（ぼうしん）</span>
-              <span id="badge-excenter" class="status-badge badge-off">OFF（高校範囲）</span>
-            </div>
-            <span class="toggle-sub">1内角と2外角の二等分線の交点（3つ存在）</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- 出題数の選択 -->
-      <div class="count-setting-box">
-        <div class="setting-title">
-          <span>🎲 出題数（3回に1回、定義問題が出題されます）</span>
-        </div>
-        <p class="setting-desc">
-          問題は毎回ランダムに出題され、3回に1回のペースで「重心・内心・外心の定義」が復習として登場します！
-        </p>
-        <div class="count-btn-group">
-          <button type="button" class="btn-quiz-count active" data-count="10">10問（おすすめ）</button>
-          <button type="button" class="btn-quiz-count" data-count="15">15問</button>
-          <button type="button" class="btn-quiz-count" data-count="all">全問チャレンジ</button>
-        </div>
-      </div>
-
-      <div class="start-actions">
-        <button id="btn-start" class="btn-primary">クイズをスタートする 🚀</button>
-        <button id="btn-open-history" class="btn-secondary" type="button">
-          📜 挑戦履歴を見る <span id="history-count-badge" class="badge badge-count">0</span>
+        <button class="ctrl-btn" id="fullscreen-btn" title="全画面表示 切り替え [F]">
+          <svg id="fullscreen-icon-enter" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+          </svg>
+          <svg id="fullscreen-icon-exit" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+            <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path>
+          </svg>
+          <span id="fullscreen-text">全画面 [F]</span>
         </button>
       </div>
-    </section>
+    </header>
 
-    <!-- 2. クイズ解答画面 -->
-    <section id="view-quiz" class="card quiz-layout hidden">
-      <!-- 左側：問題と4択 -->
-      <div class="quiz-left-col">
-        <div class="quiz-header">
-          <div class="quiz-step-box">
-            <span class="quiz-step">第 <span id="q-current-index">1</span> 問 / 全 <span id="q-total">10</span> 問</span>
-            <span id="scope-badge" class="badge badge-junior">中学範囲</span>
-          </div>
-          <div class="quiz-header-right">
-            <div id="quiz-streak-badge" class="streak-badge">
-              <span class="streak-fire">🔥</span> 連続正解: <strong id="streak-count">0</strong> 問
-            </div>
-            <button id="btn-quiz-history" class="btn-header-history" type="button" title="過去の成績履歴を見る">
-              📜 履歴
-            </button>
-          </div>
-        </div>
-
-        <div class="progress-container">
-          <div id="quiz-progress-bar" class="progress-bar"></div>
-        </div>
-
-        <!-- リアルタイム回答状況インジケーター -->
-        <div id="quiz-answer-tracker" class="quiz-answer-tracker"></div>
-
-        <div class="quiz-content">
-          <div id="q-text" class="quiz-question-text">問題文がここに入ります。</div>
-
-          <!-- 4択ボタンコンテナ -->
-          <div id="options-container" class="options-grid"></div>
-        </div>
-      </div>
-
-      <!-- 右側：正解・解説・次へボタン -->
-      <div class="quiz-right-col">
-        <!-- 未回答時の案内 -->
-        <div id="feedback-placeholder" class="feedback-placeholder">
-          <div class="placeholder-icon">👉</div>
-          <h3>解答待ち</h3>
-          <p>左側の選択肢から答えを1つ選んでください。</p>
-        </div>
-
-        <!-- 回答後の判定カード -->
-        <div id="feedback-card" class="feedback-card hidden">
-          <!-- 上部固定バー：判定ステータス ＆ 次の問題へボタン（スクロール一切不要で即座に押せる！） -->
-          <div class="feedback-header-bar">
-            <div class="feedback-status">
-              <span id="feedback-icon" class="feedback-icon">⭕</span>
-              <span id="feedback-title" class="feedback-title">正解！</span>
-            </div>
-            <button id="btn-next" class="btn-primary btn-next-top" type="button">次の問題へ ➔</button>
-          </div>
-
-          <div id="auto-next-indicator" class="auto-next-indicator hidden">⚡ 自動で次の問題へ進みます...</div>
-
-          <!-- スクロール不要でコンパクトに収まる解説領域 -->
-          <div class="feedback-content-area">
-            <!-- 正解の明示表示エリア（選択後に表示） -->
-            <div id="feedback-correct-answer" class="feedback-correct-answer">
-              <span class="correct-badge">正解</span>
-              <strong id="feedback-correct-text" class="correct-text">重心（G）</strong>
-            </div>
-
-            <p id="feedback-explanation" class="feedback-explanation">解説テキスト</p>
-            <div id="feedback-tip" class="feedback-tip">💡 覚え方のヒント</div>
-            <div id="quiz-svg-container" class="quiz-svg-container"></div>
-          </div>
-
-          <!-- 下部にも念のため配置（どちらでも押せます） -->
-          <div class="feedback-bottom-action">
-            <button id="btn-next-bottom" class="btn-secondary btn-next-sub" type="button">次の問題へ ➔</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 3. 結果発表画面 -->
-    <section id="view-result" class="card result-card hidden">
-      <h2>🎉 クイズ終了！お疲れ様でした</h2>
-      
-      <div class="score-circle">
-        <div id="result-score" class="score-number">8</div>
-        <div class="score-total">/ <span id="result-total">10</span> 問正解</div>
-      </div>
-
-      <div class="result-stats-row">
-        <div id="result-percentage" class="result-percentage">正答率: 80%</div>
-        <div id="result-streak-box" class="result-streak-box">🔥 最長連続正解: <strong id="result-max-streak">0</strong> 問</div>
-      </div>
-      <p id="result-message" class="result-message"></p>
-      <div class="result-actions">
-        <button id="btn-restart" class="btn-primary">もう一度挑戦する 🔄</button>
-        <button id="btn-result-history" class="btn-secondary" type="button">📜 過去の挑戦履歴を見る 📊</button>
-      </div>
-
-      <!-- 復習リスト -->
-      <div class="review-section">
-        <h3>📋 今回の問題と振り返り</h3>
-        <div id="result-review-list"></div>
-      </div>
-    </section>
-
-    <!-- 挑戦履歴画面（タブから常時直接アクセス可能） -->
-    <section id="view-history" class="card history-view-card hidden">
-      <div class="history-view-header">
+    <!-- Main App Selection Grid -->
+    <main>
+      <!-- App 1: 三角形の心 & チェバ・メネラウス -->
+      <a href="./centers/index.html" class="app-card card-centers" id="card-centers">
         <div>
-          <h2 class="history-view-title">📊 4択クイズ 挑戦履歴</h2>
-          <p class="history-view-desc">これまでのクイズ成績と、毎回の全問題・回答の復習ができます。</p>
-        </div>
-        <div style="display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap;">
-          <button id="btn-view-toggle-all" class="btn-secondary" style="font-size: 0.8rem; padding: 0.35rem 0.75rem;" type="button">すべて折りたたむ / 展開 ↕️</button>
-          <button id="btn-view-clear-history" class="btn-text-danger" type="button">履歴をすべてリセット 🗑️</button>
-        </div>
-      </div>
-
-      <!-- 統計サマリーカード -->
-      <div class="history-stats-grid">
-        <div class="stat-card">
-          <div id="stat-view-total-plays" class="stat-num">0 回</div>
-          <div class="stat-lbl">挑戦回数</div>
-        </div>
-        <div class="stat-card">
-          <div id="stat-view-avg-accuracy" class="stat-num">0%</div>
-          <div class="stat-lbl">平均正答率</div>
-        </div>
-        <div class="stat-card">
-          <div id="stat-view-best-streak" class="stat-num">0 問</div>
-          <div class="stat-lbl">最高連続正解</div>
-        </div>
-      </div>
-
-      <!-- 履歴一覧 -->
-      <div class="history-view-body">
-        <div id="history-view-list" class="history-list-container"></div>
-      </div>
-    </section>
-
-    <!-- 4. まとめ図鑑画面 -->
-    <section id="view-encyclopedia" class="hidden">
-      <div style="margin-bottom: 1rem;">
-        <h2 style="font-size: 1.3rem; margin-bottom: 0.3rem;">📖 三角形の五心 まとめ図鑑</h2>
-        <p style="color: var(--text-muted); font-size: 0.9rem;">
-          定義・作図方法・特徴的な性質をいつでも確認できるチートシートです。
-        </p>
-      </div>
-      <div id="encyclopedia-container" class="encyclo-container"></div>
-    </section>
-
-    <!-- 5. 5心シミュレーター画面 -->
-    <section id="view-simulator" class="card sim-layout hidden">
-      <!-- 左パネル: コントロール & 情報 -->
-      <div class="sim-panel">
-        <div class="sim-panel-header">
-          <h3>🎮 五心コントロール</h3>
-          <p class="sim-guide">頂点A, B, Cを直接ドラッグして動かせます！</p>
-        </div>
-
-        <!-- プリセットボタン -->
-        <div class="sim-control-group">
-          <label class="sim-label">三角形プリセット</label>
-          <div class="preset-btn-grid">
-            <button class="btn-preset" data-preset="acute" title="鋭角三角形">鋭角</button>
-            <button class="btn-preset" data-preset="right" title="直角三角形">直角</button>
-            <button class="btn-preset" data-preset="obtuse" title="鈍角三角形">鈍角</button>
-            <button class="btn-preset" data-preset="equilateral" title="正三角形">正△</button>
-          </div>
-        </div>
-
-        <!-- 表示切り替えトグル -->
-        <div class="sim-control-group">
-          <label class="sim-label">表示する「心」と図形</label>
-          <div class="sim-check-list">
-            <label class="sim-check-item sim-check-centroid">
-              <input type="checkbox" id="sim-show-centroid" checked>
-              <span class="sim-check-mark"></span>
-              <span class="sim-check-text"><strong>重心 (G)</strong> <small>中線</small></span>
-            </label>
-
-            <label class="sim-check-item sim-check-incenter">
-              <input type="checkbox" id="sim-show-incenter" checked>
-              <span class="sim-check-mark"></span>
-              <span class="sim-check-text"><strong>内心 (I)</strong> <small>内接円・二等分線</small></span>
-            </label>
-
-            <label class="sim-check-item sim-check-sub sim-check-formula" id="sim-formula-row" title="内接円の半径公式 S=1/2r(a+b+c) の導出図解を表示">
-              <input type="checkbox" id="sim-show-incenter-demo">
-              <span class="sim-check-mark"></span>
-              <span class="sim-check-text"><strong>↳ 📐 半径の求め方</strong> <small>3分割公式</small></span>
-            </label>
-
-            <label class="sim-check-item sim-check-circumcenter">
-              <input type="checkbox" id="sim-show-circumcenter" checked>
-              <span class="sim-check-mark"></span>
-              <span class="sim-check-text"><strong>外心 (O)</strong> <small>外接円・垂直二等分線</small></span>
-            </label>
-
-            <label class="sim-check-item sim-check-orthocenter">
-              <input type="checkbox" id="sim-show-orthocenter">
-              <span class="sim-check-mark"></span>
-              <span class="sim-check-text"><strong>垂心 (H)</strong> <small>垂線（高校）</small></span>
-            </label>
-
-            <label class="sim-check-item sim-check-excenter">
-              <input type="checkbox" id="sim-show-excenter">
-              <span class="sim-check-mark"></span>
-              <span class="sim-check-text"><strong>傍心 (I_A)</strong> <small>傍接円（高校）</small></span>
-            </label>
-
-            <label class="sim-check-item sim-check-euler">
-              <input type="checkbox" id="sim-show-euler">
-              <span class="sim-check-mark"></span>
-              <span class="sim-check-text"><strong>オイラー線</strong> <small>O-G-Hの一直線</small></span>
-            </label>
-          </div>
-        </div>
-
-        <!-- リアルタイム情報 -->
-        <div class="sim-info-card">
-          <div class="sim-info-row">
-            <span class="sim-info-label">形状:</span>
-            <span id="sim-triangle-type" class="sim-type-badge">鋭角三角形</span>
-          </div>
-          <div class="sim-angles-row">
-            <span>∠A: <b id="sim-angle-a">60°</b></span>
-            <span>∠B: <b id="sim-angle-b">60°</b></span>
-            <span>∠C: <b id="sim-angle-c">60°</b></span>
-          </div>
-          <div id="sim-commentary" class="sim-commentary">
-            頂点を動かして、外心や垂心が内部から外部へ飛び出す様子や、直角三角形の斜辺中点に外心が乗る様子を観察してみましょう！
-          </div>
-        </div>
-      </div>
-
-      <!-- 右側：メインビュー（キャンバス ＋ 下部式バー） -->
-      <div class="sim-right-area">
-        <div class="sim-canvas-wrapper">
-          <svg id="sim-svg" viewBox="0 0 850 500" class="sim-svg">
-            <defs>
-              <pattern id="sim-grid" width="20" height="20" patternUnits="userSpaceOnUse">
-                <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#f1f5f9" stroke-width="1" />
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#sim-grid)" rx="8" />
-
-            <g id="sim-root-layer">
-              <!-- 動的要素レイヤー -->
-              <g id="sim-layer-guides"></g>
-              <g id="sim-layer-circles"></g>
-              <g id="sim-layer-euler"></g>
-
-              <!-- 内心単独表示時の3分割三角形ハイライトレイヤー -->
-              <g id="sim-layer-incenter-demo"></g>
-
-              <!-- 三角形本体 -->
-              <polygon id="sim-poly-triangle" class="sim-triangle" />
-
-              <!-- 心の点レイヤー -->
-              <g id="sim-layer-centers"></g>
-
-              <!-- 頂点ドラッグハンドル -->
-              <g id="sim-layer-handles"></g>
-            </g>
-          </svg>
-        </div>
-
-        <!-- 図の下に大きく表示する内接円の半径公式バー -->
-        <div id="sim-formula-bar" class="sim-formula-bar hidden">
-          <div class="sf-section sf-derivation">
-            <div class="sf-tag">💡 内接円の半径公式の導出（3分割）</div>
-            <div class="sf-eq-group">
-              <span class="sf-area-s">S</span>
-              <span class="sf-eq">=</span>
-              <span class="sf-tri sf-tri-a" title="△IBC (底辺 a, 高さ r)">½ ar</span>
-              <span class="sf-plus">+</span>
-              <span class="sf-tri sf-tri-b" title="△ICA (底辺 b, 高さ r)">½ br</span>
-              <span class="sf-plus">+</span>
-              <span class="sf-tri sf-tri-c" title="△IAB (底辺 c, 高さ r)">½ cr</span>
-              <span class="sf-eq">=</span>
-              <span class="sf-factored">½(a + b + c)r</span>
+          <div class="card-top">
+            <div class="card-badges">
+              <span class="badge badge-scope">中学・高校数学</span>
+              <span class="badge badge-feature">⚡ 5心シミュレーター</span>
+              <span class="badge badge-feature">🎯 4択全48問</span>
+            </div>
+            <div class="shortcut-badge">
+              キー <kbd>1</kbd>
             </div>
           </div>
 
-          <div class="sf-arrow">➔</div>
-
-          <div class="sf-section sf-target">
-            <div class="sf-target-title">半径 r の公式</div>
-            <div class="sf-frac-group">
-              <span class="sf-r-var">r</span>
-              <span class="sf-eq">=</span>
-              <div class="sf-fraction">
-                <span class="sf-num">2S</span>
-                <span class="sf-den">a + b + c</span>
-              </div>
+          <div class="card-preview">
+            <div class="preview-art">
+              <svg width="48" height="48" viewBox="0 0 60 60" fill="none">
+                <!-- Triangle ABC -->
+                <polygon points="30,8 8,50 52,50" stroke="#818cf8" stroke-width="2.5" fill="rgba(129,140,248,0.12)"></polygon>
+                <!-- Medians & Centroid G -->
+                <line x1="30" y1="8" x2="30" y2="50" stroke="#a5b4fc" stroke-width="1.5" stroke-dasharray="3 3"></line>
+                <line x1="8" y1="50" x2="41" y2="29" stroke="#a5b4fc" stroke-width="1.5" stroke-dasharray="3 3"></line>
+                <circle cx="30" cy="36" r="3.5" fill="#f59e0b"></circle>
+                <!-- Incircle preview -->
+                <circle cx="30" cy="37" r="11" stroke="#34d399" stroke-width="1.2" stroke-dasharray="2 2" fill="none"></circle>
+              </svg>
+            </div>
+            <div class="card-title-group">
+              <h2>三角形の心 & チェバ・メネラウス</h2>
+              <p class="card-subtitle">五心の幾何学的性質・比の定理・作図を直感的に極める</p>
             </div>
           </div>
 
-          <div class="sf-section sf-calc">
-            <div class="sf-calc-row">周長 <i>a+b+c</i>: <b id="sim-bar-p">0</b></div>
-            <div class="sf-calc-row">面積 <i>S</i>: <b id="sim-bar-s">0</b></div>
-            <div class="sf-calc-row sf-calc-r">半径 <i>r</i> = <b id="sim-bar-r">0</b></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 6. チェバ・メネラウス シミュレーター画面 -->
-    <section id="view-theorems" class="card sim-layout hidden">
-      <!-- 左パネル: コントロール & 情報 -->
-      <div class="sim-panel">
-        <div class="sim-panel-header">
-          <h3>📐 チェバ・メネラウス</h3>
-          <p class="sim-guide">頂点A, B, Cや交点・直線をドラッグ！</p>
-        </div>
-
-        <!-- 定理選択セグメント -->
-        <div class="sim-control-group">
-          <label class="sim-label">定理の選択</label>
-          <div class="thm-mode-selector">
-            <button id="thm-mode-ceva" class="btn-thm-mode active" type="button">チェバの定理</button>
-            <button id="thm-mode-menelaus" class="btn-thm-mode" type="button">メネラウスの定理</button>
-          </div>
+          <ul class="feature-list">
+            <li>
+              <span class="feature-icon">⚡</span>
+              <span><strong>5心シミュレーター</strong>：三角形の頂点を自由にドラッグ！重心・内心・外心・垂心・傍心とオイラー線の動きをリアルタイム観察</span>
+            </li>
+            <li>
+              <span class="feature-icon">📐</span>
+              <span><strong>チェバ・メネラウスの定理</strong>：内部点や直線上の制御点を操作し、一筆書き巡回ルートと分数計算（積＝1）を直感的に可視化</span>
+            </li>
+            <li>
+              <span class="feature-icon">🎯</span>
+              <span><strong>4択クイズ（全48問）</strong>：定義・作図条件・垂直二等分線・角の二等分線の性質をステップバイステップ解説で完全マスター</span>
+            </li>
+            <li>
+              <span class="feature-icon">📚</span>
+              <span><strong>まとめの図鑑</strong>：五心の定義、作図のコツ、位置の規則性、公式を一覧できるリファレンス</span>
+            </li>
+          </ul>
         </div>
 
-        <!-- 出発点の選択 -->
-        <div class="sim-control-group">
-          <label class="sim-label">🏁 出発する頂点</label>
-          <div class="thm-start-selector">
-            <button class="btn-thm-start active" data-start="A" type="button">頂点 A</button>
-            <button class="btn-thm-start" data-start="B" type="button">頂点 B</button>
-            <button class="btn-thm-start" data-start="C" type="button">頂点 C</button>
-          </div>
+        <div class="card-bottom">
+          <span class="target-scope-text">対象: 中学2年〜高校1・2年（数学A 平面幾何）</span>
+          <button class="launch-btn" type="button">
+            <span>アプリを起動する</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7"></path>
+            </svg>
+          </button>
         </div>
+      </a>
 
-        <!-- プリセットボタン -->
-        <div class="sim-control-group">
-          <label class="sim-label">配置プリセット</label>
-          <div class="preset-btn-grid">
-            <button class="btn-preset btn-thm-preset" data-preset="default">標準</button>
-            <button class="btn-preset btn-thm-preset" data-preset="centroid" title="重心（比1:1:1）">重心</button>
-            <button class="btn-preset btn-thm-preset" data-preset="fox" title="キツネ型（基本）">キツネ型</button>
-            <button class="btn-preset btn-thm-preset" data-preset="midpoint" title="中点交差">中点</button>
-          </div>
-        </div>
-
-        <!-- 表示設定 -->
-        <div class="sim-control-group">
-          <label class="sim-label">表示オプション</label>
-          <div class="sim-check-list">
-            <label class="sim-check-item">
-              <input type="checkbox" id="thm-show-route" checked>
-              <span class="sim-check-mark"></span>
-              <span class="sim-check-text"><strong>🔄 巡回ルート（一筆書き）</strong> <small>矢印ガイド</small></span>
-            </label>
-            <label class="sim-check-item">
-              <input type="checkbox" id="thm-show-lengths" checked>
-              <span class="sim-check-mark"></span>
-              <span class="sim-check-text"><strong>📏 線分の長さ数値</strong> <small>比率ラベル</small></span>
-            </label>
-            <label class="sim-check-item">
-              <input type="checkbox" id="thm-show-extended" checked>
-              <span class="sim-check-mark"></span>
-              <span class="sim-check-text"><strong>✂️ 延長線ガイド</strong> <small>外分交点（点線）</small></span>
-            </label>
-            <label class="sim-check-item" id="thm-opt-line-handles-row">
-              <input type="checkbox" id="thm-show-line-handles" checked>
-              <span class="sim-check-mark"></span>
-              <span class="sim-check-text"><strong>📍 直線操作点 (L1, L2)</strong> <small>メネラウス制御点</small></span>
-            </label>
-          </div>
-        </div>
-
-        <!-- 解説カード -->
-        <div class="sim-info-card">
-          <div class="sim-info-row">
-            <span class="sim-info-label">要点解説:</span>
-          </div>
-          <div id="thm-explanation" class="sim-commentary">
-            頂点AまたはBからスタートして、対辺の分点を経由しながら一筆書きで一周すると、分数の積は常に「1」になります！
-          </div>
-        </div>
-      </div>
-
-      <!-- 右側：メインビュー（キャンバス ＋ 下部式バー） -->
-      <div class="sim-right-area">
-        <div class="sim-canvas-wrapper">
-          <svg id="thm-svg" viewBox="0 0 850 500" class="sim-svg">
-            <g id="thm-root-layer">
-              <!-- 延長線レイヤー -->
-              <g id="thm-layer-extended"></g>
-              <!-- 三角形本体 -->
-              <polygon id="thm-poly-triangle" class="sim-triangle" />
-              <!-- チェバ線 / メネラウス直線レイヤー -->
-              <g id="thm-layer-lines"></g>
-              <!-- 巡回ルート矢印レイヤー -->
-              <g id="thm-layer-route"></g>
-              <!-- 分点・交点レイヤー -->
-              <g id="thm-layer-points"></g>
-              <!-- ドラッグハンドルレイヤー -->
-              <g id="thm-layer-handles"></g>
-            </g>
-          </svg>
-        </div>
-
-        <!-- 図の下に大きく表示する数式バー -->
-        <div id="thm-formula-bar" class="sim-formula-bar">
-          <div class="sf-section sf-derivation">
-            <div id="thm-bar-title" class="sf-tag">📐 定理の等式</div>
-            <div class="thm-formula-row">
-              <div id="thm-frac-1" class="thm-formula-frac-box"></div>
-              <span class="sf-times">×</span>
-              <div id="thm-frac-2" class="thm-formula-frac-box"></div>
-              <span class="sf-times">×</span>
-              <div id="thm-frac-3" class="thm-formula-frac-box"></div>
-              <span class="sf-eq">=</span>
-              <span class="thm-formula-const">1</span>
+      <!-- App 2: 直角三角形の面積を利用した垂線の長さ -->
+      <a href="./altitude/index.html" class="app-card card-altitude" id="card-altitude">
+        <div>
+          <div class="card-top">
+            <div class="card-badges">
+              <span class="badge badge-scope">中学・高校数学</span>
+              <span class="badge badge-feature">📏 面積利用の垂線算出</span>
+              <span class="badge badge-feature">🏆 10問合格テスト</span>
+            </div>
+            <div class="shortcut-badge">
+              キー <kbd>2</kbd>
             </div>
           </div>
 
-          <div class="sf-arrow">➔</div>
-
-          <div class="sf-section sf-target">
-            <div class="sf-target-title">現在の実長での計算</div>
-            <div class="thm-calc-row">
-              <div id="thm-val-1" class="thm-val-frac-box"></div>
-              <span class="sf-times">×</span>
-              <div id="thm-val-2" class="thm-val-frac-box"></div>
-              <span class="sf-times">×</span>
-              <div id="thm-val-3" class="thm-val-frac-box"></div>
-              <span class="sf-eq">=</span>
-              <div class="thm-product-badge">
-                <span id="thm-bar-product">1.00</span>
-              </div>
+          <div class="card-preview">
+            <div class="preview-art">
+              <svg width="48" height="48" viewBox="0 0 60 60" fill="none">
+                <!-- Right Triangle -->
+                <polygon points="12,12 12,48 50,48" stroke="#38bdf8" stroke-width="2.5" fill="rgba(56,189,248,0.12)"></polygon>
+                <!-- Right angle at (12, 48) -->
+                <polyline points="12,40 20,40 20,48" stroke="#38bdf8" stroke-width="1.8" fill="none"></polyline>
+                <!-- Altitude AH dropped to hypotenuse -->
+                <line x1="12" y1="48" x2="33" y2="30" stroke="#f59e0b" stroke-width="2" stroke-dasharray="3 2"></line>
+                <!-- Foot H -->
+                <circle cx="33" cy="30" r="3" fill="#f59e0b"></circle>
+                <!-- Right angle at H -->
+                <line x1="28" y1="26" x2="34" y2="21" stroke="#f59e0b" stroke-width="1.2"></line>
+                <line x1="34" y1="21" x2="39" y2="25" stroke="#f59e0b" stroke-width="1.2"></line>
+              </svg>
+            </div>
+            <div class="card-title-group">
+              <h2>直角三角形・立体の垂線求積マスター</h2>
+              <p class="card-subtitle">面積から垂線AHを求める解法を平面・立体で完全攻略</p>
             </div>
           </div>
+
+          <ul class="feature-list">
+            <li>
+              <span class="feature-icon">🎯</span>
+              <span><strong>面積利用の高速解法</strong>：直角三角形の面積 $\frac{1}{2}ab = \frac{1}{2}ch$ を利用して垂線 $h = \frac{ab}{c}$ を素早く求める4択演習</span>
+            </li>
+            <li>
+              <span class="feature-icon">🎲</span>
+              <span><strong>ランダム回転＆多彩な立体</strong>：直角三角形・長方形（4頂点からの垂線）から立方体・直方体の直交面8パターンまで網羅</span>
+            </li>
+            <li>
+              <span class="feature-icon">⚙️</span>
+              <span><strong>学習アシスト機能</strong>：斜辺の長さ表示/非表示（[H]キー）、有理化あり/なし（[U]キー）のリアルタイム切替</span>
+            </li>
+            <li>
+              <span class="feature-icon">🏆</span>
+              <span><strong>10問連続合格テストモード</strong>：1〜4問（平面）→5〜10問（立体）！ド派手な警告音演出と歓喜の合格ファンファーレ</span>
+            </li>
+          </ul>
         </div>
+
+        <div class="card-bottom">
+          <span class="target-scope-text">対象: 中学3年〜高校1・2年（三平方の定理・空間図形）</span>
+          <button class="launch-btn" type="button">
+            <span>アプリを起動する</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7"></path>
+            </svg>
+          </button>
+        </div>
+      </a>
+    </main>
+
+    <!-- Bottom Status Bar -->
+    <footer>
+      <div class="shortcut-hints">
+        <span>キーボード操作:</span>
+        <span><kbd>1</kbd> 三角形の心 & チェバ・メネラウス</span>
+        <span><kbd>2</kbd> 垂線求積マスター</span>
+        <span><kbd>F</kbd> 全画面切り替え</span>
       </div>
-    </section>
-
-  </main>
-
-  <!-- 挑戦履歴モーダル -->
-  <div id="modal-history" class="modal-overlay hidden">
-    <div class="modal-card">
-      <div class="modal-header">
-        <div class="modal-title-box">
-          <span class="modal-icon">📊</span>
-          <h3 class="modal-title">4択クイズ 挑戦履歴</h3>
-        </div>
-        <button id="btn-close-history" class="btn-modal-close" type="button" aria-label="閉じる">✕</button>
-      </div>
-
-      <div class="modal-body">
-        <!-- 総合統計サマリー -->
-        <div class="history-stats-grid">
-          <div class="stat-card">
-            <div id="stat-total-plays" class="stat-num">0</div>
-            <div class="stat-lbl">挑戦回数</div>
-          </div>
-          <div class="stat-card">
-            <div id="stat-avg-accuracy" class="stat-num">0%</div>
-            <div class="stat-lbl">平均正答率</div>
-          </div>
-          <div class="stat-card">
-            <div id="stat-best-streak" class="stat-num">0</div>
-            <div class="stat-lbl">最高連続正解</div>
-          </div>
-        </div>
-
-        <!-- 履歴リスト -->
-        <div class="history-list-header">
-          <h4>過去の成績と問題一覧</h4>
-          <div style="display: flex; gap: 0.5rem; align-items: center;">
-            <button id="btn-modal-toggle-all" class="btn-secondary" style="font-size: 0.75rem; padding: 0.25rem 0.55rem;" type="button">展開 / 折りたたみ ↕️</button>
-            <button id="btn-clear-history" class="btn-text-danger" type="button">履歴をリセット</button>
-          </div>
-        </div>
-        <div id="history-list-container" class="history-list-container">
-          <!-- JSで動的生成 -->
-        </div>
-      </div>
-    </div>
+      <a href="https://github.com/matsukio1011/triangle-app" target="_blank" rel="noopener noreferrer" class="github-link">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+        </svg>
+        <span>GitHub: matsukio1011/triangle-app</span>
+      </a>
+    </footer>
   </div>
 
-  <!-- フッター -->
-  <footer class="app-footer">
-    <p>三角形の五心・チェバ・メネラウス 4択学習アプリ | 中学・高校数学サポート</p>
-  </footer>
+  <script>
+    /* Audio Engine */
+    let audioCtx = null;
+    let soundEnabled = true;
 
-  <!-- スクリプト読み込み -->
-  <script src="questions.js"></script>
-  <script src="simulator.js"></script>
-  <script src="theorems.js"></script>
-  <script src="app.js"></script>
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playSound(type) {
+      if (!soundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        const now = ctx.currentTime;
+        if (type === 'hover') {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(540, now);
+          gain.gain.setValueAtTime(0.02, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.04);
+        } else if (type === 'launch') {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(440, now);
+          osc.frequency.exponentialRampToValueAtTime(880, now + 0.15);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.2);
+        } else if (type === 'click') {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(750, now);
+          gain.gain.setValueAtTime(0.04, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.05);
+        }
+      } catch (e) {
+        console.warn('Audio play failed', e);
+      }
+    }
+
+    /* Sound Button Toggle */
+    const soundBtn = document.getElementById('sound-btn');
+    const soundIconOn = document.getElementById('sound-icon-on');
+    const soundIconOff = document.getElementById('sound-icon-off');
+    const soundText = document.getElementById('sound-text');
+
+    soundBtn.addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      soundIconOn.style.display = soundEnabled ? 'block' : 'none';
+      soundIconOff.style.display = soundEnabled ? 'none' : 'block';
+      soundText.textContent = soundEnabled ? '効果音 ON' : '効果音 OFF';
+      if (soundEnabled) playSound('click');
+    });
+
+    /* Fullscreen Handlers */
+    const fullscreenBtn = document.getElementById('fullscreen-btn');
+    const fullscreenIconEnter = document.getElementById('fullscreen-icon-enter');
+    const fullscreenIconExit = document.getElementById('fullscreen-icon-exit');
+    const fullscreenText = document.getElementById('fullscreen-text');
+
+    function isFullscreen() {
+      return !!(
+        document.fullscreenElement ||
+        document.webkitFullscreenElement ||
+        document.mozFullScreenElement ||
+        document.msFullscreenElement
+      );
+    }
+
+    function updateFullscreenUI() {
+      const active = isFullscreen();
+      fullscreenIconEnter.style.display = active ? 'none' : 'block';
+      fullscreenIconExit.style.display = active ? 'block' : 'none';
+      fullscreenText.textContent = active ? '解除 [F]' : '全画面 [F]';
+      fullscreenBtn.title = active ? '全画面表示 解除 [F]' : '全画面表示 切り替え [F]';
+    }
+
+    function toggleFullscreen() {
+      if (!isFullscreen()) {
+        const docElm = document.documentElement;
+        if (docElm.requestFullscreen) {
+          docElm.requestFullscreen().catch(err => console.warn('Fullscreen error:', err));
+        } else if (docElm.webkitRequestFullscreen) {
+          docElm.webkitRequestFullscreen();
+        } else if (docElm.mozRequestFullScreen) {
+          docElm.mozRequestFullScreen();
+        } else if (docElm.msRequestFullscreen) {
+          docElm.msRequestFullscreen();
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen().catch(err => console.warn('Exit fullscreen error:', err));
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
+        }
+      }
+    }
+
+    fullscreenBtn.addEventListener('click', () => {
+      playSound('click');
+      toggleFullscreen();
+    });
+
+    document.addEventListener('fullscreenchange', updateFullscreenUI);
+    document.addEventListener('webkitfullscreenchange', updateFullscreenUI);
+
+    /* Card Interactive Sound & Actions */
+    const cardCenters = document.getElementById('card-centers');
+    const cardAltitude = document.getElementById('card-altitude');
+
+    cardCenters.addEventListener('mouseenter', () => playSound('hover'));
+    cardAltitude.addEventListener('mouseenter', () => playSound('hover'));
+
+    function launchApp(url) {
+      playSound('launch');
+      setTimeout(() => {
+        window.location.href = url;
+      }, 120);
+    }
+
+    cardCenters.addEventListener('click', (e) => {
+      e.preventDefault();
+      launchApp(cardCenters.getAttribute('href'));
+    });
+
+    cardAltitude.addEventListener('click', (e) => {
+      e.preventDefault();
+      launchApp(cardAltitude.getAttribute('href'));
+    });
+
+    /* Keyboard Shortcuts */
+    window.addEventListener('keydown', (e) => {
+      if (e.key === '1') {
+        launchApp(cardCenters.getAttribute('href'));
+      } else if (e.key === '2') {
+        launchApp(cardAltitude.getAttribute('href'));
+      } else if (e.key.toLowerCase() === 'f') {
+        toggleFullscreen();
+      }
+    });
+  </script>
 </body>
 </html>
