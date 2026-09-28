@@ -140,6 +140,10 @@ body {
   line-height: 1;
 }
 
+.fullscreen-toggle-btn * {
+  pointer-events: none;
+}
+
 .portal-back-btn {
   background: rgba(255, 255, 255, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.35);

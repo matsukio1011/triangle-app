@@ -202,6 +202,32 @@ class SoundManager {
     }
   }
 
+  playClick() {
+    if (!this.enabled) return;
+    try {
+      this.init();
+      if (!this.ctx) return;
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(650, now);
+
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.exponentialRampToValueAtTime(0.06, now + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.06);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.06);
+    } catch (e) {
+      // AudioContext failure should not throw
+    }
+  }
+
   playCorrect() {
     if (!this.enabled) return;
     try {
@@ -304,13 +330,17 @@ class TriangleQuizApp {
     this.fsIconExit = document.getElementById('fs-icon-exit');
     this.fsText = document.getElementById('fullscreen-text');
 
-    const updateUI = () => {
-      const isFs = !!(
+    const isFullscreen = () => {
+      return !!(
         document.fullscreenElement ||
         document.webkitFullscreenElement ||
         document.mozFullScreenElement ||
         document.msFullscreenElement
       );
+    };
+
+    const updateUI = () => {
+      const isFs = isFullscreen();
       if (this.fsIconEnter && this.fsIconExit) {
         this.fsIconEnter.style.display = isFs ? 'none' : 'block';
         this.fsIconExit.style.display = isFs ? 'block' : 'none';
@@ -324,30 +354,53 @@ class TriangleQuizApp {
     };
 
     const toggle = () => {
-      const isFs = !!(
-        document.fullscreenElement ||
-        document.webkitFullscreenElement ||
-        document.mozFullScreenElement ||
-        document.msFullscreenElement
-      );
+      const isFs = isFullscreen();
       if (!isFs) {
         const docElm = document.documentElement;
-        if (docElm.requestFullscreen) docElm.requestFullscreen().catch(e => console.warn(e));
-        else if (docElm.webkitRequestFullscreen) docElm.webkitRequestFullscreen();
-        else if (docElm.msRequestFullscreen) docElm.msRequestFullscreen();
+        const req = docElm.requestFullscreen ||
+                    docElm.webkitRequestFullscreen ||
+                    docElm.mozRequestFullScreen ||
+                    docElm.msRequestFullscreen;
+        if (req) {
+          try {
+            const p = req.call(docElm);
+            if (p && typeof p.catch === 'function') {
+              p.catch(err => console.warn('requestFullscreen error:', err));
+            }
+          } catch (e) {
+            console.warn('Fullscreen call failed:', e);
+          }
+        }
       } else {
-        if (document.exitFullscreen) document.exitFullscreen().catch(e => console.warn(e));
-        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-        else if (document.msExitFullscreen) document.msExitFullscreen();
+        const exit = document.exitFullscreen ||
+                     document.webkitExitFullscreen ||
+                     document.mozCancelFullScreen ||
+                     document.msExitFullscreen;
+        if (exit) {
+          try {
+            const p = exit.call(document);
+            if (p && typeof p.catch === 'function') {
+              p.catch(err => console.warn('exitFullscreen error:', err));
+            }
+          } catch (e) {
+            console.warn('Exit fullscreen failed:', e);
+          }
+        }
       }
     };
 
     if (this.btnFullscreen) {
-      this.btnFullscreen.addEventListener('click', () => {
-        if (this.sound && this.sound.enabled) {
-          this.sound.playClick();
+      this.btnFullscreen.addEventListener('click', (e) => {
+        e.preventDefault();
+        try {
+          if (this.sound && this.sound.enabled && typeof this.sound.playClick === 'function') {
+            this.sound.playClick();
+          }
+        } catch (err) {
+          // ignore sound error
         }
         toggle();
+        setTimeout(updateUI, 120);
       });
     }
 
@@ -355,11 +408,13 @@ class TriangleQuizApp {
     document.addEventListener('webkitfullscreenchange', updateUI);
     document.addEventListener('mozfullscreenchange', updateUI);
     document.addEventListener('MSFullscreenChange', updateUI);
+    window.addEventListener('resize', updateUI);
 
     window.addEventListener('keydown', (e) => {
       if (e.target && ['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
       if (e.key.toLowerCase() === 'f') {
         toggle();
+        setTimeout(updateUI, 120);
       }
     });
   }

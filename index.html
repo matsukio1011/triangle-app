@@ -782,13 +782,16 @@
       }
     }
 
-    fullscreenBtn.addEventListener('click', () => {
-      playSound('click');
+    fullscreenBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      try { playSound('click'); } catch (err) {}
       toggleFullscreen();
+      setTimeout(updateFullscreenUI, 120);
     });
 
     document.addEventListener('fullscreenchange', updateFullscreenUI);
     document.addEventListener('webkitfullscreenchange', updateFullscreenUI);
+    window.addEventListener('resize', updateFullscreenUI);
 
     /* Card Interactive Sound & Actions */
     const cardCenters = document.getElementById('card-centers');

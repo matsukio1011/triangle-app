@@ -2917,15 +2917,18 @@
       }
     }
 
-    fullscreenBtn.addEventListener('click', () => {
-      playSound('click');
+    fullscreenBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      try { playSound('click'); } catch (err) {}
       toggleFullscreen();
+      setTimeout(updateFullscreenUI, 120);
     });
 
     document.addEventListener('fullscreenchange', updateFullscreenUI);
     document.addEventListener('webkitfullscreenchange', updateFullscreenUI);
     document.addEventListener('mozfullscreenchange', updateFullscreenUI);
     document.addEventListener('MSFullscreenChange', updateFullscreenUI);
+    window.addEventListener('resize', updateFullscreenUI);
 
     window.addEventListener('keydown', (e) => {
       if (e.key >= '1' && e.key <= '4') {
