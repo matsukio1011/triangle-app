@@ -381,32 +381,26 @@
 
         <!-- 図の下に大きく表示する内接円の半径公式バー -->
         <div id="sim-formula-bar" class="sim-formula-bar hidden">
-          <div class="sf-section sf-derivation">
-            <div class="sf-tag">💡 内接円の半径公式の導出（3分割）</div>
-            <div class="sf-eq-group">
-              <span class="sf-area-s">S</span>
-              <span class="sf-eq">=</span>
-              <span class="sf-tri sf-tri-a" title="△IBC (底辺 a, 高さ r)">½ ar</span>
-              <span class="sf-plus">+</span>
-              <span class="sf-tri sf-tri-b" title="△ICA (底辺 b, 高さ r)">½ br</span>
-              <span class="sf-plus">+</span>
-              <span class="sf-tri sf-tri-c" title="△IAB (底辺 c, 高さ r)">½ cr</span>
-              <span class="sf-eq">=</span>
-              <span class="sf-factored">½(a + b + c)r</span>
+          <div class="sf-primary-formula">
+            <div class="sf-formula-header">
+              <span class="sf-tag-pill">📐 内接円の半径と面積の公式</span>
+              <span class="sf-sub-note">（3つの三角形の合計: △IBC + △ICA + △IAB ＝ ½ar + ½br + ½cr より）</span>
             </div>
-          </div>
-
-          <div class="sf-arrow">➔</div>
-
-          <div class="sf-section sf-target">
-            <div class="sf-target-title">🎯 内接円の半径 r を求める公式</div>
-            <div class="sf-frac-group">
-              <span class="sf-r-var">r</span>
-              <span class="sf-eq">=</span>
-              <div class="sf-fraction">
-                <span class="sf-num">2S</span>
-                <span class="sf-den">a + b + c</span>
+            <div class="sf-giant-equation">
+              <span class="sf-sym-s">S</span>
+              <span class="sf-sym-eq">=</span>
+              <div class="sf-fraction-half">
+                <span class="num">1</span>
+                <span class="den">2</span>
               </div>
+              <span class="sf-sym-r">r</span>
+              <span class="sf-sym-paren">(</span>
+              <span class="sf-term-a" title="辺BC = a">a</span>
+              <span class="sf-sym-op">+</span>
+              <span class="sf-term-b" title="辺CA = b">b</span>
+              <span class="sf-sym-op">+</span>
+              <span class="sf-term-c" title="辺AB = c">c</span>
+              <span class="sf-sym-paren">)</span>
             </div>
           </div>
 

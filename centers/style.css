@@ -1341,136 +1341,132 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* 1. 左側：導出の式 */
-.sf-section.sf-derivation {
+/* S= の式を大きく表示する新スタイル */
+.sf-primary-formula {
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
+  gap: 0.2rem;
+  flex: 1;
 }
 
-.sf-tag {
+.sf-formula-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.sf-tag-pill {
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: #0284c7;
+  background: rgba(2, 132, 199, 0.1);
+  padding: 0.15rem 0.55rem;
+  border-radius: 4px;
+  border: 1px solid rgba(2, 132, 199, 0.3);
+}
+
+.sf-sub-note {
   font-size: 0.72rem;
-  font-weight: 700;
-  color: #0369a1;
-  letter-spacing: 0.02em;
+  color: #64748b;
+  font-weight: 600;
 }
 
-.sf-eq-group {
+.sf-giant-equation {
   display: flex;
   align-items: center;
   gap: 0.35rem;
-  font-size: 0.98rem;
-  font-weight: 700;
+  font-family: 'Times New Roman', Times, Georgia, serif;
+  font-weight: 800;
+  line-height: 1;
+  padding: 0.1rem 0;
+}
+
+.sf-sym-s {
+  font-size: 2.3rem;
+  font-style: italic;
   color: #0f172a;
+  letter-spacing: -0.02em;
 }
 
-.sf-area-s {
-  font-size: 1.2rem;
-  color: #1e293b;
-  font-family: serif;
-  font-style: italic;
-  font-weight: 800;
-}
-
-.sf-tri {
-  padding: 0.1rem 0.35rem;
-  border-radius: 4px;
-  font-family: serif;
-  font-size: 0.92rem;
-}
-
-.sf-tri-a {
-  background: rgba(249, 115, 22, 0.18);
-  color: #c2410c;
-  border: 1px solid rgba(249, 115, 22, 0.4);
-}
-
-.sf-tri-b {
-  background: rgba(37, 99, 235, 0.18);
-  color: #1d4ed8;
-  border: 1px solid rgba(37, 99, 235, 0.4);
-}
-
-.sf-tri-c {
-  background: rgba(16, 185, 129, 0.18);
-  color: #047857;
-  border: 1px solid rgba(16, 185, 129, 0.4);
-}
-
-.sf-factored {
-  background: #ffffff;
-  padding: 0.1rem 0.45rem;
-  border-radius: 4px;
-  border: 1px dashed #0284c7;
-  color: #0369a1;
-  font-size: 1rem;
-}
-
-/* 矢印 */
-.sf-arrow {
-  font-size: 1.25rem;
-  font-weight: 900;
+.sf-sym-eq {
+  font-size: 1.8rem;
   color: #0284c7;
+  font-family: sans-serif;
+  margin: 0 0.15rem;
 }
 
-/* 2. 中央：大きく表示する半径 r の公式 */
-.sf-section.sf-target {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: #ffffff;
-  padding: 0.25rem 0.8rem;
-  border-radius: 6px;
-  border: 2px solid #0284c7;
-  box-shadow: 0 2px 5px rgba(2, 132, 199, 0.12);
-}
-
-.sf-target-title {
-  font-size: 0.68rem;
-  font-weight: 800;
-  color: #0284c7;
-  margin-bottom: -0.1rem;
-}
-
-.sf-frac-group {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-  font-size: 1.35rem;
-  font-weight: 800;
-}
-
-.sf-r-var {
-  font-size: 1.6rem;
-  font-family: serif;
-  font-style: italic;
-  color: #0284c7;
-}
-
-.sf-fraction {
+.sf-fraction-half {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   vertical-align: middle;
+  font-size: 1.15rem;
+  line-height: 1;
+  color: #0f172a;
+  margin: 0 0.15rem;
   font-family: serif;
-  font-size: 1.1rem;
   font-weight: 800;
-  line-height: 1.05;
 }
 
-.sf-num {
-  border-bottom: 2px solid #0284c7;
-  padding: 0 0.35rem 1px;
-  color: #0369a1;
-  width: 100%;
-  text-align: center;
+.sf-fraction-half .num {
+  border-bottom: 2px solid currentColor;
+  padding: 0 0.25rem 1px;
 }
 
-.sf-den {
-  padding: 1px 0.35rem 0;
-  color: #1e293b;
-  font-size: 1rem;
+.sf-fraction-half .den {
+  padding: 1px 0.25rem 0;
+}
+
+.sf-sym-r {
+  font-size: 2.4rem;
+  font-style: italic;
+  color: #0284c7;
+  margin: 0 0.15rem;
+  text-shadow: 0 0 10px rgba(2, 132, 199, 0.25);
+}
+
+.sf-sym-paren {
+  font-size: 2.3rem;
+  color: #475569;
+  font-weight: 300;
+}
+
+.sf-term-a {
+  font-size: 1.75rem;
+  font-style: italic;
+  color: #c2410c;
+  background: rgba(249, 115, 22, 0.15);
+  border: 1px solid rgba(249, 115, 22, 0.35);
+  padding: 0.05rem 0.35rem;
+  border-radius: 4px;
+}
+
+.sf-term-b {
+  font-size: 1.75rem;
+  font-style: italic;
+  color: #1d4ed8;
+  background: rgba(37, 99, 235, 0.15);
+  border: 1px solid rgba(37, 99, 235, 0.35);
+  padding: 0.05rem 0.35rem;
+  border-radius: 4px;
+}
+
+.sf-term-c {
+  font-size: 1.75rem;
+  font-style: italic;
+  color: #047857;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  padding: 0.05rem 0.35rem;
+  border-radius: 4px;
+}
+
+.sf-sym-op {
+  font-size: 1.3rem;
+  color: #64748b;
+  margin: 0 0.15rem;
 }
 
 /* 3. 右側：リアルタイム計算値 */
@@ -2063,66 +2059,57 @@ body {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
 }
 
-[data-theme="dark"] .sf-tag {
+[data-theme="dark"] .sf-tag-pill {
   color: #38bdf8;
+  background: rgba(56, 189, 248, 0.15);
+  border-color: rgba(56, 189, 248, 0.35);
 }
 
-[data-theme="dark"] .sf-eq-group {
-  color: #f1f5f9;
+[data-theme="dark"] .sf-sub-note {
+  color: #94a3b8;
 }
 
-[data-theme="dark"] .sf-area-s {
+[data-theme="dark"] .sf-sym-s {
   color: #f8fafc;
 }
 
-[data-theme="dark"] .sf-tri-a {
-  background: rgba(249, 115, 22, 0.25);
+[data-theme="dark"] .sf-sym-eq {
+  color: #38bdf8;
+}
+
+[data-theme="dark"] .sf-fraction-half {
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .sf-sym-r {
+  color: #38bdf8;
+  text-shadow: 0 0 14px rgba(56, 189, 248, 0.45);
+}
+
+[data-theme="dark"] .sf-sym-paren {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .sf-term-a {
   color: #fdba74;
-  border-color: #ea580c;
+  background: rgba(249, 115, 22, 0.22);
+  border-color: rgba(249, 115, 22, 0.4);
 }
 
-[data-theme="dark"] .sf-tri-b {
-  background: rgba(37, 99, 235, 0.25);
+[data-theme="dark"] .sf-term-b {
   color: #93c5fd;
-  border-color: #2563eb;
+  background: rgba(37, 99, 235, 0.22);
+  border-color: rgba(37, 99, 235, 0.4);
 }
 
-[data-theme="dark"] .sf-tri-c {
-  background: rgba(16, 185, 129, 0.25);
+[data-theme="dark"] .sf-term-c {
   color: #6ee7b7;
-  border-color: #059669;
+  background: rgba(16, 185, 129, 0.22);
+  border-color: rgba(16, 185, 129, 0.4);
 }
 
-[data-theme="dark"] .sf-factored {
-  background: #1e293b;
-  border-color: #38bdf8;
-  color: #38bdf8;
-}
-
-[data-theme="dark"] .sf-arrow {
-  color: #38bdf8;
-}
-
-[data-theme="dark"] .sf-section.sf-target {
-  background: #0f172a;
-  border-color: #0284c7;
-}
-
-[data-theme="dark"] .sf-target-title {
-  color: #38bdf8;
-}
-
-[data-theme="dark"] .sf-r-var {
-  color: #38bdf8;
-}
-
-[data-theme="dark"] .sf-num {
-  border-bottom-color: #38bdf8;
-  color: #7dd3fc;
-}
-
-[data-theme="dark"] .sf-den {
-  color: #f1f5f9;
+[data-theme="dark"] .sf-sym-op {
+  color: #94a3b8;
 }
 
 [data-theme="dark"] .sf-section.sf-calc {
