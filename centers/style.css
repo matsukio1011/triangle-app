@@ -107,9 +107,10 @@ body {
   gap: 0.5rem;
 }
 
-/* テーマ切り替えボタン＆サウンド切り替えボタン */
+/* テーマ切り替えボタン＆サウンド切り替えボタン＆全画面ボタン */
 .theme-toggle-btn,
-.sound-toggle-btn {
+.sound-toggle-btn,
+.fullscreen-toggle-btn {
   background: rgba(255, 255, 255, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.25);
   color: #ffffff;
@@ -126,9 +127,17 @@ body {
 }
 
 .theme-toggle-btn:hover,
-.sound-toggle-btn:hover {
+.sound-toggle-btn:hover,
+.fullscreen-toggle-btn:hover {
   background: rgba(255, 255, 255, 0.25);
   transform: translateY(-1px);
+}
+
+.fullscreen-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 
 .portal-back-btn {

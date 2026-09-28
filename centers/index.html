@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>三角形の心 4択マスター | 重心・内心・外心・垂心・傍心</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -23,6 +24,17 @@
         <button id="btn-theme-toggle" class="theme-toggle-btn" type="button" title="ダークモード/ライトモード切替" aria-label="テーマ切替">
           <span id="theme-icon" class="theme-icon">🌙</span>
           <span id="theme-text" class="theme-text">ダーク</span>
+        </button>
+        <button id="btn-fullscreen-toggle" class="fullscreen-toggle-btn" type="button" title="全画面表示 切り替え [F]" aria-label="全画面表示切替">
+          <span id="fullscreen-icon" class="fullscreen-icon">
+            <svg id="fs-icon-enter" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+            </svg>
+            <svg id="fs-icon-exit" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+              <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path>
+            </svg>
+          </span>
+          <span id="fullscreen-text" class="fullscreen-text">全画面</span>
         </button>
       </div>
     </div>

@@ -293,8 +293,75 @@ class TriangleQuizApp {
     this.initDOM();
     this.initTheme();
     this.initSound();
+    this.initFullscreen();
     this.bindEvents();
     this.renderEncyclopedia();
+  }
+
+  initFullscreen() {
+    this.btnFullscreen = document.getElementById('btn-fullscreen-toggle');
+    this.fsIconEnter = document.getElementById('fs-icon-enter');
+    this.fsIconExit = document.getElementById('fs-icon-exit');
+    this.fsText = document.getElementById('fullscreen-text');
+
+    const updateUI = () => {
+      const isFs = !!(
+        document.fullscreenElement ||
+        document.webkitFullscreenElement ||
+        document.mozFullScreenElement ||
+        document.msFullscreenElement
+      );
+      if (this.fsIconEnter && this.fsIconExit) {
+        this.fsIconEnter.style.display = isFs ? 'none' : 'block';
+        this.fsIconExit.style.display = isFs ? 'block' : 'none';
+      }
+      if (this.fsText) {
+        this.fsText.textContent = isFs ? '解除' : '全画面';
+      }
+      if (this.btnFullscreen) {
+        this.btnFullscreen.title = isFs ? '全画面表示 解除 [F]' : '全画面表示 切り替え [F]';
+      }
+    };
+
+    const toggle = () => {
+      const isFs = !!(
+        document.fullscreenElement ||
+        document.webkitFullscreenElement ||
+        document.mozFullScreenElement ||
+        document.msFullscreenElement
+      );
+      if (!isFs) {
+        const docElm = document.documentElement;
+        if (docElm.requestFullscreen) docElm.requestFullscreen().catch(e => console.warn(e));
+        else if (docElm.webkitRequestFullscreen) docElm.webkitRequestFullscreen();
+        else if (docElm.msRequestFullscreen) docElm.msRequestFullscreen();
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen().catch(e => console.warn(e));
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        else if (document.msExitFullscreen) document.msExitFullscreen();
+      }
+    };
+
+    if (this.btnFullscreen) {
+      this.btnFullscreen.addEventListener('click', () => {
+        if (this.sound && this.sound.enabled) {
+          this.sound.playClick();
+        }
+        toggle();
+      });
+    }
+
+    document.addEventListener('fullscreenchange', updateUI);
+    document.addEventListener('webkitfullscreenchange', updateUI);
+    document.addEventListener('mozfullscreenchange', updateUI);
+    document.addEventListener('MSFullscreenChange', updateUI);
+
+    window.addEventListener('keydown', (e) => {
+      if (e.target && ['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
+      if (e.key.toLowerCase() === 'f') {
+        toggle();
+      }
+    });
   }
 
   initSound() {
