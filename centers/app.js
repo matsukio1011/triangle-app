@@ -744,6 +744,15 @@ class TriangleQuizApp {
       this.viewTheorems.classList.add('hidden');
       this.viewEncyclopedia.classList.remove('hidden');
     });
+
+    // ハッシュによるタブ初期化サポート
+    if (window.location.hash === '#theorems' && this.tabTheorems) {
+      this.tabTheorems.click();
+    } else if (window.location.hash === '#simulator' && this.tabSimulator) {
+      this.tabSimulator.click();
+    } else if (window.location.hash === '#encyclopedia' && this.tabEncyclopedia) {
+      this.tabEncyclopedia.click();
+    }
   }
 
   setActiveTab(activeTabBtn) {

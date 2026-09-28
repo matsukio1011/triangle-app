@@ -512,31 +512,33 @@
         </div>
 
         <!-- 図の下に大きく表示する数式バー -->
-        <div id="thm-formula-bar" class="sim-formula-bar">
-          <div class="sf-section sf-derivation">
-            <div id="thm-bar-title" class="sf-tag">📐 定理の等式</div>
+        <div id="thm-formula-bar" class="sim-formula-bar thm-formula-bar">
+          <div class="thm-bar-section-formula">
+            <div class="thm-bar-header">
+              <span id="thm-bar-title" class="thm-bar-tag">📐 定理の等式</span>
+            </div>
             <div class="thm-formula-row">
               <div id="thm-frac-1" class="thm-formula-frac-box"></div>
-              <span class="sf-times">×</span>
+              <span class="thm-op-times">×</span>
               <div id="thm-frac-2" class="thm-formula-frac-box"></div>
-              <span class="sf-times">×</span>
+              <span class="thm-op-times">×</span>
               <div id="thm-frac-3" class="thm-formula-frac-box"></div>
-              <span class="sf-eq">=</span>
+              <span class="thm-op-eq">=</span>
               <span class="thm-formula-const">1</span>
             </div>
           </div>
 
-          <div class="sf-arrow">➔</div>
+          <div class="thm-bar-arrow">➔</div>
 
-          <div class="sf-section sf-target">
-            <div class="sf-target-title">現在の実長での計算</div>
+          <div class="thm-bar-section-calc">
+            <div class="thm-calc-header">現在の実長での計算</div>
             <div class="thm-calc-row">
               <div id="thm-val-1" class="thm-val-frac-box"></div>
-              <span class="sf-times">×</span>
+              <span class="thm-op-times">×</span>
               <div id="thm-val-2" class="thm-val-frac-box"></div>
-              <span class="sf-times">×</span>
+              <span class="thm-op-times">×</span>
               <div id="thm-val-3" class="thm-val-frac-box"></div>
-              <span class="sf-eq">=</span>
+              <span class="thm-op-eq">=</span>
               <div class="thm-product-badge">
                 <span id="thm-bar-product">1.00</span>
               </div>

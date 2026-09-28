@@ -746,7 +746,7 @@ class TheoremsSimulator {
   // 数式バーの更新
   updateFormulaBar(data) {
     if (this.barFormulaTitle) {
-      this.barFormulaTitle.textContent = data.title;
+      this.barFormulaTitle.textContent = `📐 ${data.title}の等式`;
     }
 
     const r1 = data.symbol1.valNum / data.symbol1.valDen;

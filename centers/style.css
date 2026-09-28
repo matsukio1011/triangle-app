@@ -2287,68 +2287,243 @@ body {
   fill: #d97706;
 }
 
-/* 数式バー */
-.thm-formula-row,
-.thm-calc-row {
+/* ==========================================================
+   チェバ・メネラウス 定理数式バー（画面はみ出し完全防止）
+   ========================================================== */
+#thm-formula-bar.thm-formula-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 0.35rem 0.75rem;
+  min-height: 50px;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  flex-shrink: 0;
+}
+
+/* 1. 左側セクション：定理の等式（文字記号） */
+.thm-bar-section-formula {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+.thm-bar-header {
   display: flex;
   align-items: center;
   gap: 0.4rem;
+  white-space: nowrap;
 }
 
-.thm-formula-frac-box,
-.thm-val-frac-box {
+.thm-bar-tag {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #0284c7;
+  background: rgba(2, 132, 199, 0.1);
+  padding: 0.1rem 0.45rem;
+  border-radius: 4px;
+  border: 1px solid rgba(2, 132, 199, 0.25);
+  letter-spacing: 0.02em;
+}
+
+.thm-formula-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: 'Times New Roman', Times, Georgia, serif;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.thm-formula-frac-box {
   display: inline-flex;
 }
 
-.thm-formula-frac,
-.thm-val-frac {
+.thm-formula-frac {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  font-weight: 700;
-  line-height: 1.1;
+  line-height: 1;
+  font-size: 0.95rem;
+  font-weight: 800;
 }
 
 .thm-fn {
-  border-bottom: 2px solid currentColor;
-  padding: 0 0.35rem;
-  font-size: 0.88rem;
+  border-bottom: 1.5px solid currentColor;
+  padding: 0 0.25rem 1px;
+  font-size: 0.9rem;
 }
 
 .thm-fd {
-  padding: 0 0.35rem;
-  font-size: 0.88rem;
+  padding: 1px 0.25rem 0;
+  font-size: 0.9rem;
+}
+
+.thm-op-times {
+  font-size: 0.85rem;
+  color: #64748b;
+  font-family: sans-serif;
+  font-weight: 600;
+  margin: 0 0.05rem;
+}
+
+.thm-op-eq {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #0284c7;
+  font-family: sans-serif;
+  margin: 0 0.1rem;
 }
 
 .thm-formula-const {
   font-size: 1.25rem;
   font-weight: 800;
-  color: var(--primary-color);
-  margin-left: 0.2rem;
+  color: #0284c7;
+  font-family: serif;
+}
+
+/* 2. 中央：誘導矢印 */
+.thm-bar-arrow {
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: #0284c7;
+  opacity: 0.75;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+/* 3. 右側セクション：現在の実長での計算 */
+.thm-bar-section-calc {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.15rem;
+  background: rgba(255, 255, 255, 0.75);
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+.thm-calc-header {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #0369a1;
+  white-space: nowrap;
+}
+
+.thm-calc-row {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: 'Times New Roman', Times, Georgia, serif;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.thm-val-frac-box {
+  display: inline-flex;
+}
+
+.thm-val-frac {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+  font-size: 0.82rem;
+  color: #334155;
+  font-weight: 700;
+}
+
+.thm-val-frac .thm-fn {
+  border-bottom: 1px solid #64748b;
+  padding: 0 0.2rem 1px;
+}
+
+.thm-val-frac .thm-fd {
+  padding: 1px 0.2rem 0;
 }
 
 .thm-product-badge {
-  background: var(--success-light);
-  border: 2px solid var(--success-color);
-  color: var(--success-color);
-  padding: 0.2rem 0.6rem;
-  border-radius: 20px;
-  font-size: 1.15rem;
+  background: #ecfdf5;
+  border: 1.5px solid #10b981;
+  color: #059669;
+  padding: 0.1rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.95rem;
   font-weight: 800;
-  letter-spacing: 0.5px;
-  box-shadow: var(--shadow-sm);
-  animation: pulse-product 2s infinite ease-in-out;
+  font-family: sans-serif;
+  letter-spacing: 0.02em;
+  box-shadow: 0 1px 3px rgba(16, 185, 129, 0.2);
+  margin-left: 0.15rem;
 }
 
-@keyframes pulse-product {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+/* 画面幅が狭い場合の折り返し対応 */
+@media (max-width: 960px) {
+  #thm-formula-bar.thm-formula-bar {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.5rem;
+  }
+  .thm-bar-arrow {
+    display: none;
+  }
+  .thm-bar-section-calc {
+    align-items: center;
+  }
+}
+
+/* ダークモード対応 */
+[data-theme="dark"] .thm-bar-tag {
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.15);
+  border-color: rgba(56, 189, 248, 0.3);
+}
+
+[data-theme="dark"] .thm-op-times {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .thm-op-eq {
+  color: #38bdf8;
+}
+
+[data-theme="dark"] .thm-formula-const {
+  color: #38bdf8;
+}
+
+[data-theme="dark"] .thm-bar-arrow {
+  color: #38bdf8;
+}
+
+[data-theme="dark"] .thm-bar-section-calc {
+  background: rgba(15, 23, 42, 0.7);
+  border-color: rgba(56, 189, 248, 0.25);
+}
+
+[data-theme="dark"] .thm-calc-header {
+  color: #7dd3fc;
+}
+
+[data-theme="dark"] .thm-val-frac {
+  color: #cbd5e1;
+}
+
+[data-theme="dark"] .thm-val-frac .thm-fn {
+  border-bottom-color: #94a3b8;
 }
 
 [data-theme="dark"] .thm-product-badge {
   background: #064e3b;
-  color: #34d399;
   border-color: #34d399;
+  color: #34d399;
 }
 
 /* ==========================================================
