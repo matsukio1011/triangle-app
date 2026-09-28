@@ -65,8 +65,8 @@
       flex-direction: column;
       height: 100vh;
       max-height: 100vh;
-      padding: 12px 24px 14px;
-      gap: 12px;
+      padding: 10px 20px 12px;
+      gap: 10px;
     }
 
     /* Header */
@@ -163,12 +163,12 @@
       transform: translateY(-1px);
     }
 
-    /* Main Showcase Grid: 2 Cards Side-by-Side */
+    /* Main Showcase Grid: 3 Cards Side-by-Side */
     main {
       flex: 1;
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
       min-height: 0;
     }
 
@@ -178,7 +178,7 @@
       background: linear-gradient(145deg, rgba(15, 23, 42, 0.85) 0%, rgba(11, 17, 32, 0.95) 100%);
       border: 1px solid var(--border-color);
       border-radius: 16px;
-      padding: 18px 22px;
+      padding: 14px 18px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -224,6 +224,11 @@
       --card-glow: var(--primary-glow);
     }
 
+    .card-polygons {
+      --card-accent: #10b981;
+      --card-glow: rgba(16, 185, 129, 0.35);
+    }
+
     /* Card Header */
     .card-top {
       display: flex;
@@ -265,14 +270,20 @@
       color: #7dd3fc;
     }
 
+    .card-polygons .badge-feature {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #6ee7b7;
+    }
+
     .shortcut-badge {
       background: rgba(0, 0, 0, 0.4);
       border: 1px solid rgba(255, 255, 255, 0.2);
       color: var(--text-muted);
       font-family: monospace;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 800;
-      padding: 3px 7px;
+      padding: 2px 6px;
       border-radius: 6px;
       display: flex;
       align-items: center;
@@ -291,13 +302,13 @@
     .card-preview {
       display: flex;
       align-items: center;
-      gap: 16px;
-      margin: 10px 0 8px;
+      gap: 12px;
+      margin: 8px 0 6px;
     }
 
     .preview-art {
-      width: 72px;
-      height: 72px;
+      width: 58px;
+      height: 58px;
       border-radius: 12px;
       background: rgba(0, 0, 0, 0.4);
       border: 1px solid rgba(255, 255, 255, 0.1);
@@ -314,11 +325,11 @@
     }
 
     .card-title-group h2 {
-      font-size: 1.22rem;
+      font-size: 1.12rem;
       font-weight: 800;
       color: var(--text-main);
       line-height: 1.25;
-      margin-bottom: 4px;
+      margin-bottom: 3px;
       transition: color 0.2s;
     }
 
@@ -327,8 +338,9 @@
     }
 
     .card-title-group .card-subtitle {
-      font-size: 0.8rem;
+      font-size: 0.76rem;
       color: var(--text-muted);
+      line-height: 1.3;
     }
 
     /* Feature List */
@@ -336,23 +348,23 @@
       list-style: none;
       display: flex;
       flex-direction: column;
-      gap: 7px;
-      margin: 6px 0 10px;
+      gap: 5px;
+      margin: 4px 0 8px;
     }
 
     .feature-list li {
-      font-size: 0.82rem;
+      font-size: 0.78rem;
       color: #cbd5e1;
       display: flex;
       align-items: flex-start;
-      gap: 8px;
-      line-height: 1.35;
+      gap: 7px;
+      line-height: 1.32;
     }
 
     .feature-icon {
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       flex-shrink: 0;
-      line-height: 1.35;
+      line-height: 1.32;
     }
 
     .feature-list strong {
@@ -365,12 +377,12 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-top: 10px;
+      padding-top: 8px;
       border-top: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     .target-scope-text {
-      font-size: 0.74rem;
+      font-size: 0.72rem;
       color: var(--text-dim);
     }
 
@@ -378,13 +390,13 @@
       background: linear-gradient(135deg, var(--btn-grad-start, #4f46e5), var(--btn-grad-end, #818cf8));
       color: #ffffff;
       border: none;
-      padding: 8px 18px;
+      padding: 7px 15px;
       border-radius: 8px;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 700;
       display: inline-flex;
       align-items: center;
-      gap: 7px;
+      gap: 6px;
       cursor: pointer;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
       transition: all 0.2s ease;
@@ -401,6 +413,12 @@
       color: #081020;
     }
 
+    .card-polygons .launch-btn {
+      --btn-grad-start: #059669;
+      --btn-grad-end: #10b981;
+      color: #ffffff;
+    }
+
     .app-card:hover .launch-btn {
       transform: translateY(-2px);
       box-shadow: 0 6px 18px var(--card-glow);
@@ -412,6 +430,27 @@
 
     .app-card:hover .launch-btn svg {
       transform: translateX(3px);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 1080px) {
+      html, body {
+        height: auto;
+        min-height: 100vh;
+        overflow-y: auto;
+      }
+      .portal-container {
+        height: auto;
+        min-height: 100vh;
+        padding: 12px;
+      }
+      main {
+        grid-template-columns: 1fr;
+        overflow: visible;
+      }
+      .app-card {
+        padding: 16px 20px;
+      }
     }
 
     /* Bottom Info Bar */
@@ -643,14 +682,88 @@
           </button>
         </div>
       </a>
+      <!-- App 3: 多角形の内角・外角マスター -->
+      <a href="./polygons/index.html" class="app-card card-polygons" id="card-polygons">
+        <div>
+          <div class="card-top">
+            <div class="card-badges">
+              <span class="badge badge-scope">中学2年〜高校幾何</span>
+              <span class="badge badge-feature">📐 内角・外角・分数計算</span>
+              <span class="badge badge-feature">✨ 全自動進行</span>
+            </div>
+            <div class="shortcut-badge">
+              キー <kbd>3</kbd>
+            </div>
+          </div>
+
+          <div class="card-preview">
+            <div class="preview-art">
+              <svg width="48" height="48" viewBox="0 0 60 60" fill="none">
+                <!-- Heptagon / Hexagon -->
+                <polygon points="30,8 49,19 49,41 30,52 11,41 11,19" stroke="#10b981" stroke-width="2.5" fill="rgba(16,185,129,0.12)" stroke-linejoin="round"></polygon>
+                <!-- Extended exterior line -->
+                <line x1="49" y1="41" x2="59" y2="47" stroke="#f59e0b" stroke-width="2" stroke-dasharray="2 2" stroke-linecap="round"></line>
+                <!-- Exterior arc -->
+                <path d="M 54,43.5 A 5.5,5.5 0 0,1 49,46.5" fill="none" stroke="#f59e0b" stroke-width="2.2" stroke-linecap="round"></path>
+                <!-- Interior arc -->
+                <path d="M 43,40 A 6,6 0 0,0 46.5,34.5" fill="none" stroke="#38bdf8" stroke-width="2.2" stroke-linecap="round"></path>
+                <!-- Vertex triangle lines -->
+                <line x1="11" y1="19" x2="49" y2="19" stroke="#34d399" stroke-width="1.2" stroke-dasharray="2 2" opacity="0.65"></line>
+                <line x1="11" y1="19" x2="49" y2="41" stroke="#34d399" stroke-width="1.2" stroke-dasharray="2 2" opacity="0.65"></line>
+                <line x1="11" y1="19" x2="30" y2="52" stroke="#34d399" stroke-width="1.2" stroke-dasharray="2 2" opacity="0.65"></line>
+                <circle cx="30" cy="8" r="2.4" fill="#ffffff"></circle>
+                <circle cx="49" cy="19" r="2.4" fill="#ffffff"></circle>
+                <circle cx="49" cy="41" r="3.2" fill="#f59e0b"></circle>
+                <circle cx="30" cy="52" r="2.4" fill="#ffffff"></circle>
+                <circle cx="11" cy="41" r="2.4" fill="#ffffff"></circle>
+                <circle cx="11" cy="19" r="2.4" fill="#ffffff"></circle>
+              </svg>
+            </div>
+            <div class="card-title-group">
+              <h2>多角形の内角・外角マスター</h2>
+              <p class="card-subtitle">公式の原理から割り切れない分数角度まで完全制覇</p>
+            </div>
+          </div>
+
+          <ul class="feature-list">
+            <li>
+              <span class="feature-icon">⚡</span>
+              <span><strong>180°×(n-2) と 常に360°</strong>：三角形分割の仕組みや、外角の総和が何角形でも360°になる原理を徹底理解</span>
+            </li>
+            <li>
+              <span class="feature-icon">➗</span>
+              <span><strong>既約分数角度の集中特訓</strong>：正7角形や正14角形など、割り切れない難問も約分ルール・解法テクで攻略</span>
+            </li>
+            <li>
+              <span class="feature-icon">🎯</span>
+              <span><strong>快適な全自動4択クイズ</strong>：正解で自動次問へサクサク進む！PCスクロール無しの集中モード搭載</span>
+            </li>
+            <li>
+              <span class="feature-icon">📖</span>
+              <span><strong>公式チートシート＆早見表</strong>：正3角形〜正20角形までの内角・外角・対角線の本数を一覧できるまとめ表</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="card-bottom">
+          <span class="target-scope-text">対象: 中学2年（多角形の角）〜高校数学</span>
+          <button class="launch-btn" type="button">
+            <span>アプリを起動する</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7"></path>
+            </svg>
+          </button>
+        </div>
+      </a>
     </main>
 
     <!-- Bottom Status Bar -->
     <footer>
       <div class="shortcut-hints">
         <span>キーボード操作:</span>
-        <span><kbd>1</kbd> 三角形の心 & チェバ・メネラウス</span>
-        <span><kbd>2</kbd> 垂線求積マスター</span>
+        <span><kbd>1</kbd> 三角形の心</span>
+        <span><kbd>2</kbd> 垂線求積</span>
+        <span><kbd>3</kbd> 多角形の内角・外角</span>
         <span><kbd>F</kbd> 全画面切り替え</span>
       </div>
       <a href="https://github.com/matsukio1011/triangle-app" target="_blank" rel="noopener noreferrer" class="github-link">
@@ -796,9 +909,11 @@
     /* Card Interactive Sound & Actions */
     const cardCenters = document.getElementById('card-centers');
     const cardAltitude = document.getElementById('card-altitude');
+    const cardPolygons = document.getElementById('card-polygons');
 
     cardCenters.addEventListener('mouseenter', () => playSound('hover'));
     cardAltitude.addEventListener('mouseenter', () => playSound('hover'));
+    cardPolygons.addEventListener('mouseenter', () => playSound('hover'));
 
     function launchApp(url) {
       playSound('launch');
@@ -817,12 +932,19 @@
       launchApp(cardAltitude.getAttribute('href'));
     });
 
+    cardPolygons.addEventListener('click', (e) => {
+      e.preventDefault();
+      launchApp(cardPolygons.getAttribute('href'));
+    });
+
     /* Keyboard Shortcuts */
     window.addEventListener('keydown', (e) => {
       if (e.key === '1') {
         launchApp(cardCenters.getAttribute('href'));
       } else if (e.key === '2') {
         launchApp(cardAltitude.getAttribute('href'));
+      } else if (e.key === '3') {
+        launchApp(cardPolygons.getAttribute('href'));
       } else if (e.key.toLowerCase() === 'f') {
         toggleFullscreen();
       }

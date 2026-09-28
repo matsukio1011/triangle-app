@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4f46e5" />
+      <stop offset="100%" stop-color="#06b6d4" />
+    </linearGradient>
+    <linearGradient id="polyFill" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.08" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.25" />
+    </filter>
+  </defs>
+
+  <!-- 背景：角丸アプリアイコン風 -->
+  <rect width="64" height="64" rx="15" fill="url(#bgGrad)" />
+
+  <!-- 正六角形（幾何学多角形） -->
+  <polygon points="32,13 49.5,23.1 49.5,43.3 32,53.4 14.5,43.3 14.5,23.1" 
+           fill="url(#polyFill)" 
+           stroke="#ffffff" 
+           stroke-width="2.8" 
+           stroke-linejoin="round"
+           filter="url(#shadow)" />
+
+  <!-- 辺の延長線（外角の視覚化） -->
+  <line x1="49.5" y1="23.1" x2="60.5" y2="29.5" 
+        stroke="#fcd34d" 
+        stroke-width="2.4" 
+        stroke-dasharray="2,2" 
+        stroke-linecap="round" />
+
+  <!-- 外角の弧（ゴールド） -->
+  <path d="M 54.8,26.1 A 6,6 0 0,1 49.5,30.5" 
+        fill="none" 
+        stroke="#f59e0b" 
+        stroke-width="3" 
+        stroke-linecap="round" />
+
+  <!-- 内角の弧（シアン） -->
+  <path d="M 44.2,26.1 A 6,6 0 0,0 43.5,19.6" 
+        fill="none" 
+        stroke="#38bdf8" 
+        stroke-width="2.6" 
+        stroke-linecap="round" />
+
+  <!-- 各頂点のポイント -->
+  <circle cx="32" cy="13" r="2.4" fill="#ffffff" />
+  <circle cx="49.5" cy="23.1" r="2.8" fill="#fcd34d" />
+  <circle cx="49.5" cy="43.3" r="2.4" fill="#ffffff" />
+  <circle cx="32" cy="53.4" r="2.4" fill="#ffffff" />
+  <circle cx="14.5" cy="43.3" r="2.4" fill="#ffffff" />
+  <circle cx="14.5" cy="23.1" r="2.4" fill="#ffffff" />
+</svg>

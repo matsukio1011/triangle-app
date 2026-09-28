@@ -1,0 +1,1899 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>多角形の内角・外角マスター | 4択クイズアプリ</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%234f46e5'/%3E%3Cstop offset='100%25' stop-color='%2306b6d4'/%3E%3C/linearGradient%3E%3ClinearGradient id='pf' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23ffffff' stop-opacity='0.3'/%3E%3Cstop offset='100%25' stop-color='%23ffffff' stop-opacity='0.08'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='15' fill='url(%23bg)'/%3E%3Cpolygon points='32,13 49.5,23.1 49.5,43.3 32,53.4 14.5,43.3 14.5,23.1' fill='url(%23pf)' stroke='%23ffffff' stroke-width='2.8' stroke-linejoin='round'/%3E%3Cline x1='49.5' y1='23.1' x2='60.5' y2='29.5' stroke='%23fcd34d' stroke-width='2.4' stroke-dasharray='2,2' stroke-linecap='round'/%3E%3Cpath d='M 54.8,26.1 A 6,6 0 0,1 49.5,30.5' fill='none' stroke='%23f59e0b' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M 44.2,26.1 A 6,6 0 0,0 43.5,19.6' fill='none' stroke='%2338bdf8' stroke-width='2.6' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='13' r='2.4' fill='%23ffffff'/%3E%3Ccircle cx='49.5' cy='23.1' r='2.8' fill='%23fcd34d'/%3E%3Ccircle cx='49.5' cy='43.3' r='2.4' fill='%23ffffff'/%3E%3Ccircle cx='32' cy='53.4' r='2.4' fill='%23ffffff'/%3E%3Ccircle cx='14.5' cy='43.3' r='2.4' fill='%23ffffff'/%3E%3Ccircle cx='14.5' cy='23.1' r='2.4' fill='%23ffffff'/%3E%3C/svg%3E">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --primary-light: #eef2ff;
+      --secondary: #0ea5e9;
+      --accent: #f59e0b;
+      --success: #10b981;
+      --danger: #ef4444;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --tab-bg: #e2e8f0;
+      --tab-active-bg: #ffffff;
+      --box-sub-bg: #f8fafc;
+      --choice-num-bg: #f1f5f9;
+      --table-th-bg: #f1f5f9;
+      --table-even-bg: #fafafa;
+      --radius: 16px;
+      --shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.06);
+    }
+
+    body.dark-mode {
+      --primary: #818cf8;
+      --primary-hover: #6366f1;
+      --primary-light: #1e1b4b;
+      --secondary: #38bdf8;
+      --accent: #fbbf24;
+      --success: #34d399;
+      --danger: #f87171;
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --tab-bg: #334155;
+      --tab-active-bg: #1e293b;
+      --box-sub-bg: #0f172a;
+      --choice-num-bg: #334155;
+      --table-th-bg: #334155;
+      --table-even-bg: #162032;
+      --shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.5);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 8px 12px 20px;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    @media (min-width: 640px) {
+      body.quiz-playing {
+        height: 100vh;
+        overflow: hidden;
+        padding-bottom: 8px;
+        justify-content: center;
+      }
+      body.quiz-playing .container {
+        display: flex;
+        flex-direction: column;
+        height: 98vh;
+        justify-content: flex-start;
+      }
+    }
+
+    .container {
+      width: 100%;
+      max-width: 820px;
+    }
+
+    /* ヘッダー＆ツールバー */
+    .top-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+
+    .app-branding {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      cursor: pointer;
+      user-select: none;
+      transition: opacity 0.15s;
+    }
+
+    .app-branding:hover {
+      opacity: 0.85;
+    }
+
+    .app-title {
+      font-size: 1.3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.02em;
+    }
+
+    .app-tagline {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      display: none;
+    }
+
+    @media (min-width: 520px) {
+      .app-tagline { display: inline-block; }
+    }
+
+    .top-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .tool-btn {
+      background: var(--card-bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+
+    .tool-btn:hover {
+      border-color: var(--primary);
+      transform: translateY(-1px);
+    }
+
+    /* タブバー */
+    .tab-bar {
+      display: flex;
+      background: var(--tab-bg);
+      border-radius: 10px;
+      padding: 3px;
+      margin-bottom: 8px;
+      gap: 4px;
+      transition: background 0.2s;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 6px 10px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.82rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .tab-btn.active {
+      background: var(--tab-active-bg);
+      color: var(--primary);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+
+    /* カード */
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      margin-bottom: 10px;
+      transition: background-color 0.25s, border-color 0.25s;
+    }
+
+    /* クイズカード */
+    .quiz-card-inner {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .quiz-status {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.82rem;
+      font-weight: 700;
+      gap: 8px;
+    }
+
+    /* 中断・トップへ戻るボタン */
+    .btn-quit {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      border-radius: 8px;
+      padding: 2px 8px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+    }
+
+    .btn-quit:hover {
+      background: #fee2e2;
+      border-color: #ef4444;
+      color: #b91c1c;
+    }
+
+    body.dark-mode .btn-quit:hover {
+      background: #450a0a;
+      border-color: #f87171;
+      color: #fecaca;
+    }
+
+    .progress-track {
+      flex-grow: 1;
+      height: 6px;
+      background: var(--tab-bg);
+      border-radius: 999px;
+      margin: 0 8px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #4f46e5, #06b6d4);
+      width: 0%;
+      border-radius: 999px;
+      transition: width 0.25s ease;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .badge-primary { background: var(--primary-light); color: var(--primary); }
+    .badge-accent { background: #fef3c7; color: #b45309; }
+    .badge-info { background: #e0f2fe; color: #0369a1; }
+    body.dark-mode .badge-accent { background: #78350f; color: #fde68a; }
+    body.dark-mode .badge-info { background: #0c4a6e; color: #bae6fd; }
+
+    .question-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .question-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.45;
+      margin-bottom: 10px;
+    }
+
+    /* 2カラムレイアウト */
+    .quiz-body-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    @media (min-width: 640px) {
+      .quiz-body-layout {
+        flex-direction: row;
+        align-items: stretch;
+        gap: 16px;
+      }
+      .quiz-visualizer-col {
+        flex: 0 0 240px;
+        margin-bottom: 0 !important;
+      }
+      .quiz-choices-col {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+    }
+
+    .quiz-body-layout.no-visual .quiz-visualizer-col {
+      display: none !important;
+    }
+    .quiz-body-layout.no-visual .quiz-choices-col {
+      width: 100%;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    /* 多角形ビジュアライザー */
+    .visualizer-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--box-sub-bg);
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      padding: 6px;
+      margin-bottom: 8px;
+      transition: background-color 0.25s;
+    }
+
+    canvas {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .visualizer-caption {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+      text-align: center;
+    }
+
+    /* 4択グリッド */
+    .choices-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    @media (max-width: 480px) {
+      .choices-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .choice-btn {
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 10px;
+      font-size: 1.08rem;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transition: all 0.12s ease;
+      min-height: 56px;
+      text-align: center;
+    }
+
+    .choice-btn:hover:not(:disabled) {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(79, 70, 229, 0.12);
+    }
+
+    .choice-btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .choice-btn .choice-number {
+      position: absolute;
+      left: 8px;
+      top: 8px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--choice-num-bg);
+      color: var(--text-muted);
+      font-size: 0.7rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+
+    .choice-btn.correct {
+      background: #d1fae5 !important;
+      border-color: var(--success) !important;
+      color: #065f46 !important;
+      animation: popSuccess 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    body.dark-mode .choice-btn.correct {
+      background: #064e3b !important;
+      border-color: #34d399 !important;
+      color: #a7f3d0 !important;
+    }
+
+    .choice-btn.wrong {
+      background: #fee2e2 !important;
+      border-color: var(--danger) !important;
+      color: #991b1b !important;
+      animation: shake 0.35s ease;
+    }
+
+    body.dark-mode .choice-btn.wrong {
+      background: #450a0a !important;
+      border-color: #f87171 !important;
+      color: #fecaca !important;
+    }
+
+    .choice-btn:disabled {
+      cursor: default;
+      opacity: 0.95;
+    }
+
+    @keyframes popSuccess {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.04); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-5px); }
+      40%, 80% { transform: translateX(5px); }
+    }
+
+    .auto-next-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--success);
+      margin-top: 8px;
+      animation: fadeIn 0.2s ease;
+    }
+
+    /* 分数スタイル */
+    .frac-box {
+      display: inline-flex;
+      flex-direction: column;
+      vertical-align: middle;
+      text-align: center;
+      margin: 0 3px;
+      font-size: 0.92em;
+    }
+
+    .frac-box .num {
+      border-bottom: 2px solid currentColor;
+      padding: 0 3px;
+      line-height: 1.1;
+      font-weight: 700;
+    }
+
+    .frac-box .den {
+      padding: 0 3px;
+      line-height: 1.1;
+      font-weight: 700;
+    }
+
+    .deg {
+      margin-left: 1px;
+      font-size: 0.9em;
+    }
+
+    /* 解説ボックス */
+    .explanation-box {
+      background: var(--box-sub-bg);
+      border-left: 4px solid var(--danger);
+      border-radius: 0 10px 10px 0;
+      padding: 10px 14px;
+      margin-top: 8px;
+      animation: fadeIn 0.25s ease;
+    }
+
+    .exp-header {
+      font-weight: 700;
+      font-size: 0.88rem;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--danger);
+    }
+
+    .exp-content {
+      font-size: 0.82rem;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .btn-next {
+      width: 100%;
+      margin-top: 8px;
+      padding: 10px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-next:hover {
+      background: var(--primary-hover);
+    }
+
+    /* スタート画面 */
+    .mode-selection-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: 550px) {
+      .mode-selection-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .mode-card {
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      background: var(--card-bg);
+      text-align: left;
+    }
+
+    .mode-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .mode-card.selected {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .mode-title {
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--text);
+      margin-bottom: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .mode-desc {
+      font-size: 0.73rem;
+      color: var(--text-muted);
+      line-height: 1.3;
+    }
+
+    .start-options {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 8px;
+      margin-bottom: 14px;
+      font-size: 0.85rem;
+      color: var(--text);
+      background: var(--box-sub-bg);
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+    }
+
+    .start-options input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    .btn-start {
+      width: 100%;
+      padding: 13px;
+      background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .btn-start:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(79, 70, 229, 0.35);
+    }
+
+    /* 結果画面 */
+    .result-container {
+      text-align: center;
+      padding: 16px 10px;
+    }
+
+    .score-circle {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 12px;
+      box-shadow: 0 6px 16px rgba(79, 70, 229, 0.3);
+    }
+
+    .score-number {
+      font-size: 2rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .score-label {
+      font-size: 0.72rem;
+      opacity: 0.9;
+    }
+
+    .result-message {
+      font-size: 1.15rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .result-stats {
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      margin: 12px 0;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .result-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    .btn-secondary {
+      flex: 1;
+      min-width: 140px;
+      padding: 11px;
+      background: var(--card-bg);
+      color: var(--text);
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover {
+      background: var(--tab-bg);
+    }
+
+    /* チートシート */
+    .sheet-section {
+      margin-bottom: 16px;
+    }
+
+    .sheet-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sheet-card {
+      background: var(--box-sub-bg);
+      border-radius: 10px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      margin-bottom: 6px;
+    }
+
+    .formula-badge {
+      display: inline-block;
+      background: var(--primary-light);
+      color: var(--primary);
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-weight: 800;
+      font-size: 0.92rem;
+      margin: 2px 0;
+    }
+
+    .table-container {
+      overflow-x: auto;
+      margin-top: 6px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+      text-align: center;
+    }
+
+    th, td {
+      border: 1px solid var(--border);
+      padding: 5px 3px;
+    }
+
+    th {
+      background: var(--table-th-bg);
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    tr:nth-child(even) {
+      background: var(--table-even-bg);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- ヘッダー＆ツールバー（タイトルクリックでトップ復帰可能） -->
+    <div class="top-header-row">
+      <div class="app-branding" onclick="backToTop()" title="トップページに戻る">
+        <h1 class="app-title">多角形の内角・外角マスター</h1>
+        <span class="app-tagline">4択クイズ</span>
+      </div>
+      <div class="top-toolbar">
+        <a href="../index.html" class="tool-btn" style="text-decoration: none;" title="幾何学ポータルへ戻る">
+          <span>🏛️</span> <span>ポータル</span>
+        </a>
+        <button id="topNavBtn" class="tool-btn" title="トップページ（モード選択）に戻る" onclick="backToTop()">
+          <span>🏠</span> <span>トップ</span>
+        </button>
+        <button id="visualToggle" class="tool-btn" title="多角形の図の表示 / 非表示を切替" onclick="toggleVisual()">
+          <span id="visualIcon">📐</span> <span id="visualText">図: ON</span>
+        </button>
+        <button id="darkToggle" class="tool-btn" title="ダークモード / ライトモード切替" onclick="toggleDarkMode()">
+          <span id="darkIcon">🌙</span> <span id="darkText">ダーク</span>
+        </button>
+        <button id="fsToggle" class="tool-btn" title="全画面表示 / 解除" onclick="toggleFullscreen()">
+          <span id="fsIcon">⛶</span> <span id="fsText">全画面</span>
+        </button>
+        <button id="soundToggle" class="tool-btn" title="効果音のON/OFF">
+          <span id="soundIcon">🔊</span> <span id="soundText">音: ON</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- タブバー -->
+    <div class="tab-bar">
+      <button class="tab-btn active" id="tabQuiz" onclick="switchTab('quiz')">
+        <span>✏️</span> 4択クイズ
+      </button>
+      <button class="tab-btn" id="tabSheet" onclick="switchTab('sheet')">
+        <span>📖</span> 公式・早見表まとめ
+      </button>
+    </div>
+
+    <!-- ===== 画面1: クイズタブ ===== -->
+    <div id="quizTabContent">
+      <!-- スタート設定カード -->
+      <div id="startScreen" class="card">
+        <h2 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 6px;">出題モードを選んでスタート</h2>
+        <p style="color: var(--text-muted); font-size: 0.82rem; margin-bottom: 12px;">
+          基本公式、計算、割り切れない分数角度（例: 正7角形の外角 <sup>360</sup>/<sub>7</sub>°）まで網羅。正解すると自動で次の問題へサクサク進みます！
+        </p>
+
+        <div class="mode-selection-grid">
+          <div class="mode-card selected" onclick="selectMode('all', this)">
+            <div class="mode-title">
+              <span>🌟 ランダム総合 (10問)</span>
+              <span class="badge badge-primary">おすすめ</span>
+            </div>
+            <div class="mode-desc">公式、内角・外角の和、1つの角度、分数までバランスよく出題。</div>
+          </div>
+
+          <div class="mode-card" onclick="selectMode('fraction', this)">
+            <div class="mode-title">
+              <span>➗ 分数角度特訓 (10問)</span>
+              <span class="badge badge-accent">重要</span>
+            </div>
+            <div class="mode-desc">正7角形や正14角形など、割り切れない角度を既約分数で答える集中特訓！</div>
+          </div>
+
+          <div class="mode-card" onclick="selectMode('sum', this)">
+            <div class="mode-title">
+              <span>📐 内角・外角の和 (10問)</span>
+              <span class="badge badge-info">基本</span>
+            </div>
+            <div class="mode-desc">180(n-2) の計算や、何角形でも常に360°の外角の和を徹底マスター。</div>
+          </div>
+
+          <div class="mode-card" onclick="selectMode('one', this)">
+            <div class="mode-title">
+              <span>🎯 1つの角度 (10問)</span>
+              <span class="badge badge-primary">計算</span>
+            </div>
+            <div class="mode-desc">正10角形の外角36°や内角144°など、1つの角度を求める計算問題。</div>
+          </div>
+        </div>
+
+        <label class="start-options">
+          <input type="checkbox" id="visualCheck" checked onchange="setVisualPreference(this.checked)">
+          <span>多角形のビジュアル図（Canvas）を表示する</span>
+        </label>
+
+        <button class="btn-start" onclick="startQuiz()">
+          クイズをスタートする！
+        </button>
+      </div>
+
+      <!-- クイズプレイカード（中断・戻るボタンつき） -->
+      <div id="quizPlayScreen" class="card" style="display: none;">
+        <div class="quiz-card-inner">
+          <div class="quiz-status">
+            <button class="btn-quit" onclick="backToTop()" title="クイズを中断してトップに戻る">
+              <span>🏠</span> <span>中断</span>
+            </button>
+            <span id="questionCounter">第 1 / 10 問</span>
+            <div class="progress-track">
+              <div id="progressBar" class="progress-fill"></div>
+            </div>
+            <span id="scoreTracker">正解: 0</span>
+          </div>
+
+          <div class="question-header">
+            <span id="categoryBadge" class="badge badge-primary">内角の和</span>
+            <span id="autoNextNotice" style="display: none; color: var(--success); font-size: 0.75rem; font-weight: 700;">
+              ✨ 正解！自動で次へ進みます...
+            </span>
+          </div>
+
+          <h3 id="questionText" class="question-title">問題文がここに入ります</h3>
+
+          <div class="quiz-body-layout" id="quizBodyLayout">
+            <!-- 左カラム: 多角形ビジュアライザー -->
+            <div class="quiz-visualizer-col visualizer-box" id="visualizerContainer">
+              <canvas id="polyCanvas" width="220" height="170"></canvas>
+              <div id="visualizerCaption" class="visualizer-caption">図: 正10角形</div>
+            </div>
+
+            <!-- 右カラム: 4択ボタン ＆ 解説 -->
+            <div class="quiz-choices-col">
+              <div class="choices-grid" id="choicesContainer">
+                <!-- JSで4つの選択肢が生成されます -->
+              </div>
+
+              <div id="correctFeedback" class="auto-next-indicator" style="display: none;">
+                <span>🎉 正解！次の問題へ進みます</span>
+              </div>
+
+              <div id="explanationContainer" class="explanation-box" style="display: none;">
+                <div id="expHeader" class="exp-header">💡 おしい！正解はこちら</div>
+                <div id="expContent" class="exp-content">解説文</div>
+                <button id="nextBtn" class="btn-next" onclick="nextQuestion()">次の問題へ 進む ➔ (Enter)</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 結果カード -->
+      <div id="resultScreen" class="card result-container" style="display: none;">
+        <div class="score-circle">
+          <span id="finalScore" class="score-number">10</span>
+          <span class="score-label">/ 10 点</span>
+        </div>
+
+        <h3 id="resultTitle" class="result-message">素晴らしい！全問正解！</h3>
+        <p id="resultComment" style="color: var(--text-muted); font-size: 0.85rem;">
+          多角形の内角と外角の性質を完璧にマスターしています！
+        </p>
+
+        <div class="result-stats">
+          <div>正答率: <strong id="accuracyRate" style="color: var(--primary);">100%</strong></div>
+          <div>クリアタイム: <strong id="clearTime" style="color: var(--secondary);">0:45</strong></div>
+        </div>
+
+        <div class="result-actions">
+          <button class="btn-secondary" onclick="retryQuiz()">もう一度挑戦する</button>
+          <button class="btn-secondary" onclick="backToTop(true)">🏠 トップへ</button>
+          <a href="../index.html" class="btn-secondary" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 4px;" title="幾何学ポータルへ戻る">🏛️ ポータルへ</a>
+          <button class="btn-start" style="flex: 1; min-width: 140px;" onclick="switchTab('sheet')">公式まとめを確認する</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 画面2: 公式・早見表タブ ===== -->
+    <div id="sheetTabContent" style="display: none;">
+      <div class="card">
+        <h2 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 12px;">多角形の内角・外角 公式チートシート</h2>
+
+        <div class="sheet-section">
+          <div class="sheet-title"><span>1.</span> n角形の内角の和</div>
+          <div class="sheet-card">
+            <div class="formula-badge">内角の和 = 180° × (n - 2)</div>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 4px;">
+              <strong>【なぜこの式？】</strong> 1頂点から対角線を引くと、多角形は <code>(n - 2) 個の三角形</code> に分かれます。三角形の内角の和は 180° なので、180° × (n - 2) になります！
+            </p>
+            <p style="font-size: 0.78rem; background: var(--card-bg); padding: 5px 8px; border-radius: 6px; margin-top: 4px; border: 1px solid var(--border);">
+              例: 10角形の内角の和 ➔ 180° × (10 - 2) = 180° × 8 = <strong>1440°</strong>
+            </p>
+          </div>
+        </div>
+
+        <div class="sheet-section">
+          <div class="sheet-title"><span>2.</span> 多角形の外角の和</div>
+          <div class="sheet-card">
+            <div class="formula-badge">外角の和 = 常に 360°</div>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 4px;">
+              <strong>【なぜ常に360°？】</strong> 多角形の周りを1周回って元の向きに戻ると、ちょうど1回転（360°）回転します。何角形であっても、外角をすべて足すと必ず 360° になります！
+            </p>
+          </div>
+        </div>
+
+        <div class="sheet-section">
+          <div class="sheet-title"><span>3.</span> 正n角形の「1つの外角」と「1つの内角」</div>
+          <div class="sheet-card">
+            <div class="formula-badge">1つの外角 = 360° ÷ n</div>
+            <div class="formula-badge" style="margin-left: 4px; background: #e0f2fe; color: #0369a1;">1つの内角 = 180° - (1つの外角)</div>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 5px;">
+              <strong>【解法のコツ】</strong> 正多角形の1つの内角を求めるときは、内角の和を n で割るよりも、<strong>「まず外角を求めて 180° から引く」</strong> のが一番早くて計算ミスも減ります！
+            </p>
+            <p style="font-size: 0.78rem; background: var(--card-bg); padding: 5px 8px; border-radius: 6px; margin-top: 4px; border: 1px solid var(--border);">
+              例: 正10角形 ➔ 外角 = 360° ÷ 10 = <strong>36°</strong>、内角 = 180° - 36° = <strong>144°</strong>
+            </p>
+          </div>
+        </div>
+
+        <div class="sheet-section">
+          <div class="sheet-title"><span>4.</span> 割り切れないときの分数表記ルール</div>
+          <div class="sheet-card">
+            <p style="font-size: 0.82rem; margin-bottom: 5px;">
+              360 を n で割って割り切れない場合は、<strong>既約分数（これ以上約分できない仮分数）</strong> で表します。
+            </p>
+            <ul style="font-size: 0.78rem; padding-left: 18px; line-height: 1.7; color: var(--text-muted);">
+              <li><strong>正7角形:</strong> 外角 = <span class="frac-box"><span class="num">360</span><span class="den">7</span></span>°、内角 = 180° - <span class="frac-box"><span class="num">360</span><span class="den">7</span></span>° = <span class="frac-box"><span class="num">900</span><span class="den">7</span></span>°</li>
+              <li><strong>正11角形:</strong> 外角 = <span class="frac-box"><span class="num">360</span><span class="den">11</span></span>°、内角 = 180° - <span class="frac-box"><span class="num">360</span><span class="den">11</span></span>° = <span class="frac-box"><span class="num">1620</span><span class="den">11</span></span>°</li>
+              <li><strong>正14角形:</strong> 外角 = <sup>360</sup>/<sub>14</sub> を2で約分 ➔ <span class="frac-box"><span class="num">180</span><span class="den">7</span></span>°、内角 = 180° - <span class="frac-box"><span class="num">180</span><span class="den">7</span></span>° = <span class="frac-box"><span class="num">1080</span><span class="den">7</span></span>°</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="sheet-section">
+          <div class="sheet-title"><span>📊</span> 正多角形の角度 早見表</div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>図形</th>
+                  <th>内角の和</th>
+                  <th>外角の和</th>
+                  <th>1つの外角 (360°/n)</th>
+                  <th>1つの内角 (180°-外角)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>正三角形</strong> (n=3)</td><td>180°</td><td>360°</td><td>120°</td><td>60°</td></tr>
+                <tr><td><strong>正方形</strong> (n=4)</td><td>360°</td><td>360°</td><td>90°</td><td>90°</td></tr>
+                <tr><td><strong>正五角形</strong> (n=5)</td><td>540°</td><td>360°</td><td>72°</td><td>108°</td></tr>
+                <tr><td><strong>正六角形</strong> (n=6)</td><td>720°</td><td>360°</td><td>60°</td><td>120°</td></tr>
+                <tr style="font-weight: 700;"><td><strong>正七角形</strong> (n=7)</td><td>900°</td><td>360°</td><td><span class="frac-box"><span class="num">360</span><span class="den">7</span></span>°</td><td><span class="frac-box"><span class="num">900</span><span class="den">7</span></span>°</td></tr>
+                <tr><td><strong>正八角形</strong> (n=8)</td><td>1080°</td><td>360°</td><td>45°</td><td>135°</td></tr>
+                <tr><td><strong>正九角形</strong> (n=9)</td><td>1260°</td><td>360°</td><td>40°</td><td>140°</td></tr>
+                <tr style="font-weight: 700;"><td><strong>正十角形</strong> (n=10)</td><td>1440° (180×8)</td><td>360°</td><td><strong>36°</strong></td><td><strong>144°</strong></td></tr>
+                <tr style="font-weight: 700;"><td><strong>正十一角形</strong> (n=11)</td><td>1620°</td><td>360°</td><td><span class="frac-box"><span class="num">360</span><span class="den">11</span></span>°</td><td><span class="frac-box"><span class="num">1620</span><span class="den">11</span></span>°</td></tr>
+                <tr><td><strong>正十二角形</strong> (n=12)</td><td>1800°</td><td>360°</td><td>30°</td><td>150°</td></tr>
+                <tr style="font-weight: 700;"><td><strong>正十四角形</strong> (n=14)</td><td>2160°</td><td>360°</td><td><span class="frac-box"><span class="num">180</span><span class="den">7</span></span>°</td><td><span class="frac-box"><span class="num">1080</span><span class="den">7</span></span>°</td></tr>
+                <tr><td><strong>正十五角形</strong> (n=15)</td><td>2340°</td><td>360°</td><td>24°</td><td>156°</td></tr>
+                <tr><td><strong>正二十角形</strong> (n=20)</td><td>3240°</td><td>360°</td><td>18°</td><td>162°</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ==========================================================
+       1. 設定管理・トップ戻る制御
+       ========================================================== */
+    let isDarkMode = false;
+    let showVisualizer = true;
+    let currentNForVisual = 10;
+    let autoNextTimer = null;
+
+    function initPreferences() {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark' || (!savedTheme && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        isDarkMode = true;
+        document.body.classList.add('dark-mode');
+      } else {
+        isDarkMode = false;
+        document.body.classList.remove('dark-mode');
+      }
+      updateDarkButtonUI();
+
+      const savedVisual = localStorage.getItem('showVisual');
+      if (savedVisual !== null) {
+        showVisualizer = (savedVisual === 'true');
+      } else {
+        showVisualizer = true;
+      }
+      updateVisualUI();
+    }
+
+    // トップページに戻る
+    function backToTop(force = false) {
+      const playScreen = document.getElementById('quizPlayScreen');
+      const isPlaying = playScreen && playScreen.style.display !== 'none';
+
+      if (force || !isPlaying || confirm('クイズを中断してトップ画面に戻りますか？')) {
+        if (autoNextTimer) {
+          clearTimeout(autoNextTimer);
+          autoNextTimer = null;
+        }
+        document.body.classList.remove('quiz-playing');
+        document.getElementById('quizPlayScreen').style.display = 'none';
+        document.getElementById('resultScreen').style.display = 'none';
+        document.getElementById('startScreen').style.display = 'block';
+
+        // 4択クイズタブをアクティブにする
+        switchTab('quiz');
+      }
+    }
+
+    function toggleVisual() {
+      showVisualizer = !showVisualizer;
+      localStorage.setItem('showVisual', showVisualizer);
+      updateVisualUI();
+    }
+
+    function setVisualPreference(enabled) {
+      showVisualizer = enabled;
+      localStorage.setItem('showVisual', showVisualizer);
+      updateVisualUI();
+    }
+
+    function updateVisualUI() {
+      const icon = document.getElementById('visualIcon');
+      const text = document.getElementById('visualText');
+      const check = document.getElementById('visualCheck');
+      const layout = document.getElementById('quizBodyLayout');
+
+      if (icon) icon.textContent = showVisualizer ? '📐' : '🚫';
+      if (text) text.textContent = showVisualizer ? '図: ON' : '図: OFF';
+      if (check) check.checked = showVisualizer;
+
+      if (layout) {
+        if (showVisualizer) {
+          layout.classList.remove('no-visual');
+          drawPolygon(currentNForVisual);
+        } else {
+          layout.classList.add('no-visual');
+        }
+      }
+    }
+
+    function toggleDarkMode() {
+      isDarkMode = !isDarkMode;
+      if (isDarkMode) {
+        document.body.classList.add('dark-mode');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        document.body.classList.remove('dark-mode');
+        localStorage.setItem('theme', 'light');
+      }
+      updateDarkButtonUI();
+      if (showVisualizer) {
+        drawPolygon(currentNForVisual);
+      }
+    }
+
+    function updateDarkButtonUI() {
+      const icon = document.getElementById('darkIcon');
+      const text = document.getElementById('darkText');
+      if (icon && text) {
+        icon.textContent = isDarkMode ? '☀️' : '🌙';
+        text.textContent = isDarkMode ? 'ライト' : 'ダーク';
+      }
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        const root = document.documentElement;
+        if (root.requestFullscreen) {
+          root.requestFullscreen().catch(err => {
+            console.warn("Fullscreen request error:", err);
+          });
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+
+    document.addEventListener('fullscreenchange', () => {
+      const isFull = !!document.fullscreenElement;
+      const icon = document.getElementById('fsIcon');
+      const text = document.getElementById('fsText');
+      if (icon && text) {
+        icon.textContent = isFull ? '🗗' : '⛶';
+        text.textContent = isFull ? '全画面解除' : '全画面';
+      }
+    });
+
+    /* ==========================================================
+       2. 音声システム (Web Audio API)
+       ========================================================== */
+    let audioCtx = null;
+    let soundEnabled = true;
+
+    function initAudio() {
+      if (!audioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (AudioContext) audioCtx = new AudioContext();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function playSound(type) {
+      if (!soundEnabled) return;
+      initAudio();
+      if (!audioCtx) return;
+
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      if (type === 'correct') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(523.25, now);
+        osc.frequency.setValueAtTime(783.99, now + 0.08);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+        osc.start(now);
+        osc.stop(now + 0.3);
+      } else if (type === 'wrong') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(160, now);
+        osc.frequency.setValueAtTime(140, now + 0.12);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+        osc.start(now);
+        osc.stop(now + 0.28);
+      } else if (type === 'fanfare') {
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, idx) => {
+          const noteOsc = audioCtx.createOscillator();
+          const noteGain = audioCtx.createGain();
+          noteOsc.connect(noteGain);
+          noteGain.connect(audioCtx.destination);
+          noteOsc.type = 'triangle';
+          noteOsc.frequency.setValueAtTime(freq, now + idx * 0.1);
+          noteGain.gain.setValueAtTime(0.2, now + idx * 0.1);
+          noteGain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.1 + 0.3);
+          noteOsc.start(now + idx * 0.1);
+          noteOsc.stop(now + idx * 0.1 + 0.3);
+        });
+      }
+    }
+
+    document.getElementById('soundToggle').addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      document.getElementById('soundText').textContent = soundEnabled ? '音: ON' : '音: OFF';
+      document.getElementById('soundIcon').textContent = soundEnabled ? '🔊' : '🔇';
+    });
+
+    /* ==========================================================
+       3. 数学ユーティリティ（分数処理・既約分数）
+       ========================================================== */
+    function gcd(a, b) {
+      a = Math.abs(a);
+      b = Math.abs(b);
+      while (b) {
+        let t = b;
+        b = a % b;
+        a = t;
+      }
+      return a;
+    }
+
+    function createAngle(numerator, denominator = 1) {
+      if (denominator === 0) return { num: 0, den: 1, isFrac: false, text: '0°', html: '0°' };
+      const sign = (numerator * denominator < 0) ? -1 : 1;
+      numerator = Math.abs(numerator);
+      denominator = Math.abs(denominator);
+      const g = gcd(numerator, denominator);
+      const n = (numerator / g) * sign;
+      const d = denominator / g;
+
+      if (d === 1) {
+        return {
+          num: n,
+          den: 1,
+          isFrac: false,
+          text: `${n}°`,
+          html: `${n}°`
+        };
+      } else {
+        return {
+          num: n,
+          den: d,
+          isFrac: true,
+          text: `${n}/${d}°`,
+          html: `<span class="frac-box"><span class="num">${n}</span><span class="den">${d}</span></span><span class="deg">°</span>`
+        };
+      }
+    }
+
+    /* ==========================================================
+       4. 問題ジェネレーター
+       ========================================================== */
+    let currentMode = 'all';
+    let quizQuestions = [];
+    let currentQuestionIdx = 0;
+    let correctCount = 0;
+    let startTime = 0;
+
+    function selectMode(mode, element) {
+      currentMode = mode;
+      document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('selected'));
+      element.classList.add('selected');
+    }
+
+    function generateFormulaQuestion() {
+      const types = [
+        {
+          cat: "公式・性質",
+          title: "n角形の内角の和を求める公式として、正しいものはどれ？",
+          correct: { text: "180° × (n - 2)", html: "180° × (n - 2)" },
+          wrongs: [
+            { text: "180° × n", html: "180° × n" },
+            { text: "180° × (n - 1)", html: "180° × (n - 1)" },
+            { text: "360° × (n - 2)", html: "360° × (n - 2)" }
+          ],
+          exp: "<strong>正解: 180° × (n - 2)</strong><br>1頂点から対角線を引くと (n - 2)個の三角形に分割できるためです。",
+          nForVisual: 6
+        },
+        {
+          cat: "公式・性質",
+          title: "n角形の「外角の和」は何度？",
+          correct: { text: "360°", html: "360°" },
+          wrongs: [
+            { text: "180°", html: "180°" },
+            { text: "180° × (n - 2)", html: "180° × (n - 2)" },
+            { text: "360° × n", html: "360° × n" }
+          ],
+          exp: "<strong>正解: 常に 360°</strong><br>何角形であっても、外角の和は <strong>常に 360°</strong> です！",
+          nForVisual: 5
+        },
+        {
+          cat: "公式・性質",
+          title: "正n角形の「1つの外角」を求める式として、正しいものはどれ？",
+          correct: { text: "360° ÷ n", html: "360° ÷ n" },
+          wrongs: [
+            { text: "180° ÷ n", html: "180° ÷ n" },
+            { text: "360° ÷ (n - 2)", html: "360° ÷ (n - 2)" },
+            { text: "180° × (n - 2)", html: "180° × (n - 2)" }
+          ],
+          exp: "<strong>正解: 360° ÷ n</strong><br>外角の和360°を角の数 n で等分します。",
+          nForVisual: 8
+        },
+        {
+          cat: "公式・性質",
+          title: "正n角形の「1つの内角」を求める式として、最もシンプルなものはどれ？",
+          correct: { text: "180° - (360° ÷ n)", html: "180° - (360° ÷ n)" },
+          wrongs: [
+            { text: "360° - (180° ÷ n)", html: "360° - (180° ÷ n)" },
+            { text: "180° × (n - 2)", html: "180° × (n - 2)" },
+            { text: "360° ÷ n", html: "360° ÷ n" }
+          ],
+          exp: "<strong>正解: 180° - (360° ÷ n)</strong><br>内角と外角の和は 180° なので、180° - (1つの外角) で求まります。",
+          nForVisual: 6
+        }
+      ];
+      return types[Math.floor(Math.random() * types.length)];
+    }
+
+    function generateInteriorSumQuestion() {
+      const nList = [5, 6, 7, 8, 9, 10, 12, 15, 20];
+      const n = nList[Math.floor(Math.random() * nList.length)];
+      const isFormulaStyle = (n === 10 && Math.random() < 0.5);
+
+      if (isFormulaStyle) {
+        const correctFormula = `180° × 8`;
+        return {
+          cat: "内角の和の式",
+          title: `10角形の内角の和を求める正しい式はどれ？`,
+          correct: { text: correctFormula, html: correctFormula },
+          wrongs: [
+            { text: "180° × 10", html: "180° × 10" },
+            { text: "180° × 7", html: "180° × 7" },
+            { text: "360° × 8", html: "360° × 8" }
+          ],
+          exp: `<strong>正解: 180° × 8 (= 1440°)</strong><br>180° × (n - 2) より、180° × (10 - 2) = <strong>180° × 8</strong> です。`,
+          nForVisual: 10
+        };
+      } else {
+        const sum = 180 * (n - 2);
+        const correctObj = createAngle(sum);
+        const w1 = createAngle(180 * (n - 1));
+        const w2 = createAngle(180 * (n - 3));
+        const w3 = createAngle(180 * n);
+
+        return {
+          cat: "内角の和",
+          title: `${n}角形の内角の和は何度？`,
+          correct: correctObj,
+          wrongs: [w1, w2, w3],
+          exp: `<strong>正解: ${sum}°</strong><br>計算式: 180° × (${n} - 2) = 180° × ${n - 2} = <strong>${sum}°</strong>`,
+          nForVisual: n
+        };
+      }
+    }
+
+    function generateExteriorSumQuestion() {
+      const nList = [5, 6, 7, 8, 10, 12, 15, 20, 100];
+      const n = nList[Math.floor(Math.random() * nList.length)];
+
+      const correct = { text: "360°", html: "360°" };
+      const wrongs = [
+        { text: `${180 * (n - 2)}°`, html: `${180 * (n - 2)}°` },
+        { text: "180°", html: "180°" },
+        { text: `${360 * n}°`, html: `${360 * n}°` }
+      ];
+
+      return {
+        cat: "外角の和",
+        title: `${n}角形の外角の和は何度？`,
+        correct: correct,
+        wrongs: wrongs,
+        exp: `<strong>正解: 360°</strong><br>${n}角形であっても、外角の和は <strong>常に 360°</strong> です！`,
+        nForVisual: n <= 12 ? n : 8
+      };
+    }
+
+    function generateOneExteriorQuestion(forceFraction = false) {
+      let nList = forceFraction ? [7, 11, 13, 14, 16, 17] : [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 18, 20];
+      const n = nList[Math.floor(Math.random() * nList.length)];
+      const correct = createAngle(360, n);
+
+      let wrongs = [];
+      if (correct.isFrac) {
+        const w1 = createAngle(180, n);
+        const w2 = createAngle(360, n - 2);
+        const w3 = createAngle(180 * (n - 2), n);
+        wrongs = [w1, w2, w3];
+      } else {
+        const wrongValues = [
+          180 - correct.num,
+          Math.round(360 / (n + 1)),
+          Math.round(360 / (n - 1 > 2 ? n - 1 : 4))
+        ];
+        wrongs = wrongValues.map(v => createAngle(v === correct.num ? v + 10 : v));
+      }
+
+      ensureUniqueChoices(correct, wrongs);
+
+      let formulaExp = "";
+      if (correct.isFrac) {
+        const g = gcd(360, n);
+        if (g > 1) {
+          formulaExp = `360° ÷ ${n} = <sup>360</sup>/<sub>${n}</sub>° を ${g} で約分して <strong>${correct.text}</strong>（既約分数）。`;
+        } else {
+          formulaExp = `360° ÷ ${n} = <strong>${correct.text}</strong>（既約分数）。`;
+        }
+      } else {
+        formulaExp = `360° ÷ ${n} = <strong>${correct.text}</strong>`;
+      }
+
+      return {
+        cat: "1つの外角",
+        title: `正${n}角形の「1つの外角」の大きさは何度？`,
+        correct: correct,
+        wrongs: wrongs,
+        exp: `<strong>正解: ${correct.html}</strong><br>計算: ${formulaExp}`,
+        nForVisual: n
+      };
+    }
+
+    function generateOneInteriorQuestion(forceFraction = false) {
+      let nList = forceFraction ? [7, 11, 13, 14, 16, 17] : [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 18, 20];
+      const n = nList[Math.floor(Math.random() * nList.length)];
+
+      const ext = createAngle(360, n);
+      const correct = createAngle(180 * (n - 2), n);
+
+      let wrongs = [];
+      if (correct.isFrac) {
+        const w1 = ext;
+        const w2 = createAngle(180 * (n - 1), n);
+        const w3 = createAngle(180 * (n - 3), n);
+        wrongs = [w1, w2, w3];
+      } else {
+        const wrongValues = [
+          ext.num,
+          correct.num - 15,
+          correct.num + 10
+        ];
+        wrongs = wrongValues.map(v => createAngle(v === correct.num ? v + 12 : v));
+      }
+
+      ensureUniqueChoices(correct, wrongs);
+
+      let stepExp = "";
+      if (correct.isFrac) {
+        stepExp = `① 外角 = 360° ÷ ${n} = ${ext.html}<br>` +
+                  `② 内角 = 180° - ${ext.html} = <strong>${correct.html}</strong>（既約分数）`;
+      } else {
+        stepExp = `① 外角 = 360° ÷ ${n} = ${ext.text}<br>` +
+                  `② 内角 = 180° - ${ext.text} = <strong>${correct.text}</strong>`;
+      }
+
+      return {
+        cat: "1つの内角",
+        title: `正${n}角形の「1つの内角」の大きさは何度？`,
+        correct: correct,
+        wrongs: wrongs,
+        exp: `<strong>正解: ${correct.html}</strong><br>${stepExp}`,
+        nForVisual: n
+      };
+    }
+
+    function generateReverseQuestion() {
+      const candidates = [
+        { n: 10, ext: 36, int: 144 },
+        { n: 8, ext: 45, int: 135 },
+        { n: 5, ext: 72, int: 108 },
+        { n: 6, ext: 60, int: 120 },
+        { n: 12, ext: 30, int: 150 },
+        { n: 7, extFrac: createAngle(360, 7) }
+      ];
+      const item = candidates[Math.floor(Math.random() * candidates.length)];
+      const isExt = Math.random() < 0.6 || item.extFrac;
+
+      if (item.extFrac) {
+        const correct = { text: "正7角形", html: "正7角形" };
+        return {
+          cat: "逆算問題",
+          title: `1つの外角が <span class="frac-box"><span class="num">360</span><span class="den">7</span></span>° である正多角形は、正何角形？`,
+          correct: correct,
+          wrongs: [
+            { text: "正5角形", html: "正5角形" },
+            { text: "正9角形", html: "正9角形" },
+            { text: "正14角形", html: "正14角形" }
+          ],
+          exp: `<strong>正解: 正7角形</strong><br>計算: 360° ÷ (<sup>360</sup>/<sub>7</sub>°) = <strong>7</strong>`,
+          nForVisual: 7
+        };
+      }
+
+      if (isExt) {
+        const correct = { text: `正${item.n}角形`, html: `正${item.n}角形` };
+        const wrongs = [
+          { text: `正${item.n - 2}角形`, html: `正${item.n - 2}角形` },
+          { text: `正${item.n + 2}角形`, html: `正${item.n + 2}角形` },
+          { text: `正${item.n + 4}角形`, html: `正${item.n + 4}角形` }
+        ];
+        return {
+          cat: "逆算問題",
+          title: `1つの外角の大きさが ${item.ext}° である正多角形は、正何角形？`,
+          correct: correct,
+          wrongs: wrongs,
+          exp: `<strong>正解: 正${item.n}角形</strong><br>計算: 360° ÷ ${item.ext}° = <strong>${item.n}</strong>`,
+          nForVisual: item.n
+        };
+      } else {
+        const correct = { text: `正${item.n}角形`, html: `正${item.n}角形` };
+        const wrongs = [
+          { text: `正${item.n - 2}角形`, html: `正${item.n - 2}角形` },
+          { text: `正${item.n + 2}角形`, html: `正${item.n + 2}角形` },
+          { text: `正${item.n + 4}角形`, html: `正${item.n + 4}角形` }
+        ];
+        return {
+          cat: "逆算問題",
+          title: `1つの内角の大きさが ${item.int}° である正多角形は、正何角形？`,
+          correct: correct,
+          wrongs: wrongs,
+          exp: `<strong>正解: 正${item.n}角形</strong><br>外角: 180° - ${item.int}° = ${item.ext}° ➔ 360° ÷ ${item.ext}° = <strong>${item.n}</strong>`,
+          nForVisual: item.n
+        };
+      }
+    }
+
+    function ensureUniqueChoices(correct, wrongs) {
+      const seen = new Set([correct.text]);
+      for (let i = 0; i < wrongs.length; i++) {
+        let attempt = 0;
+        while (seen.has(wrongs[i].text) && attempt < 10) {
+          if (wrongs[i].isFrac) {
+            wrongs[i] = createAngle(wrongs[i].num + (attempt + 1) * 30, wrongs[i].den);
+          } else {
+            wrongs[i] = createAngle(wrongs[i].num + (attempt + 1) * 15);
+          }
+          attempt++;
+        }
+        seen.add(wrongs[i].text);
+      }
+    }
+
+    function buildQuizQuestions(mode) {
+      const list = [];
+      if (mode === 'fraction') {
+        while (list.length < 5) list.push(generateOneExteriorQuestion(true));
+        while (list.length < 10) list.push(generateOneInteriorQuestion(true));
+      } else if (mode === 'sum') {
+        list.push(generateFormulaQuestion());
+        list.push(generateFormulaQuestion());
+        while (list.length < 6) list.push(generateInteriorSumQuestion());
+        while (list.length < 10) list.push(generateExteriorSumQuestion());
+      } else if (mode === 'one') {
+        while (list.length < 5) list.push(generateOneExteriorQuestion(false));
+        while (list.length < 10) list.push(generateOneInteriorQuestion(false));
+      } else {
+        list.push(generateFormulaQuestion());
+        list.push(generateInteriorSumQuestion());
+        list.push(generateExteriorSumQuestion());
+        list.push(generateOneExteriorQuestion(false));
+        list.push(generateOneInteriorQuestion(false));
+        list.push(generateOneExteriorQuestion(true));
+        list.push(generateOneInteriorQuestion(true));
+        list.push(generateReverseQuestion());
+        list.push(generateInteriorSumQuestion());
+        list.push(generateOneExteriorQuestion(Math.random() < 0.5));
+      }
+      return list.sort(() => Math.random() - 0.5);
+    }
+
+    /* ==========================================================
+       5. クイズフロー制御
+       ========================================================== */
+    function startQuiz() {
+      initAudio();
+      quizQuestions = buildQuizQuestions(currentMode);
+      currentQuestionIdx = 0;
+      correctCount = 0;
+      startTime = Date.now();
+
+      document.body.classList.add('quiz-playing');
+
+      document.getElementById('startScreen').style.display = 'none';
+      document.getElementById('resultScreen').style.display = 'none';
+      document.getElementById('quizPlayScreen').style.display = 'block';
+
+      loadQuestion(0);
+    }
+
+    function loadQuestion(idx) {
+      if (autoNextTimer) {
+        clearTimeout(autoNextTimer);
+        autoNextTimer = null;
+      }
+
+      const q = quizQuestions[idx];
+      document.getElementById('questionCounter').textContent = `第 ${idx + 1} / ${quizQuestions.length} 問`;
+      document.getElementById('scoreTracker').textContent = `正解: ${correctCount}`;
+      document.getElementById('progressBar').style.width = `${((idx) / quizQuestions.length) * 100}%`;
+
+      document.getElementById('categoryBadge').textContent = q.cat;
+      document.getElementById('autoNextNotice').style.display = 'none';
+      document.getElementById('questionText').innerHTML = q.title;
+
+      currentNForVisual = q.nForVisual || 6;
+      if (showVisualizer) {
+        drawPolygon(currentNForVisual);
+        document.getElementById('visualizerCaption').textContent = `図: 正${currentNForVisual}角形`;
+      }
+
+      const choices = [
+        { ...q.correct, isCorrect: true },
+        ...q.wrongs.map(w => ({ ...w, isCorrect: false }))
+      ].sort(() => Math.random() - 0.5);
+
+      const choicesBox = document.getElementById('choicesContainer');
+      choicesBox.innerHTML = '';
+
+      choices.forEach((choice, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.innerHTML = `<span class="choice-number">${i + 1}</span>${choice.html}`;
+        btn.onclick = () => selectAnswer(btn, choice.isCorrect, q);
+        choicesBox.appendChild(btn);
+      });
+
+      document.getElementById('correctFeedback').style.display = 'none';
+      document.getElementById('explanationContainer').style.display = 'none';
+    }
+
+    function selectAnswer(selectedBtn, isCorrect, q) {
+      const buttons = document.querySelectorAll('.choice-btn');
+      buttons.forEach(b => b.disabled = true);
+
+      if (isCorrect) {
+        playSound('correct');
+        selectedBtn.classList.add('correct');
+        correctCount++;
+        document.getElementById('scoreTracker').textContent = `正解: ${correctCount}`;
+
+        document.getElementById('correctFeedback').style.display = 'flex';
+        document.getElementById('autoNextNotice').style.display = 'inline-block';
+        document.getElementById('progressBar').style.width = `${((currentQuestionIdx + 1) / quizQuestions.length) * 100}%`;
+
+        autoNextTimer = setTimeout(() => {
+          nextQuestion();
+        }, 750);
+
+      } else {
+        playSound('wrong');
+        selectedBtn.classList.add('wrong');
+        buttons.forEach(b => {
+          if (b.innerText.includes(q.correct.text) || b.innerHTML.includes(q.correct.html)) {
+            b.classList.add('correct');
+          }
+        });
+
+        const expContent = document.getElementById('expContent');
+        expContent.innerHTML = q.exp;
+        document.getElementById('explanationContainer').style.display = 'block';
+
+        const nextBtn = document.getElementById('nextBtn');
+        if (currentQuestionIdx === quizQuestions.length - 1) {
+          nextBtn.textContent = '結果を見る 🏆 (Enter)';
+        } else {
+          nextBtn.textContent = '次の問題へ 進む ➔ (Enter)';
+        }
+      }
+    }
+
+    function nextQuestion() {
+      if (autoNextTimer) {
+        clearTimeout(autoNextTimer);
+        autoNextTimer = null;
+      }
+      currentQuestionIdx++;
+      if (currentQuestionIdx < quizQuestions.length) {
+        loadQuestion(currentQuestionIdx);
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+      document.body.classList.remove('quiz-playing');
+      document.getElementById('progressBar').style.width = '100%';
+      document.getElementById('quizPlayScreen').style.display = 'none';
+      document.getElementById('resultScreen').style.display = 'block';
+
+      const total = quizQuestions.length;
+      document.getElementById('finalScore').textContent = correctCount;
+      const rate = Math.round((correctCount / total) * 100);
+      document.getElementById('accuracyRate').textContent = `${rate}%`;
+
+      const durationSec = Math.floor((Date.now() - startTime) / 1000);
+      const min = Math.floor(durationSec / 60);
+      const sec = durationSec % 60;
+      document.getElementById('clearTime').textContent = `${min}:${sec < 10 ? '0' : ''}${sec}`;
+
+      const resTitle = document.getElementById('resultTitle');
+      const resComment = document.getElementById('resultComment');
+
+      if (rate === 100) {
+        playSound('fanfare');
+        resTitle.textContent = '🏆 完璧！満点達成！';
+        resComment.textContent = '多角形の内角・外角の公式から割り切れない分数角度まで、完璧にマスターしています！';
+      } else if (rate >= 80) {
+        playSound('fanfare');
+        resTitle.textContent = '🌟 大変優秀です！合格！';
+        resComment.textContent = '素晴らしい成績です！間違えた問題の公式や約分を復習して、次回は満点を目指そう！';
+      } else if (rate >= 60) {
+        resTitle.textContent = '👍 よく頑張りました！';
+        resComment.textContent = '基本はバッチリ身についています。「公式シート」で分数の約分ルールをもう一度確認してみよう！';
+      } else {
+        resTitle.textContent = '💪 もう一息！復習してみよう！';
+        resComment.textContent = '「公式・早見表まとめ」タブで公式を確認してから再挑戦してみましょう！';
+      }
+    }
+
+    function retryQuiz() {
+      startQuiz();
+    }
+
+    /* ==========================================================
+       6. 多角形ビジュアライザー (Canvas 描画)
+       ========================================================== */
+    function drawPolygon(n) {
+      currentNForVisual = n;
+      if (!showVisualizer) return;
+
+      const canvas = document.getElementById('polyCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
+
+      ctx.clearRect(0, 0, w, h);
+
+      const cx = w / 2;
+      const cy = h / 2 + 6;
+      const r = Math.min(w, h) * 0.36;
+
+      const vertices = [];
+      for (let i = 0; i < n; i++) {
+        const angle = -Math.PI / 2 + (2 * Math.PI * i) / n;
+        vertices.push({
+          x: cx + r * Math.cos(angle),
+          y: cy + r * Math.sin(angle)
+        });
+      }
+
+      ctx.beginPath();
+      ctx.moveTo(vertices[0].x, vertices[0].y);
+      for (let i = 1; i < n; i++) {
+        ctx.lineTo(vertices[i].x, vertices[i].y);
+      }
+      ctx.closePath();
+
+      const grad = ctx.createLinearGradient(cx - r, cy - r, cx + r, cy + r);
+      if (isDarkMode) {
+        grad.addColorStop(0, 'rgba(129, 140, 248, 0.18)');
+        grad.addColorStop(1, 'rgba(56, 189, 248, 0.18)');
+      } else {
+        grad.addColorStop(0, 'rgba(79, 70, 229, 0.12)');
+        grad.addColorStop(1, 'rgba(6, 182, 212, 0.12)');
+      }
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      ctx.strokeStyle = isDarkMode ? '#818cf8' : '#4f46e5';
+      ctx.lineWidth = 2.2;
+      ctx.stroke();
+
+      vertices.forEach(v => {
+        ctx.beginPath();
+        ctx.arc(v.x, v.y, 3, 0, Math.PI * 2);
+        ctx.fillStyle = isDarkMode ? '#a5b4fc' : '#4f46e5';
+        ctx.fill();
+      });
+
+      if (vertices.length >= 2) {
+        const p0 = vertices[0];
+        const p1 = vertices[1];
+        const dx = p1.x - p0.x;
+        const dy = p1.y - p0.y;
+        const len = Math.hypot(dx, dy);
+
+        const extLength = 38;
+        const extEnd = {
+          x: p1.x + (dx / len) * extLength,
+          y: p1.y + (dy / len) * extLength
+        };
+
+        ctx.beginPath();
+        ctx.setLineDash([3, 3]);
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(extEnd.x, extEnd.y);
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 1.8;
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        const p2 = vertices[2 % n];
+        const angleEdgeNext = Math.atan2(p2.y - p1.y, p2.x - p1.x);
+        const angleExtLine = Math.atan2(extEnd.y - p1.y, extEnd.x - p1.x);
+
+        ctx.beginPath();
+        ctx.arc(p1.x, p1.y, 18, angleExtLine, angleEdgeNext, false);
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+
+        ctx.font = 'bold 11px sans-serif';
+        ctx.fillStyle = isDarkMode ? '#fbbf24' : '#d97706';
+        ctx.fillText('外角', extEnd.x - 10, extEnd.y - 6);
+
+        const anglePrev = Math.atan2(p0.y - p1.y, p0.x - p1.x);
+        ctx.beginPath();
+        ctx.arc(p1.x, p1.y, 14, angleEdgeNext, anglePrev, false);
+        ctx.strokeStyle = isDarkMode ? '#38bdf8' : '#0ea5e9';
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+
+        ctx.fillStyle = isDarkMode ? '#38bdf8' : '#0284c7';
+        ctx.fillText('内角', p1.x - 30, p1.y);
+      }
+    }
+
+    /* ==========================================================
+       7. タブ切り替え
+       ========================================================== */
+    function switchTab(tabId) {
+      if (tabId === 'quiz') {
+        document.getElementById('tabQuiz').classList.add('active');
+        document.getElementById('tabSheet').classList.remove('active');
+        document.getElementById('quizTabContent').style.display = 'block';
+        document.getElementById('sheetTabContent').style.display = 'none';
+      } else {
+        document.body.classList.remove('quiz-playing');
+        document.getElementById('tabSheet').classList.add('active');
+        document.getElementById('tabQuiz').classList.remove('active');
+        document.getElementById('quizTabContent').style.display = 'none';
+        document.getElementById('sheetTabContent').style.display = 'block';
+      }
+    }
+
+    window.addEventListener('keydown', (e) => {
+      const playScreen = document.getElementById('quizPlayScreen');
+      if (playScreen && playScreen.style.display !== 'none') {
+        const expBox = document.getElementById('explanationContainer');
+        if (expBox.style.display === 'block') {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            nextQuestion();
+          }
+        } else {
+          const num = parseInt(e.key);
+          if (num >= 1 && num <= 4) {
+            const buttons = document.querySelectorAll('.choice-btn');
+            if (buttons[num - 1] && !buttons[num - 1].disabled) {
+              buttons[num - 1].click();
+            }
+          }
+        }
+      }
+    });
+
+    initPreferences();
+  </script>
+</body>
+</html>
