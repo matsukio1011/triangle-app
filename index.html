@@ -501,6 +501,25 @@
     .github-link:hover {
       color: var(--primary);
     }
+    @media (min-width: 761px) {
+      html,body {height:100dvh;max-height:100dvh;overflow:hidden}
+      .portal-container {height:100dvh;min-height:0;max-height:100dvh}
+      main {grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));overflow:visible}
+      .app-card {min-height:0;padding:12px 14px}
+      .feature-list {display:none}
+      .card-preview {margin:16px 0}
+      .card-bottom {gap:8px}
+      .launch-btn {padding:7px 10px;flex-shrink:0}
+      .shortcut-hints {gap:8px;flex-wrap:wrap}
+    }
+    @media (min-width:761px) and (max-height:650px) {
+      .card-preview {margin:8px 0}
+      .preview-art {width:42px;height:42px}
+      .preview-art svg {width:36px;height:36px}
+      .card-title-group h2 {font-size:1rem}
+      .badge {padding:2px 5px}
+      .target-scope-text {display:none}
+    }
   </style>
 </head>
 <body>
@@ -755,6 +774,24 @@
           </button>
         </div>
       </a>
+
+      <a href="./angle-training/index.html" class="app-card card-altitude" id="card-angle-sum">
+        <div>
+          <div class="card-top"><div class="card-badges"><span class="badge badge-scope">角の練習</span><span class="badge badge-feature">15回連続正解で合格</span></div><div class="shortcut-badge">キー <kbd>4</kbd></div></div>
+          <div class="card-preview"><div class="preview-art" aria-hidden="true" style="font-size:32px;color:#38bdf8">∠</div><div class="card-title-group"><h2>角の和トレーニング</h2><p class="card-subtitle">10種類の交差する図形の角の和を4択で練習</p></div></div>
+          <ul class="feature-list"><li>補助線を引いて考えよう</li><li>正解音・不正解音／ダークモード／全画面表示</li></ul>
+        </div>
+        <div class="card-bottom"><span class="target-scope-text">正解したら自動で次の問題へ</span><span class="launch-btn">練習を始める</span></div>
+      </a>
+
+      <a href="./angle-training/equal.html" class="app-card card-altitude" id="card-angle-equal">
+        <div>
+          <div class="card-top"><div class="card-badges"><span class="badge badge-scope">角の練習</span><span class="badge badge-feature">15回連続正解で合格</span></div><div class="shortcut-badge">キー <kbd>5</kbd></div></div>
+          <div class="card-preview"><div class="preview-art" aria-hidden="true" style="font-size:32px;color:#38bdf8">∠</div><div class="card-title-group"><h2>等しい角トレーニング</h2><p class="card-subtitle">折り返した帯から、等しい角を3つ選んで判定</p></div></div>
+          <ul class="feature-list"><li>角をクリックして小さな丸で選択</li><li>正解音・不正解音／ダークモード／全画面表示</li></ul>
+        </div>
+        <div class="card-bottom"><span class="target-scope-text">正解したら自動で次の問題へ</span><span class="launch-btn">練習を始める</span></div>
+      </a>
     </main>
 
     <!-- Bottom Status Bar -->
@@ -764,6 +801,7 @@
         <span><kbd>1</kbd> 三角形の心</span>
         <span><kbd>2</kbd> 垂線求積</span>
         <span><kbd>3</kbd> 多角形の内角・外角</span>
+        <span><kbd>4</kbd> 角の和</span><span><kbd>5</kbd> 等しい角</span>
         <span><kbd>F</kbd> 全画面切り替え</span>
       </div>
       <a href="https://github.com/matsukio1011/triangle-app" target="_blank" rel="noopener noreferrer" class="github-link">
@@ -937,6 +975,15 @@
       launchApp(cardPolygons.getAttribute('href'));
     });
 
+    const cardAngleSum = document.getElementById('card-angle-sum');
+    const cardAngleEqual = document.getElementById('card-angle-equal');
+    [cardAngleSum, cardAngleEqual].forEach(card => {
+      card.addEventListener('mouseenter', () => playSound('hover'));
+      card.addEventListener('click', e => {
+        if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+        e.preventDefault(); launchApp(card.getAttribute('href'));
+      });
+    });
     /* Keyboard Shortcuts */
     window.addEventListener('keydown', (e) => {
       if (e.key === '1') {
@@ -945,6 +992,10 @@
         launchApp(cardAltitude.getAttribute('href'));
       } else if (e.key === '3') {
         launchApp(cardPolygons.getAttribute('href'));
+      } else if (e.key === '4') {
+        launchApp(cardAngleSum.getAttribute('href'));
+      } else if (e.key === '5') {
+        launchApp(cardAngleEqual.getAttribute('href'));
       } else if (e.key.toLowerCase() === 'f') {
         toggleFullscreen();
       }
